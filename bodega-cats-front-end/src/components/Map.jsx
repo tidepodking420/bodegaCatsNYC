@@ -40,8 +40,7 @@ export default function Map(){
     const markersRef = useRef([]);
 
      function DeleteMarkerNode({mapInstance, lngLat}){
-      // TODO delete marker from UI when it gets  
-      // TODO use id instead of lng, lat to delete in API
+      // not able to create and delete pins
       return <div> 
         <h3>Do you want to delete this pin?</h3>
         <p><strong>Latitude:</strong> {lngLat.lat}</p>
@@ -53,9 +52,14 @@ export default function Map(){
           headers: {
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify(lngLat)
+          body: JSON.stringify({'id': lngLat.id})
         }).then(res => res.json()).then(data => {
-          console.log(data)
+          console.log(data);
+          const markerToDelete = markersRef.current.filter(pin => pin.id === lngLat.id)[0].marker;
+          markerToDelete.remove();
+          const filteredMarkers = markersRef.current.filter(pin => pin.id !== lngLat.id);
+          markersRef.current = filteredMarkers;
+          setMarkers(filteredMarkers)
         })
       }}>Yes</button>
         </center>
