@@ -3,6 +3,7 @@ import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import './Map.css';
 import ReactDOM from 'react-dom/client';
+import ReactDOMServer from 'react-dom/server';
 
 const SERVER_URL = "http://127.0.0.1:5000/";
 const API_KEY_URL = SERVER_URL + "api_key/map_tiler";
@@ -32,10 +33,29 @@ export default function Map(){
     const zoom = 11;
     const [apiKey, setApiKey] = useState('');
 
-    function MarkerPopup({lngLat, mapInstance}) {
+     function DeleteMarkerNode({mapInstance, lngLat}){
+      return <div> 
+        <h3>Do you want to delete this pin?</h3>
+        <p><strong>Latitude:</strong> {lngLat.lat}</p>
+        <p><strong>Longitude:</strong> {lngLat.lng}</p>
+        <center>
+      <button onClick={(e) => console.log(e)}>Yes</button>
+        </center>
+      </div>
+     } 
+
+    // MapPopup component 
+    function MapPopup({lngLat, mapInstance}) {
       // add the marker to UI
-      const addMarker = () => {new maplibregl.Marker({color: "#FF0000"})
+      const addMarker = () => {
+        const deleteNode = document.createElement('div');
+            const root = ReactDOM.createRoot(deleteNode);
+            root.render(<DeleteMarkerNode  mapInstance={map.current} lngLat={lngLat}/>);
+
+
+        new maplibregl.Marker({color: "#FF0000"})
       .setLngLat([lngLat.lng, lngLat.lat])
+      .setPopup(new maplibregl.Popup().setDOMContent(deleteNode))
       .addTo(mapInstance);
 
       // add marker to database
@@ -48,8 +68,6 @@ export default function Map(){
         body: JSON.stringify(lngLat)}).then(
         res => res.json()
     ).then(data => console.log(data))
-    
-
     }
 
     const [added, setAdded] = useState(false);
@@ -81,14 +99,20 @@ export default function Map(){
           zoom: zoom,
           doubleClickZoom: false,
         });
-        
+
         // add pins from db
         fetch(PIN_URL).then(res => res.json()).then(data => {
           const {pins} = data;
           pins.forEach(pin => {
+            const deleteNode = document.createElement('div');
+            const root = ReactDOM.createRoot(deleteNode);
+            root.render(<DeleteMarkerNode  mapInstance={map.current} lngLat={pin}/>);
+
+
             new maplibregl.Marker({color: "#FF0000"})
-        .setLngLat([pin.lng, pin.lat])
-        .addTo(map.current);
+              .setLngLat([pin.lng, pin.lat])
+              .setPopup(new maplibregl.Popup().setDOMContent(deleteNode)) 
+              .addTo(map.current);
           })
         })
 
@@ -99,7 +123,7 @@ export default function Map(){
 
             const popupNode = document.createElement('div');
             const root = ReactDOM.createRoot(popupNode);
-            root.render(<MarkerPopup lngLat={lngLat} mapInstance={map.current}/>);
+            root.render(<MapPopup lngLat={lngLat} mapInstance={map.current}/>);
 
             new maplibregl.Popup({closeOnClick: true})
             .setLngLat([lngLat.lng, lngLat.lat])
