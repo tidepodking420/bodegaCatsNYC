@@ -4,7 +4,9 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import './Map.css';
 import ReactDOM from 'react-dom/client';
 
-const API_KEY_URL = "http://127.0.0.1:5000/api_key/map_tiler";
+const SERVER_URL = "http://127.0.0.1:5000/";
+const API_KEY_URL = SERVER_URL + "api_key/map_tiler";
+const PIN_URL = SERVER_URL + "/pin";
 
 // later steps
 // how can i set up multiple pages
@@ -30,10 +32,24 @@ export default function Map(){
     const zoom = 11;
     const [apiKey, setApiKey] = useState('');
 
-    function MyCustomPopup({lngLat, mapInstance}) {
+    function MarkerPopup({lngLat, mapInstance}) {
+      // add the marker to UI
       const addMarker = () => {new maplibregl.Marker({color: "#FF0000"})
       .setLngLat([lngLat.lng, lngLat.lat])
       .addTo(mapInstance);
+
+      // add marker to database
+
+      fetch(PIN_URL, {
+        method: 'POST',
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(lngLat)}).then(
+        res => res.json()
+    ).then(data => console.log(data))
+    
+
     }
 
     const [added, setAdded] = useState(false);
@@ -67,21 +83,13 @@ export default function Map(){
         });
         map.current.addControl(new maplibregl.NavigationControl(), 'top-right');
 
-        new maplibregl.Marker({color: "#FF0000"})
-        .setLngLat([-73.9960136, 40.7505045])
-        .addTo(map.current);
-
         map.current.on('dblclick', (e) => {
             const { lngLat } = e;
-            // setClickedLocation(lngLat); // Update state with clicked location
-            // console.log('Clicked location:', lngLat);
 
-            // Create a container for the React component
             const popupNode = document.createElement('div');
-
-            // // Use React 18's createRoot to render the component
             const root = ReactDOM.createRoot(popupNode);
-            root.render(<MyCustomPopup lngLat={lngLat} mapInstance={map.current}/>);
+            root.render(<MarkerPopup lngLat={lngLat} mapInstance={map.current}/>);
+
             new maplibregl.Popup({closeOnClick: true})
             .setLngLat([lngLat.lng, lngLat.lat])
             .setDOMContent(popupNode)
@@ -91,8 +99,6 @@ export default function Map(){
       
       }, [apiKey, lng, lat, zoom]);
 
-      // on double click, prompt if I want to add a pin to that location
-      // if true, add a pin to that location
 
       return (
         <div className="map-wrap">

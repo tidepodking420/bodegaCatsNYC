@@ -1,10 +1,40 @@
-from flask import Flask
-import os
+from flask import Flask, request
 from flask_cors import CORS
+from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///pin.sqlite3'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 CORS(app)
+db = SQLAlchemy(app)
 api_key_path='/home/user/vscode/secrets.txt'
+
+class pin(db.Model):
+    __tablename__ = 'pin'
+    _id = db.Column("id", db.Integer, primary_key=True)
+    lat = db.Column(db.Float, nullable=False)
+    lng = db.Column(db.Float, nullable=False)
+
+    def __init__(self, lat, lng):
+        self.lat = lat
+        self.lng = lng
+
+@app.route('/pin', methods=['GET', 'POST'])
+def pin_logic():
+    if request.method == 'POST':
+        # this method should create a new pin, and return a message if 
+        # done successfully
+        prev_count  = db.session.query(pin).count()
+        lat = request.json.get('lat')
+        lng = request.json.get('lng')
+        new_pin = pin(lat, lng)
+        db.session.add(new_pin)
+        db.session.commit()
+        return {'prev_count': prev_count, 'new_count': db.session.query(pin).count()}
+    else:
+        # default is GET
+        # this method should return all the pins
+        return {'pin_key': 'pin_value'}
 
 @app.route('/api_key/map_tiler')
 def home():
@@ -14,4 +44,6 @@ def home():
         return {'map_tiler': api_secret}
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    with app.app_context():
+        db.create_all()
+        app.run(debug=True)
