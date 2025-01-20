@@ -2,8 +2,33 @@ import React, { useRef, useEffect, useState } from 'react';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import './Map.css';
+import ReactDOM from 'react-dom/client';
 
 const API_KEY_URL = "http://127.0.0.1:5000/api_key/map_tiler";
+
+// later steps
+// how can i set up multiple pages
+// admin and user screen
+
+// immediate next step
+// be able to click on the map to add a pin
+// if I reload then that pin should be persistent
+// use flask backend to save the pins as I go
+// when I reload this page, I should initialize with those pins
+
+// I should also be able to delete pins
+
+// I want to be able to associate cats with these pins eventually
+
+function MyCustomPopup() {
+  return (
+      <div style={{ padding: '10px', maxWidth: '200px' }}>
+          <h3>Location Details</h3>
+          {/* <p><strong>Latitude:</strong> {location.lat}</p>
+          <p><strong>Longitude:</strong> {location.lng}</p> */}
+      </div>
+  );
+}
 
 export default function Map(){
     const mapContainer = useRef(null);
@@ -27,7 +52,8 @@ export default function Map(){
           container: mapContainer.current,
           style: `https://api.maptiler.com/maps/streets-v2/style.json?key=${apiKey}`,
           center: [lng, lat],
-          zoom: zoom
+          zoom: zoom,
+          doubleClickZoom: false,
         });
         map.current.addControl(new maplibregl.NavigationControl(), 'top-right');
 
@@ -35,12 +61,37 @@ export default function Map(){
         .setLngLat([-73.9960136, 40.7505045])
         .addTo(map.current);
 
+        map.current.on('dblclick', (e) => {
+            const { lngLat } = e;
+            // setClickedLocation(lngLat); // Update state with clicked location
+            // console.log('Clicked location:', lngLat);
+
+            // Create a container for the React component
+            // const popupNode = document.createElement('div');
+
+            // // Use React 18's createRoot to render the component
+            // const root = ReactDOM.createRoot(popupNode);
+            // root.render(<MyCustomPopup location={lngLat} />);
+            console.log([lngLat.lng, lngLat.lat])
+            new maplibregl.Popup({closeOnClick: true})
+            .setLngLat([lngLat.lng, lngLat.lat])
+            .setHTML('Hello')
+            .addTo(map.current);
+          });
+
       
       }, [apiKey, lng, lat, zoom]);
 
+      // on double click, prompt if I want to add a pin to that location
+      // if true, add a pin to that location
+
       return (
         <div className="map-wrap">
-          <div ref={mapContainer} className="map" />
+        <div ref={mapContainer} className="map" />
+          <div className="popup">
+          Content of the popup
+          {/* <button onClick={togglePopup}>Close</button> */}
+        </div>
         </div>
       );
 }
