@@ -39,7 +39,17 @@ export default function Map(){
         <p><strong>Latitude:</strong> {lngLat.lat}</p>
         <p><strong>Longitude:</strong> {lngLat.lng}</p>
         <center>
-      <button onClick={(e) => console.log(e)}>Yes</button>
+      <button onClick={() => {
+        fetch(PIN_URL, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(lngLat)
+        }).then(res => res.json()).then(data => {
+          console.log(data)
+        })
+      }}>Yes</button>
         </center>
       </div>
      } 

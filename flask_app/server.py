@@ -29,8 +29,12 @@ class pin(db.Model):
             "lat": self.lat,
             "lng": self.lng
         }
+    
+def find_pin_by_coords(lat, lng):
+    return pin.query.filter_by(lat=lat, lng=lng).first()
 
-@app.route('/pin', methods=['GET', 'POST'])
+
+@app.route('/pin', methods=['GET', 'POST', 'DELETE'])
 def pin_logic():
     if request.method == 'POST':
         # this method should create a new pin, and return a message if 
@@ -42,6 +46,13 @@ def pin_logic():
         db.session.add(new_pin)
         db.session.commit()
         return {'prev_count': prev_count, 'new_count': db.session.query(pin).count()}
+    elif request.method == 'DELETE':
+        lat = request.json.get('lat')
+        lng = request.json.get('lng')
+        pin_to_delete = find_pin_by_coords(lat, lng)
+        db.session.delete(pin_to_delete)
+        db.session.commit()
+        return {"message": f"Pin at coordinates ({lat}, {lng}) deleted successfully."}
     else:
         # default is GET
         pin_list = [p.to_dict() for p in db.session.query(pin).all()]
