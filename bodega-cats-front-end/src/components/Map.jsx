@@ -12,7 +12,7 @@ const API_KEY_URL = "http://127.0.0.1:5000/api_key/map_tiler";
 
 // immediate next step
 // be able to click on the map to add a pin
-// if I reload then that pin should be persistent
+// if I reload then that pin should be persistent ----- current step
 // use flask backend to save the pins as I go
 // when I reload this page, I should initialize with those pins
 
@@ -31,21 +31,21 @@ export default function Map(){
     const [apiKey, setApiKey] = useState('');
 
     function MyCustomPopup({lngLat, mapInstance}) {
-      return (
+      const addMarker = () => {new maplibregl.Marker({color: "#FF0000"})
+      .setLngLat([lngLat.lng, lngLat.lat])
+      .addTo(mapInstance);
+    }
+
+    const [added, setAdded] = useState(false);
+      return added ? <h4>Please close the window</h4> : (
           <div style={{ padding: '10px', maxWidth: '200px' }}>
               <h3>Adding a new Marker</h3>
               <p><strong>Latitude:</strong> {lngLat.lat}</p>
               <p><strong>Longitude:</strong> {lngLat.lng}</p>
               <h4>Are you sure you want to add a new marker here?</h4>
-              <button onClick={() => addMarker(lngLat, mapInstance)}>Yes</button>
+              <button onClick={() => {setAdded(true);addMarker(lngLat, mapInstance)}}>Yes</button>
           </div>
       );
-    }
-
-    function addMarker(lngLat, mapInstance){
-      new maplibregl.Marker({color: "#FF0000"})
-        .setLngLat([lngLat.lng, lngLat.lat])
-        .addTo(mapInstance);
     }
 
     useEffect(() => {
@@ -97,10 +97,6 @@ export default function Map(){
       return (
         <div className="map-wrap">
         <div ref={mapContainer} className="map" />
-          <div className="popup">
-          Content of the popup
-          {/* <button onClick={togglePopup}>Close</button> */}
-        </div>
         </div>
       );
 }
