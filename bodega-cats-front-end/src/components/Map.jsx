@@ -20,15 +20,7 @@ const API_KEY_URL = "http://127.0.0.1:5000/api_key/map_tiler";
 
 // I want to be able to associate cats with these pins eventually
 
-function MyCustomPopup() {
-  return (
-      <div style={{ padding: '10px', maxWidth: '200px' }}>
-          <h3>Location Details</h3>
-          {/* <p><strong>Latitude:</strong> {location.lat}</p>
-          <p><strong>Longitude:</strong> {location.lng}</p> */}
-      </div>
-  );
-}
+
 
 export default function Map(){
     const mapContainer = useRef(null);
@@ -36,7 +28,25 @@ export default function Map(){
     const lat = 40.7632571;
     const lng = -73.932958;
     const zoom = 11;
-    const [apiKey, setApiKey] = useState('')
+    const [apiKey, setApiKey] = useState('');
+
+    function MyCustomPopup({lngLat, mapInstance}) {
+      return (
+          <div style={{ padding: '10px', maxWidth: '200px' }}>
+              <h3>Adding a new Marker</h3>
+              <p><strong>Latitude:</strong> {lngLat.lat}</p>
+              <p><strong>Longitude:</strong> {lngLat.lng}</p>
+              <h4>Are you sure you want to add a new marker here?</h4>
+              <button onClick={() => addMarker(lngLat, mapInstance)}>Yes</button>
+          </div>
+      );
+    }
+
+    function addMarker(lngLat, mapInstance){
+      new maplibregl.Marker({color: "#FF0000"})
+        .setLngLat([lngLat.lng, lngLat.lat])
+        .addTo(mapInstance);
+    }
 
     useEffect(() => {
         fetch(API_KEY_URL).then(
@@ -67,15 +77,14 @@ export default function Map(){
             // console.log('Clicked location:', lngLat);
 
             // Create a container for the React component
-            // const popupNode = document.createElement('div');
+            const popupNode = document.createElement('div');
 
             // // Use React 18's createRoot to render the component
-            // const root = ReactDOM.createRoot(popupNode);
-            // root.render(<MyCustomPopup location={lngLat} />);
-            console.log([lngLat.lng, lngLat.lat])
+            const root = ReactDOM.createRoot(popupNode);
+            root.render(<MyCustomPopup lngLat={lngLat} mapInstance={map.current}/>);
             new maplibregl.Popup({closeOnClick: true})
             .setLngLat([lngLat.lng, lngLat.lat])
-            .setHTML('Hello')
+            .setDOMContent(popupNode)
             .addTo(map.current);
           });
 
