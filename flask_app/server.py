@@ -45,7 +45,7 @@ def pin_logic():
         new_pin = pin(lat, lng)
         db.session.add(new_pin)
         db.session.commit()
-        return {'prev_count': prev_count, 'new_count': db.session.query(pin).count()}
+        return {'id': new_pin._id}
     elif request.method == 'DELETE':
         lat = request.json.get('lat')
         lng = request.json.get('lng')
