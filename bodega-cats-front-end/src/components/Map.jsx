@@ -68,18 +68,7 @@ export default function Map(){
 
     // MapPopup component 
     function MapPopup({lngLat, mapInstance}) {
-      // add the marker to UI
       const addMarker = () => {
-        const deleteNode = document.createElement('div');
-            const root = ReactDOM.createRoot(deleteNode);
-            root.render(<DeleteMarkerNode  mapInstance={map.current} lngLat={lngLat}/>);
-
-
-        const newMarker = new maplibregl.Marker({color: "#FF0000"})
-      .setLngLat([lngLat.lng, lngLat.lat])
-      .setPopup(new maplibregl.Popup().setDOMContent(deleteNode))
-      .addTo(mapInstance);
-
       // add marker to database
       fetch(PIN_URL, {
         method: 'POST',
@@ -90,9 +79,22 @@ export default function Map(){
           res => res.json()
     )
     .then(data => {
-      const newValue = [...markersRef.current, {'marker': newMarker, 'id': data.id}];
-      markersRef.current = newValue;
-      setMarkers(newValue)
+      const deleteNode = document.createElement('div');
+      const root = ReactDOM.createRoot(deleteNode);
+      const newLngLat = {
+        'id': data.id, 'lat': lngLat.lat, 'lng': lngLat.lng
+      };
+      root.render(<DeleteMarkerNode  mapInstance={map.current} lngLat={newLngLat}/>);
+
+
+    const newMarker = new maplibregl.Marker({color: "#FF0000"})
+      .setLngLat([lngLat.lng, lngLat.lat])
+      .setPopup(new maplibregl.Popup().setDOMContent(deleteNode))
+      .addTo(mapInstance);
+
+    const newValue = [...markersRef.current, {'marker': newMarker, 'id': data.id}];
+    markersRef.current = newValue;
+    setMarkers(newValue)
     })
     }
     
@@ -126,7 +128,7 @@ export default function Map(){
           doubleClickZoom: false,
         });
 
-        // add pins from db
+        // add pins from dbmapInstance
         fetch(PIN_URL).then(res => res.json()).then(data => {
           const {pins} = data;
           const initMarkerState = pins.map(pin => {

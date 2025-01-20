@@ -35,9 +35,7 @@ class pin(db.Model):
 @app.route('/pin', methods=['GET', 'POST', 'DELETE'])
 def pin_logic():
     if request.method == 'POST':
-        # this method should create a new pin, and return a message if 
-        # done successfully
-        prev_count = db.session.query(pin).count()
+        # this method should create a new pin, and return an id
         lat = request.json.get('lat')
         lng = request.json.get('lng')
         new_pin = pin(lat, lng)
