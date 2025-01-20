@@ -19,12 +19,23 @@ class pin(db.Model):
         self.lat = lat
         self.lng = lng
 
+    def __repr__(self):
+        return f"<Pin(id={self._id}, lat={self.lat}, lng={self.lng})>"
+    
+    def to_dict(self):
+        # Convert SQLAlchemy model to a dictionary
+        return {
+            "id": self._id,
+            "lat": self.lat,
+            "lng": self.lng
+        }
+
 @app.route('/pin', methods=['GET', 'POST'])
 def pin_logic():
     if request.method == 'POST':
         # this method should create a new pin, and return a message if 
         # done successfully
-        prev_count  = db.session.query(pin).count()
+        prev_count = db.session.query(pin).count()
         lat = request.json.get('lat')
         lng = request.json.get('lng')
         new_pin = pin(lat, lng)
@@ -33,8 +44,9 @@ def pin_logic():
         return {'prev_count': prev_count, 'new_count': db.session.query(pin).count()}
     else:
         # default is GET
-        # this method should return all the pins
-        return {'pin_key': 'pin_value'}
+        pin_list = [p.to_dict() for p in db.session.query(pin).all()]
+        print(db.session.query(pin).all())
+        return {'pins': pin_list}
 
 @app.route('/api_key/map_tiler')
 def home():

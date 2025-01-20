@@ -81,6 +81,17 @@ export default function Map(){
           zoom: zoom,
           doubleClickZoom: false,
         });
+        
+        // add pins from db
+        fetch(PIN_URL).then(res => res.json()).then(data => {
+          const {pins} = data;
+          pins.forEach(pin => {
+            new maplibregl.Marker({color: "#FF0000"})
+        .setLngLat([pin.lng, pin.lat])
+        .addTo(map.current);
+          })
+        })
+
         map.current.addControl(new maplibregl.NavigationControl(), 'top-right');
 
         map.current.on('dblclick', (e) => {
