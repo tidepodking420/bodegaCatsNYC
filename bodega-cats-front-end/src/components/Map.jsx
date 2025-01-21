@@ -14,8 +14,8 @@ const PIN_URL = SERVER_URL + "/pin";
 // differentiate between me, priveleged users, and regular users
 // how to associate the pins with cats, how to represent the cats
 
-
-export default function Map(){
+// 0 for admin, 1 for user
+export default function Map({permissions}){
     const mapContainer = useRef(null);
     const map = useRef(null);
     const lat = 40.7632571;
@@ -29,8 +29,9 @@ export default function Map(){
     const [markers, setMarkers] = useState([]);
     const markersRef = useRef([]);
 
-     function DeleteMarkerNode({mapInstance, lngLat}){
-      // not able to create and delete pins
+     function MarkerPopup({mapInstance, lngLat}){
+       if(permissions === 0){
+        // ADMIN
       return <div> 
         <h3>Do you want to delete this pin?</h3>
         <p><strong>Latitude:</strong> {lngLat.lat}</p>
@@ -54,10 +55,21 @@ export default function Map(){
       }}>Yes</button>
         </center>
       </div>
+      // END ADMIN
+     } else{
+       // USER
+      return <div> 
+        <h3>What do you think of the cats here?</h3>
+        <button>Good!</button><button>Great!</button>
+      </div>
+      // END USER
+     }
+
      } 
 
-    // MapPopup component 
     function MapPopup({lngLat, mapInstance}) {
+      if(permissions == 0){
+        // ADMIN
       const addMarker = () => {
       // add marker to database
       fetch(PIN_URL, {
@@ -74,7 +86,7 @@ export default function Map(){
       const newLngLat = {
         'id': data.id, 'lat': lngLat.lat, 'lng': lngLat.lng
       };
-      root.render(<DeleteMarkerNode  mapInstance={map.current} lngLat={newLngLat}/>);
+      root.render(<MarkerPopup  mapInstance={map.current} lngLat={newLngLat}/>);
 
 
     const newMarker = new maplibregl.Marker({color: "#FF0000"})
@@ -98,6 +110,15 @@ export default function Map(){
               <button onClick={() => {setAdded(true);addMarker(lngLat, mapInstance)}}>Yes</button>
           </div>
       );
+      // END ADMIN
+    } else{
+
+      // USER 
+      return <div style={{ padding: '10px', maxWidth: '200px' }}>
+              <h3>Do you know any cats here?</h3>
+          </div>
+      // END USER
+    }
     }
 
     useEffect(() => {
@@ -124,7 +145,7 @@ export default function Map(){
           const initMarkerState = pins.map(pin => {
             const deleteNode = document.createElement('div');
             const root = ReactDOM.createRoot(deleteNode);
-            root.render(<DeleteMarkerNode  mapInstance={map.current} lngLat={pin}/>);
+            root.render(<MarkerPopup  mapInstance={map.current} lngLat={pin}/>);
             
             const newMarker = new maplibregl.Marker({color: "#FF0000"})
             .setLngLat([pin.lng, pin.lat])
