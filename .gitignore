@@ -1,1 +1,4 @@
 .env
+bodega-cats-front-end/node_modules
+flask_app/instance
+pin.sqlite3

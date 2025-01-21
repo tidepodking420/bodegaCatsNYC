@@ -1,28 +1,18 @@
-import React, { useRef, useEffect, useState } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import './Map.css';
 import ReactDOM from 'react-dom/client';
-import ReactDOMServer from 'react-dom/server';
 
 const SERVER_URL = "http://127.0.0.1:5000/";
 const API_KEY_URL = SERVER_URL + "api_key/map_tiler";
 const PIN_URL = SERVER_URL + "/pin";
 
-// later steps
-// how can i set up multiple pages
-// admin and user screen
-
-// immediate next step
-// be able to click on the map to add a pin
-// if I reload then that pin should be persistent ----- current step
-// use flask backend to save the pins as I go
-// when I reload this page, I should initialize with those pins
-
-// I should also be able to delete pins
-
-// I want to be able to associate cats with these pins eventually
-
+// next steps
+// figure out how I can deploy my flask/react application
+// how to make mobile friendly interfaces
+// differentiate between me, priveleged users, and regular users
+// how to associate the pins with cats, how to represent the cats
 
 
 export default function Map(){
