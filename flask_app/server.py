@@ -9,31 +9,61 @@ CORS(app)
 db = SQLAlchemy(app)
 api_key_path='/home/user/vscode/secrets.txt'
 
+class cat(db.Model):
+    __tablename__ = 'cat'
+    id = db.Column("id", db.Integer, primary_key=True)
+    name = db.Column(db.String(25), nullable=False)
+    desc = db.Column(db.String(100), nullable=False)
+    # Foreign key to `pin` table
+    pin_id = db.Column(db.Integer, db.ForeignKey('pin.id'), nullable=False)
+
+    def __init__(self, name, desc, pin_id):
+        self.name = name
+        self.desc = desc
+        self.pin_id = pin_id
+
+    def __repr__(self):
+        return f"<Cat(id={self.id}, name={self.name}, desc={self.desc}, pin_id={self.pin_id})>"
+    
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "desc": self.desc,
+            "pin_id": self.pin_id
+        }
+
 class pin(db.Model):
     __tablename__ = 'pin'
-    _id = db.Column("id", db.Integer, primary_key=True)
+    id = db.Column("id", db.Integer, primary_key=True)
     lat = db.Column(db.Float, nullable=False)
     lng = db.Column(db.Float, nullable=False)
+
+    # One-to-many relationship to cats; deletes associated cats
+    # when the pin gets deleted
+    cats = db.relationship('cat', backref='pin', lazy=True, cascade="all, delete-orphan")
 
     def __init__(self, lat, lng):
         self.lat = lat
         self.lng = lng
 
     def __repr__(self):
-        return f"<Pin(id={self._id}, lat={self.lat}, lng={self.lng})>"
+        return f"<Pin(id={self.id}, lat={self.lat}, lng={self.lng}, cats={[cat.id for cat in self.cats]})>"
     
     def to_dict(self):
         # Convert SQLAlchemy model to a dictionary
         return {
-            "id": self._id,
+            "id": self.id,
             "lat": self.lat,
-            "lng": self.lng
+            "lng": self.lng,
+            "cats": [cat.id for cat in self.cats]
         }
 
 
 
-@app.route('/pin', methods=['GET', 'POST', 'DELETE'])
+@app.route('/pin', methods=['GET', 'POST', 'DELETE', 'PATCH'])
 def pin_logic():
+    # its easier to add the cats using patch
     if request.method == 'POST':
         # this method should create a new pin, and return an id
         lat = request.json.get('lat')
@@ -41,13 +71,23 @@ def pin_logic():
         new_pin = pin(lat, lng)
         db.session.add(new_pin)
         db.session.commit()
-        return {'id': new_pin._id}
+        return {'id': new_pin.id}
     elif request.method == 'DELETE':
         id = request.json.get('id')
-        pin_to_delete = pin.query.filter_by(_id=id).first()
+        pin_to_delete = pin.query.filter_by(id=id).first()
         db.session.delete(pin_to_delete)
         db.session.commit()
         return {"message": f"Pin {id} deleted successfully."}
+    elif request.method == 'PATCH':
+        # what can I do in a patch
+        # start with create a new cat, TODO modify an existing cat, or delete one of the cats
+        # 1. create a new cat TODO call this from the front end
+        cat_name = request.json.get('name')
+        cat_desc = request.json.get('desc')
+        pin_id = request.json.get('id')
+        new_cat = cat(name=cat_name, desc=cat_desc, pin_id=pin_id)
+        db.session.add(new_cat)
+        db.session.commit()
     else:
         # default is GET
         pin_list = [p.to_dict() for p in db.session.query(pin).all()]

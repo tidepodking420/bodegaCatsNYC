@@ -11,7 +11,6 @@ const PIN_URL = SERVER_URL + "/pin";
 // next steps
 // figure out how I can deploy my flask/react application
 // how to make mobile friendly interfaces
-// differentiate between me, priveleged users, and regular users
 // how to associate the pins with cats, how to represent the cats
 
 // 0 for admin, 1 for user
@@ -29,6 +28,7 @@ export default function Map({permissions}){
     const [markers, setMarkers] = useState([]);
     const markersRef = useRef([]);
 
+     // see note; be careful about assumptions with lngLat
      function MarkerPopup({mapInstance, lngLat}){
        if(permissions === 0){
         // ADMIN
@@ -53,6 +53,24 @@ export default function Map({permissions}){
           setMarkers(filteredMarkers)
         })
       }}>Yes</button>
+      <h3>Add a cat instead?</h3>
+      <button onClick={() => {
+        fetch(PIN_URL, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({'id': lngLat.id})
+        }).then(res => res.json()).then(data => {
+          console.log(data);
+          // TODO FINISH IMPLEMENTING THIS!!
+          // const markerToDelete = markersRef.current.filter(pin => pin.id === lngLat.id)[0].marker;
+          // markerToDelete.remove();
+          // const filteredMarkers = markersRef.current.filter(pin => pin.id !== lngLat.id);
+          // markersRef.current = filteredMarkers;
+          // setMarkers(filteredMarkers)
+        })
+      }}>Add cat</button>
         </center>
       </div>
       // END ADMIN
@@ -83,6 +101,8 @@ export default function Map({permissions}){
     .then(data => {
       const deleteNode = document.createElement('div');
       const root = ReactDOM.createRoot(deleteNode);
+      // NOTE; this part is wonky because when you create the marker popup
+      // the id is not known until response is received from the server with the id
       const newLngLat = {
         'id': data.id, 'lat': lngLat.lat, 'lng': lngLat.lng
       };
