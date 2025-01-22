@@ -3,15 +3,17 @@ import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import './Map.css';
 import ReactDOM from 'react-dom/client';
+import { CatViewer } from './CatViewer';
 
-const SERVER_URL = "http://127.0.0.1:5000/";
-const API_KEY_URL = SERVER_URL + "api_key/map_tiler";
+const SERVER_URL = "http://127.0.0.1:5000";
+const API_KEY_URL = SERVER_URL + "/api_key/map_tiler";
 const PIN_URL = SERVER_URL + "/pin";
 
 // next steps
 // figure out how I can deploy my flask/react application
 // how to make mobile friendly interfaces
 // how to associate the pins with cats, how to represent the cats
+
 
 // 0 for admin, 1 for user
 export default function Map({permissions}){
@@ -32,64 +34,87 @@ export default function Map({permissions}){
      function MarkerPopup({mapInstance, lngLat}){
        const [catName, setCatName] = useState("");
  const [catDesc, setCatDesc] = useState("");
+ const [selectedOption, setSelectedOption] = useState('admin');
+ const catViewer = <CatViewer pin_id={lngLat.id}/>
        if(permissions === 0){
-
         // ADMIN
-      return <div> 
-        <h3>Do you want to delete this pin?</h3>
-        <p><strong>Latitude:</strong> {lngLat.lat}</p>
-        <p><strong>Longitude:</strong> {lngLat.lng}</p>
-        <center>
-      <button onClick={() => {
-        fetch(PIN_URL, {
-          method: 'DELETE',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({'id': lngLat.id})
-        }).then(res => res.json()).then(data => {
-          console.log(data);
-          const markerToDelete = markersRef.current.filter(pin => pin.id === lngLat.id)[0].marker;
-          markerToDelete.remove();
-          const filteredMarkers = markersRef.current.filter(pin => pin.id !== lngLat.id);
-          markersRef.current = filteredMarkers;
-          setMarkers(filteredMarkers)
-        })
-      }}>Yes</button>
-      <h3>Add a cat instead?</h3>
-      <input 
-      type="text"
-      value={catName}
-      onChange={(e) => setCatName(e.target.value)}
-      placeholder='Name of the Cat?'
-      />
-      <textarea
-      value={catDesc}
-      onChange={(e) => setCatDesc(e.target.value)}
-      placeholder='Description...'
-       rows="7"
-      cols="20"
-      />
-      <button onClick={() => {
-        fetch(PIN_URL, {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({'id': lngLat.id, 'name': catName, 'desc': catDesc})
-        }).then(res => res.json()).then(data => {
-          console.log(data);
-        })
-      }}>Add cat</button>
-        </center>
-      </div>
+    return <div> 
+              <label>
+                  <input 
+                      type="radio" 
+                      value="admin" 
+                      checked={selectedOption === 'admin'} 
+                      onChange={(e) => setSelectedOption(e.target.value)} 
+                  />
+                  Option 1
+              </label>
+              <label>
+                  <input 
+                      type="radio" 
+                      value="viewer" 
+                      checked={selectedOption === 'viewer'} 
+                      onChange={(e) => setSelectedOption(e.target.value)} 
+                  />
+                  Option 2
+              </label>
+              {selectedOption === 'viewer' ? <div>
+                {catViewer}
+              </div> :
+              <div> 
+                <h3>Do you want to delete this pin?</h3>
+                <p><strong>Latitude:</strong> {lngLat.lat}</p>
+                <p><strong>Longitude:</strong> {lngLat.lng}</p>
+                <center>
+                <button onClick={() => {
+                fetch(PIN_URL, {
+                  method: 'DELETE',
+                  headers: {
+                    'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify({'id': lngLat.id})
+                }).then(res => res.json()).then(data => {
+                  console.log(data);
+                  const markerToDelete = markersRef.current.filter(pin => pin.id === lngLat.id)[0].marker;
+                  markerToDelete.remove();
+                  const filteredMarkers = markersRef.current.filter(pin => pin.id !== lngLat.id);
+                  markersRef.current = filteredMarkers;
+                  setMarkers(filteredMarkers)
+                })
+                }}>Yes</button>
+                <h3>Add a cat instead?</h3>
+                <input 
+                type="text"
+                value={catName}
+                onChange={(e) => setCatName(e.target.value)}
+                placeholder='Name of the Cat?'
+                />
+                <textarea
+                value={catDesc}
+                onChange={(e) => setCatDesc(e.target.value)}
+                placeholder='Description...'
+                rows="7"
+                cols="20"
+                />
+                <button 
+                disabled={!catName.length || !catDesc.length}
+                onClick={() => {
+                  fetch(PIN_URL, {
+                    method: 'PATCH',
+                    headers: {
+                      'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({'id': lngLat.id, 'name': catName, 'desc': catDesc})
+                  }).then(res => res.json()).then(data => {
+                    console.log(data);
+                  })
+                }}>Add cat</button>
+                  </center>
+              </div>}
+          </div>
       // END ADMIN
      } else{
        // USER
-      return <div> 
-        <h3>What do you think of the cats here?</h3>
-        <button>Good!</button><button>Great!</button>
-      </div>
+      return catViewer
       // END USER
      }
 

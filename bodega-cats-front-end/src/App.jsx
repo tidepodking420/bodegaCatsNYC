@@ -4,7 +4,7 @@ import Map from './components/Map.jsx';
 
 
 function App() {
-  const permissions = 0;
+  const permissions = 1;
   return (
     <div className="App">
     <Navbar/>

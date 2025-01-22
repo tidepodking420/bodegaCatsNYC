@@ -59,6 +59,11 @@ class pin(db.Model):
             "cats": [cat.id for cat in self.cats]
         }
 
+@app.route('/cat', methods=['GET'])
+def cat_logic():
+    # retrieving the cats at specific id
+    return {'cats' : list(map(lambda x: x.to_dict(), cat.query.filter_by(pin_id=request.args.get('pin_id')).all()))}
+
 
 
 @app.route('/pin', methods=['GET', 'POST', 'DELETE', 'PATCH'])
