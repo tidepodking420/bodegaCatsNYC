@@ -30,7 +30,10 @@ export default function Map({permissions}){
 
      // see note; be careful about assumptions with lngLat
      function MarkerPopup({mapInstance, lngLat}){
+       const [catName, setCatName] = useState("");
+ const [catDesc, setCatDesc] = useState("");
        if(permissions === 0){
+
         // ADMIN
       return <div> 
         <h3>Do you want to delete this pin?</h3>
@@ -54,21 +57,28 @@ export default function Map({permissions}){
         })
       }}>Yes</button>
       <h3>Add a cat instead?</h3>
+      <input 
+      type="text"
+      value={catName}
+      onChange={(e) => setCatName(e.target.value)}
+      placeholder='Name of the Cat?'
+      />
+      <textarea
+      value={catDesc}
+      onChange={(e) => setCatDesc(e.target.value)}
+      placeholder='Description...'
+       rows="7"
+      cols="20"
+      />
       <button onClick={() => {
         fetch(PIN_URL, {
           method: 'PATCH',
           headers: {
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify({'id': lngLat.id})
+          body: JSON.stringify({'id': lngLat.id, 'name': catName, 'desc': catDesc})
         }).then(res => res.json()).then(data => {
           console.log(data);
-          // TODO FINISH IMPLEMENTING THIS!!
-          // const markerToDelete = markersRef.current.filter(pin => pin.id === lngLat.id)[0].marker;
-          // markerToDelete.remove();
-          // const filteredMarkers = markersRef.current.filter(pin => pin.id !== lngLat.id);
-          // markersRef.current = filteredMarkers;
-          // setMarkers(filteredMarkers)
         })
       }}>Add cat</button>
         </center>

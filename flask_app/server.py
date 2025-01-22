@@ -88,6 +88,10 @@ def pin_logic():
         new_cat = cat(name=cat_name, desc=cat_desc, pin_id=pin_id)
         db.session.add(new_cat)
         db.session.commit()
+        all_cats = list(map(lambda x: x.to_dict(), cat.query.filter_by(pin_id=pin_id).all()))
+        return {'assoicated_cats': all_cats,
+                'pin_id': pin_id
+                }
     else:
         # default is GET
         pin_list = [p.to_dict() for p in db.session.query(pin).all()]
