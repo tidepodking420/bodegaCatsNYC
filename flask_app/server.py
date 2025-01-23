@@ -38,6 +38,8 @@ class pin(db.Model):
     id = db.Column("id", db.Integer, primary_key=True)
     lat = db.Column(db.Float, nullable=False)
     lng = db.Column(db.Float, nullable=False)
+    # address field to implement google maps stuff
+    # name of the business
 
     # One-to-many relationship to cats; deletes associated cats
     # when the pin gets deleted
@@ -86,7 +88,7 @@ def pin_logic():
     elif request.method == 'PATCH':
         # what can I do in a patch
         # start with create a new cat, TODO modify an existing cat, or delete one of the cats
-        # 1. create a new cat TODO call this from the front end
+        # 1. create a new cat
         cat_name = request.json.get('name')
         cat_desc = request.json.get('desc')
         pin_id = request.json.get('id')

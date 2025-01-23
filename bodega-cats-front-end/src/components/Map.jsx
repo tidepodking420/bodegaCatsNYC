@@ -4,6 +4,7 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import './Map.css';
 import ReactDOM from 'react-dom/client';
 import { CatViewer } from './CatViewer';
+import { subwayLayerStyles } from './data/subway-layer-styles';
 
 const SERVER_URL = "http://127.0.0.1:5000";
 const API_KEY_URL = SERVER_URL + "/api_key/map_tiler";
@@ -158,6 +159,33 @@ export default function Map({permissions}){
     const [added, setAdded] = useState(false);
       return added ? <h4>Please close the window</h4> : (
           <div style={{ padding: '10px', maxWidth: '200px' }}>
+            <button onClick={() => {
+                subwayLayerStyles.forEach((style) => {
+                  // TODO get toggle feature working
+                  map.current.removeLayer(style.id)
+                })
+        
+                map.current.removeSource('nyc-subway-routes');
+        
+                map.current.removeSource('nyc-subway-stops');
+            }}>turn off yellow</button>
+             <button onClick={() => {
+                // add geojson sources for subway routes and stops
+        map.current.addSource('nyc-subway-routes', {
+          type: 'geojson',
+          data: 'src/components/data/nyc-subway-routes.geojson'
+        });
+
+        map.current.addSource('nyc-subway-stops', {
+          type: 'geojson',
+          data: 'src/components/data/nyc-subway-stops.geojson'
+        });
+
+        // add layers by iterating over the styles in the array defined in subway-layer-styles.js
+        subwayLayerStyles.forEach((style) => {
+          map.current.addLayer(style)
+        })
+            }}>turn on</button>
               <h3>Adding a new Marker</h3>
               <p><strong>Latitude:</strong> {lngLat.lat}</p>
               <p><strong>Longitude:</strong> {lngLat.lng}</p>
@@ -193,6 +221,34 @@ export default function Map({permissions}){
           zoom: zoom,
           doubleClickZoom: false,
         });
+
+
+        // wait for the initial mapbox style to load before loading our own data
+      map.current.on('style.load', () => {
+        // fitbounds to NYC
+        map.current.fitBounds([
+          [-74.270056,40.494061],
+          [-73.663062,40.957187]
+        ])
+
+        // add geojson sources for subway routes and stops
+        map.current.addSource('nyc-subway-routes', {
+          type: 'geojson',
+          data: 'src/components/data/nyc-subway-routes.geojson'
+        });
+
+        map.current.addSource('nyc-subway-stops', {
+          type: 'geojson',
+          data: 'src/components/data/nyc-subway-stops.geojson'
+        });
+
+        // add layers by iterating over the styles in the array defined in subway-layer-styles.js
+        subwayLayerStyles.forEach((style) => {
+          map.current.addLayer(style)
+        })
+        
+})
+
 
         // add pins from dbmapInstance
         fetch(PIN_URL).then(res => res.json()).then(data => {
