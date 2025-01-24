@@ -14,12 +14,19 @@ const PIN_URL = SERVER_URL + "/pin";
 // figure out how I can deploy my flask/react application
 // how to make mobile friendly interfaces
 // how to associate the pins with cats, how to represent the cats
-
+type Pin = {
+    marker: maplibregl.Marker,
+    id: number
+};
+type LngLat = {
+  id?: number, lat: number, lng: number
+};
+type Mapish = maplibregl.Map | null;
 
 // 0 for admin, 1 for user
 export default function Map({permissions}: {permissions: number}){
     const mapContainer = useRef(null);
-    const map = useRef<maplibregl.Map | null>(null);
+    const map = useRef<Mapish>(null);
     const lat = 40.7632571;
     const lng = -73.932958;
     const zoom = 11;
@@ -28,11 +35,11 @@ export default function Map({permissions}: {permissions: number}){
     // marker: maplibregl.marker
     // id: int
     // }
-    const [markers, setMarkers] = useState([]);
+    const [markers, setMarkers] = useState<Array<Pin>>([]);
     const markersRef = useRef([]);
 
      // see note; be careful about assumptions with lngLat
-     function MarkerPopup({mapInstance, lngLat}){
+     function MarkerPopup({mapInstance, lngLat} : {mapInstance : any, lngLat: LngLat}){
        const [catName, setCatName] = useState("");
  const [catDesc, setCatDesc] = useState("");
  const [selectedOption, setSelectedOption] = useState('admin');
@@ -121,7 +128,7 @@ export default function Map({permissions}: {permissions: number}){
 
      } 
 
-    function MapPopup({lngLat, mapInstance}) {
+    function MapPopup({lngLat, mapInstance}: {lngLat: LngLat, mapInstance: any}) {
     const [added, setAdded] = useState(false);
 
       if(permissions == 0){
@@ -163,35 +170,35 @@ export default function Map({permissions}: {permissions: number}){
             <button onClick={() => {
                 subwayLayerStyles.forEach((style) => {
                   // TODO get toggle feature working
-                  map.current.removeLayer(style.id)
+                  map.current!.removeLayer(style.id)
                 })
         
-                map.current.removeSource('nyc-subway-routes');
+                map.current!.removeSource('nyc-subway-routes');
         
-                map.current.removeSource('nyc-subway-stops');
+                map.current!.removeSource('nyc-subway-stops');
             }}>turn off yellow</button>
              <button onClick={() => {
                 // add geojson sources for subway routes and stops
-        map.current.addSource('nyc-subway-routes', {
+        map.current!.addSource('nyc-subway-routes', {
           type: 'geojson',
           data: 'src/components/data/nyc-subway-routes.geojson'
         });
 
-        map.current.addSource('nyc-subway-stops', {
+        map.current!.addSource('nyc-subway-stops', {
           type: 'geojson',
           data: 'src/components/data/nyc-subway-stops.geojson'
         });
 
         // add layers by iterating over the styles in the array defined in subway-layer-styles.js
         subwayLayerStyles.forEach((style) => {
-          map.current.addLayer(style)
+          map.current!.addLayer(style)
         })
             }}>turn on</button>
               <h3>Adding a new Marker</h3>
               <p><strong>Latitude:</strong> {lngLat.lat}</p>
               <p><strong>Longitude:</strong> {lngLat.lng}</p>
               <h4>Are you sure you want to add a new marker here?</h4>
-              <button onClick={() => {setAdded(true);addMarker(lngLat, mapInstance)}}>Yes</button>
+              <button onClick={() => {setAdded(true);addMarker()}}>Yes</button>
           </div>
       );
       // END ADMIN
@@ -286,7 +293,7 @@ export default function Map({permissions}: {permissions: number}){
             .addTo(map.current!);
           });
 
-      
+      // eslint-disable-next-line react-hooks/exhaustive-deps
       }, [apiKey, lng, lat, zoom]);
 
 
