@@ -1,5 +1,5 @@
 import { useRef, useEffect, useState } from 'react';
-import maplibregl, { LngLat } from 'maplibre-gl';
+import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import '../assets/Map.css';
 import ReactDOM from 'react-dom/client';
@@ -18,7 +18,7 @@ type Marker = {
     marker: maplibregl.Marker,
     id: number
 };
-type LngLat = {
+type LngLatWithID = {
   id: number | null, lat: number, lng: number
 };
 type Mapish = maplibregl.Map | null;
@@ -45,7 +45,7 @@ export default function Map({permissions}: {permissions: number}){
     const markersRef = useRef([]);
 
      // see note; be careful about assumptions with lngLat
-     function MarkerPopup({mapInstance, lngLat} : {mapInstance : any, lngLat: LngLat}){
+     function MarkerPopup({mapInstance, lngLat} : {mapInstance : any, lngLat: LngLatWithID}){
        const [catName, setCatName] = useState("");
  const [catDesc, setCatDesc] = useState("");
  const [selectedOption, setSelectedOption] = useState('admin');
@@ -134,7 +134,7 @@ export default function Map({permissions}: {permissions: number}){
 
      } 
 
-    function MapPopup({lngLat, mapInstance}: {lngLat: LngLat, mapInstance: any}) {
+    function MapPopup({lngLat, mapInstance}: {lngLat: LngLatWithID, mapInstance: any}) {
     const [added, setAdded] = useState(false);
 
       if(permissions == 0){
@@ -270,7 +270,7 @@ export default function Map({permissions}: {permissions: number}){
           const initMarkerState = pins.map((pin: Pin) => {
             const deleteNode = document.createElement('div');
             const root = ReactDOM.createRoot(deleteNode);
-            const lngLatProp  : LngLat = {
+            const lngLatProp  : LngLatWithID = {
               id: pin.id,
               lng: pin.lng,
               lat: pin.lat
@@ -292,7 +292,7 @@ export default function Map({permissions}: {permissions: number}){
 
         map.current.on('dblclick', (e) => {
             const { lngLat } = e;
-            const lngLatProp: LngLat = {
+            const lngLatProp: LngLatWithID = {
               id: null,
               lng: lngLat.lng,
               lat: lngLat.lat
