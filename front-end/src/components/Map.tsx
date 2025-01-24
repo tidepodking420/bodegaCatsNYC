@@ -1,5 +1,5 @@
 import { useRef, useEffect, useState } from 'react';
-import maplibregl from 'maplibre-gl';
+import maplibregl, { LngLat } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import '../assets/Map.css';
 import ReactDOM from 'react-dom/client';
@@ -14,14 +14,20 @@ const PIN_URL = SERVER_URL + "/pin";
 // figure out how I can deploy my flask/react application
 // how to make mobile friendly interfaces
 // how to associate the pins with cats, how to represent the cats
-type Pin = {
+type Marker = {
     marker: maplibregl.Marker,
     id: number
 };
 type LngLat = {
-  id?: number, lat: number, lng: number
+  id: number | null, lat: number, lng: number
 };
 type Mapish = maplibregl.Map | null;
+type Pin = {
+id: number,
+lat: number
+lng: number,
+cats: Array<number>
+};
 
 // 0 for admin, 1 for user
 export default function Map({permissions}: {permissions: number}){
@@ -35,7 +41,7 @@ export default function Map({permissions}: {permissions: number}){
     // marker: maplibregl.marker
     // id: int
     // }
-    const [markers, setMarkers] = useState<Array<Pin>>([]);
+    const [markers, setMarkers] = useState<Array<Marker>>([]);
     const markersRef = useRef([]);
 
      // see note; be careful about assumptions with lngLat
@@ -43,7 +49,7 @@ export default function Map({permissions}: {permissions: number}){
        const [catName, setCatName] = useState("");
  const [catDesc, setCatDesc] = useState("");
  const [selectedOption, setSelectedOption] = useState('admin');
- const catViewer = <CatViewer pin_id={lngLat.id}/>
+ const catViewer = lngLat.id && <CatViewer pin_id={lngLat.id}/>;
        if(permissions === 0){
         // ADMIN
     return <div> 
@@ -261,10 +267,15 @@ export default function Map({permissions}: {permissions: number}){
         // add pins from dbmapInstance
         fetch(PIN_URL).then(res => res.json()).then(data => {
           const {pins} = data;
-          const initMarkerState = pins.map(pin => {
+          const initMarkerState = pins.map((pin: Pin) => {
             const deleteNode = document.createElement('div');
             const root = ReactDOM.createRoot(deleteNode);
-            root.render(<MarkerPopup  mapInstance={map.current} lngLat={pin}/>);
+            const lngLatProp  : LngLat = {
+              id: pin.id,
+              lng: pin.lng,
+              lat: pin.lat
+            }
+            root.render(<MarkerPopup  mapInstance={map.current} lngLat={lngLatProp}/>);
             
             const newMarker = new maplibregl.Marker({color: "#FF0000"})
             .setLngLat([pin.lng, pin.lat])
@@ -281,14 +292,19 @@ export default function Map({permissions}: {permissions: number}){
 
         map.current.on('dblclick', (e) => {
             const { lngLat } = e;
+            const lngLatProp: LngLat = {
+              id: null,
+              lng: lngLat.lng,
+              lat: lngLat.lat
+            }
             console.log(markersRef.current)
 
             const popupNode = document.createElement('div');
             const root = ReactDOM.createRoot(popupNode);
-            root.render(<MapPopup lngLat={lngLat} mapInstance={map.current}/>);
+            root.render(<MapPopup lngLat={lngLatProp} mapInstance={map.current}/>);
 
             new maplibregl.Popup({closeOnClick: true})
-            .setLngLat([lngLat.lng, lngLat.lat])
+            .setLngLat([lngLatProp.lng, lngLatProp.lat])
             .setDOMContent(popupNode)
             .addTo(map.current!);
           });
