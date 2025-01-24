@@ -186,12 +186,12 @@ export default function Map({permissions}: {permissions: number}){
                 // add geojson sources for subway routes and stops
         map.current!.addSource('nyc-subway-routes', {
           type: 'geojson',
-          data: 'src/components/data/nyc-subway-routes.geojson'
+          data: 'static/assets/data/nyc-subway-routes.geojson'
         });
 
         map.current!.addSource('nyc-subway-stops', {
           type: 'geojson',
-          data: 'src/components/data/nyc-subway-stops.geojson'
+          data: 'static/assets/data/nyc-subway-stops.geojson'
         });
 
         // add layers by iterating over the styles in the array defined in subway-layer-styles.js
@@ -240,12 +240,12 @@ export default function Map({permissions}: {permissions: number}){
         // add geojson sources for subway routes and stops
         map.current!.addSource('nyc-subway-routes', {
           type: 'geojson',
-          data: 'src/components/data/nyc-subway-routes.geojson'
+          data: 'static/assets/data/nyc-subway-routes.geojson'
         });
 
         map.current!.addSource('nyc-subway-stops', {
           type: 'geojson',
-          data: 'src/components/data/nyc-subway-stops.geojson'
+          data: 'static/assets/data/nyc-subway-stops.geojson'
         });
 
         // add layers by iterating over the styles in the array defined in subway-layer-styles.js
