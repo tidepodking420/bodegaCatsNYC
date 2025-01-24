@@ -19,7 +19,7 @@ const PIN_URL = SERVER_URL + "/pin";
 // 0 for admin, 1 for user
 export default function Map({permissions}: {permissions: number}){
     const mapContainer = useRef(null);
-    const map = useRef(null);
+    const map = useRef<maplibregl.Map | null>(null);
     const lat = 40.7632571;
     const lng = -73.932958;
     const zoom = 11;
@@ -93,8 +93,8 @@ export default function Map({permissions}: {permissions: number}){
                 value={catDesc}
                 onChange={(e) => setCatDesc(e.target.value)}
                 placeholder='Description...'
-                rows="7"
-                cols="20"
+                rows={7}
+                cols={20}
                 />
                 <button 
                 disabled={!catName.length || !catDesc.length}
@@ -122,6 +122,8 @@ export default function Map({permissions}: {permissions: number}){
      } 
 
     function MapPopup({lngLat, mapInstance}) {
+    const [added, setAdded] = useState(false);
+
       if(permissions == 0){
         // ADMIN
       const addMarker = () => {
@@ -156,7 +158,6 @@ export default function Map({permissions}: {permissions: number}){
     })
     }
     
-    const [added, setAdded] = useState(false);
       return added ? <h4>Please close the window</h4> : (
           <div style={{ padding: '10px', maxWidth: '200px' }}>
             <button onClick={() => {
@@ -215,7 +216,7 @@ export default function Map({permissions}: {permissions: number}){
         if (apiKey.length === 0) return; // wait until apiKey is fetched
       
         map.current = new maplibregl.Map({
-          container: mapContainer.current,
+          container: mapContainer.current!,
           style: `https://api.maptiler.com/maps/streets-v2/style.json?key=${apiKey}`,
           center: [lng, lat],
           zoom: zoom,
@@ -226,25 +227,25 @@ export default function Map({permissions}: {permissions: number}){
         // wait for the initial mapbox style to load before loading our own data
       map.current.on('style.load', () => {
         // fitbounds to NYC
-        map.current.fitBounds([
+        map.current!.fitBounds([
           [-74.270056,40.494061],
           [-73.663062,40.957187]
         ])
 
         // add geojson sources for subway routes and stops
-        map.current.addSource('nyc-subway-routes', {
+        map.current!.addSource('nyc-subway-routes', {
           type: 'geojson',
           data: 'src/components/data/nyc-subway-routes.geojson'
         });
 
-        map.current.addSource('nyc-subway-stops', {
+        map.current!.addSource('nyc-subway-stops', {
           type: 'geojson',
           data: 'src/components/data/nyc-subway-stops.geojson'
         });
 
         // add layers by iterating over the styles in the array defined in subway-layer-styles.js
         subwayLayerStyles.forEach((style) => {
-          map.current.addLayer(style)
+          map.current!.addLayer(style)
         })
         
 })
@@ -261,7 +262,7 @@ export default function Map({permissions}: {permissions: number}){
             const newMarker = new maplibregl.Marker({color: "#FF0000"})
             .setLngLat([pin.lng, pin.lat])
             .setPopup(new maplibregl.Popup().setDOMContent(deleteNode)) 
-            .addTo(map.current);
+            .addTo(map.current!);
             return {'marker': newMarker, 'id': pin.id};
           })
           console.log(initMarkerState)
@@ -282,7 +283,7 @@ export default function Map({permissions}: {permissions: number}){
             new maplibregl.Popup({closeOnClick: true})
             .setLngLat([lngLat.lng, lngLat.lat])
             .setDOMContent(popupNode)
-            .addTo(map.current);
+            .addTo(map.current!);
           });
 
       
