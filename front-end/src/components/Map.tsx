@@ -7,8 +7,8 @@ import { CatViewer } from './CatViewer';
 import { subwayLayerStyles } from './data/subway-layer-styles.ts';
 
 const SERVER_URL = "http://127.0.0.1:5000";
-const API_KEY_URL = SERVER_URL + "/api_key/map_tiler";
 const PIN_URL = SERVER_URL + "/pin";
+const apiKey = import.meta.env.VITE_MAPTILER_API_KEY;
 
 // next steps
 // figure out how I can deploy my flask/react application
@@ -36,7 +36,6 @@ export default function Map({permissions}: {permissions: number}){
     const lat = 40.7632571;
     const lng = -73.932958;
     const zoom = 11;
-    const [apiKey, setApiKey] = useState('');
     // {
     // marker: maplibregl.marker
     // id: int
@@ -219,14 +218,7 @@ export default function Map({permissions}: {permissions: number}){
     }
 
     useEffect(() => {
-        fetch(API_KEY_URL).then(
-            res => res.json()
-        ).then(data => setApiKey(data.map_tiler))
-    }, [])
-
-    useEffect(() => {
         if (map.current) return; // stops map from intializing more than once
-        if (apiKey.length === 0) return; // wait until apiKey is fetched
       
         map.current = new maplibregl.Map({
           container: mapContainer.current!,
@@ -310,7 +302,7 @@ export default function Map({permissions}: {permissions: number}){
           });
 
       // eslint-disable-next-line react-hooks/exhaustive-deps
-      }, [apiKey, lng, lat, zoom]);
+      }, [lng, lat, zoom]);
 
 
       return (
