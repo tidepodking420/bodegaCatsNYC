@@ -1,16 +1,24 @@
 import { useEffect, useState } from 'react';
- // invoke get and return the visual element for cats
- const SERVER_URL = "http://127.0.0.1:5000";
- const CAT_URL = SERVER_URL + "/cat"
-export function CatViewer({pin_id}){
+const SERVER_URL = "http://127.0.0.1:5000";
+const CAT_URL = SERVER_URL + "/cat"
+
+ type Cat = {
+    id: string;
+    name: string;
+    desc: string;
+    pin_id: number;
+};
+
+
+export function CatViewer({pin_id}: {pin_id: number}){
         //  {
         //     "id": self.id,
         //     "name": self.name,
-        //     "desc": self.desc,
+        //     "desc": self.desc, these are all strings except pin_id
         //     "pin_id": self.pin_id
         // }
     // array of cat dictionaries
-    const [cats, setCats] = useState([]);
+    const [cats, setCats] = useState<Array<Cat>>([]);
     const FULL_URL = `${CAT_URL}?pin_id=${pin_id}`
     useEffect(() => {
         fetch(FULL_URL, {

@@ -4,7 +4,7 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import './Map.css';
 import ReactDOM from 'react-dom/client';
 import { CatViewer } from './CatViewer';
-import { subwayLayerStyles } from './data/subway-layer-styles';
+import { subwayLayerStyles } from './data/subway-layer-styles.ts';
 
 const SERVER_URL = "http://127.0.0.1:5000";
 const API_KEY_URL = SERVER_URL + "/api_key/map_tiler";
@@ -17,7 +17,7 @@ const PIN_URL = SERVER_URL + "/pin";
 
 
 // 0 for admin, 1 for user
-export default function Map({permissions}){
+export default function Map({permissions}: {permissions: number}){
     const mapContainer = useRef(null);
     const map = useRef(null);
     const lat = 40.7632571;
