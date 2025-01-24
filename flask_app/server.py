@@ -1,13 +1,12 @@
-from flask import Flask, request
+from flask import Flask, request, send_from_directory
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static', static_url_path='')
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///pin.sqlite3'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 CORS(app)
 db = SQLAlchemy(app)
-api_key_path='/home/user/vscode/secrets.txt'
 
 class cat(db.Model):
     __tablename__ = 'cat'
@@ -60,6 +59,17 @@ class pin(db.Model):
             "lng": self.lng,
             "cats": [cat.id for cat in self.cats]
         }
+    
+
+# Serve React App
+@app.route('/')
+def serve():
+    return send_from_directory('templates', 'index.html')
+
+# Serve static files (CSS, JS, images)
+@app.route('/static/<path:path>')
+def serve_static(path):
+    return send_from_directory('static', path)
 
 @app.route('/cat', methods=['GET'])
 def cat_logic():
@@ -104,13 +114,6 @@ def pin_logic():
         pin_list = [p.to_dict() for p in db.session.query(pin).all()]
         print(db.session.query(pin).all())
         return {'pins': pin_list}
-
-@app.route('/api_key/map_tiler')
-def home():
-    with open(api_key_path, 'r') as file:
-        first_line = file.readline()
-        api_secret = first_line[first_line.index('=') + 1:len(first_line) - 1]
-        return {'map_tiler': api_secret}
 
 if __name__ == '__main__':
     with app.app_context():
