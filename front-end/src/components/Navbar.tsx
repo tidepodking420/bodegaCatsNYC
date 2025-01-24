@@ -1,4 +1,4 @@
-import './Navbar.css';
+import '../assets/Navbar.css';
 
 export default function Navbar(){
   return (
