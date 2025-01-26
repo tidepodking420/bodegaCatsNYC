@@ -1,8 +1,8 @@
-from flask import Flask, request, send_from_directory
+from flask import Flask, request
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 
-app = Flask(__name__, static_folder='static', static_url_path='')
+app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///pin.sqlite3'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 CORS(app)
@@ -59,17 +59,8 @@ class pin(db.Model):
             "lng": self.lng,
             "cats": [cat.id for cat in self.cats]
         }
-    
 
-# Serve React App
-@app.route('/')
-def serve():
-    return send_from_directory('templates', 'index.html')
 
-# Serve static files (CSS, JS, images)
-@app.route('/static/<path:path>')
-def serve_static(path):
-    return send_from_directory('static', path)
 
 @app.route('/cat', methods=['GET'])
 def cat_logic():
