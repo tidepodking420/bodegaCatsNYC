@@ -1,6 +1,6 @@
-from flask import Flask, request
+from flask import Flask, request, jsonify
 from flask_cors import CORS
-import mysql.connector
+from mysql.connector import pooling
 
 app = Flask(__name__)
 CORS(app)
@@ -8,51 +8,51 @@ app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'
 app.config['MYSQL_PASSWORD'] = 'password'
 app.config['MYSQL_DB'] = 'cat_app'
-# db = SQLAlchemy(app)
 
 # Function to get a database connection
-def get_db():
-    mydb = mysql.connector.connect(
-        host=app.config['MYSQL_HOST'],
-        user=app.config['MYSQL_USER'],
-        password=app.config['MYSQL_PASSWORD'],
-        database=app.config['MYSQL_DB']
-    )
-    return mydb
+connection_pool = pooling.MySQLConnectionPool(
+    pool_name="Swimming_Pools_Drank",
+    pool_size=5,
+    host=app.config['MYSQL_HOST'],
+    user=app.config['MYSQL_USER'],
+    password=app.config['MYSQL_PASSWORD'],
+    database=app.config['MYSQL_DB']
+)
+
+def execute_query(query):
+    mydb = connection_pool.get_connection()
+    cursor = mydb.cursor()
+    cursor.execute(query)
+    rows = cursor.fetchall()
+    mydb.close()
+    return rows
+
 
 @app.route('/')
 def index():
-    mydb = get_db()
-    cursor = mydb.cursor()
-    cursor.execute("SELECT * FROM cat")
-    result = cursor.fetchall()
-    mydb.close()
-    return str(result)
+    return execute_query("SELECT * FROM cat")
 
 
-# class cat(db.Model):
-#     __tablename__ = 'cat'
-#     id = db.Column("id", db.Integer, primary_key=True)
-#     name = db.Column(db.String(25), nullable=False)
-#     desc = db.Column(db.String(100), nullable=False)
-#     # Foreign key to `pin` table
-#     pin_id = db.Column(db.Integer, db.ForeignKey('pin.id'), nullable=False)
+class Cat(object):
+    def __init__(self, id, name, desc, pin_id):
+        self.id = id
+        self.name = name
+        self.desc = desc
+        self.pin_id = pin_id
 
-#     def __init__(self, name, desc, pin_id):
-#         self.name = name
-#         self.desc = desc
-#         self.pin_id = pin_id
-
-#     def __repr__(self):
-#         return f"<Cat(id={self.id}, name={self.name}, desc={self.desc}, pin_id={self.pin_id})>"
+    def __repr__(self):
+        return f"<Cat(id={self.id}, name={self.name}, desc={self.desc}, pin_id={self.pin_id})>"
     
-#     def to_dict(self):
-#         return {
-#             "id": self.id,
-#             "name": self.name,
-#             "desc": self.desc,
-#             "pin_id": self.pin_id
-#         }
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "desc": self.desc,
+            "pin_id": self.pin_id
+        }
+    
+    def map_to_cat(rows):
+        return [Cat(id=row[0], name=row[1], desc=row[2], pin_id=row[3]).to_dict() for row in rows]
 
 # class pin(db.Model):
 #     __tablename__ = 'pin'
@@ -73,21 +73,25 @@ def index():
 #     def __repr__(self):
 #         return f"<Pin(id={self.id}, lat={self.lat}, lng={self.lng}, cats={[cat.id for cat in self.cats]})>"
     
-#     def to_dict(self):
-#         # Convert SQLAlchemy model to a dictionary
-#         return {
-#             "id": self.id,
-#             "lat": self.lat,
-#             "lng": self.lng,
-#             "cats": [cat.id for cat in self.cats]
-#         }
+    # def to_dict(self):
+    #     # Convert SQLAlchemy model to a dictionary
+    #     return {
+    #         "id": self.id,
+    #         "lat": self.lat,
+    #         "lng": self.lng,
+    #         "cats": [cat.id for cat in self.cats]
+    #     }
 
 
 
 @app.route('/cat', methods=['GET'])
 def cat_logic():
     # retrieving the cats at specific id
-    return {'cats' : list(map(lambda x: x.to_dict(), cat.query.filter_by(pin_id=request.args.get('pin_id')).all()))}
+    # return {'cats' : list(map(lambda x: x.to_dict(), cat.query.filter_by(pin_id=request.args.get('pin_id')).all()))}
+    pin_id=request.args.get('pin_id')
+    result = execute_query(f"SELECT * FROM cat where pin_id={pin_id}")
+    cats = Cat.map_to_cat(result)
+    return jsonify(cats)
 
 
 
@@ -127,11 +131,8 @@ def pin_logic():
         # pin_list = [p.to_dict() for p in db.session.query(pin).all()]
         # print(db.session.query(pin).all())
         # return {'pins': pin_list}
-        conn = mysql.connect()
-        cursor = conn.cursor()
-        cursor.execute("SELECT * from User")
-        data = cursor.fetchone()
-        return {'pins': 5}
+        result = execute_query()
+        return execute_query("SELECT * FROM pin")
 
 
 if __name__ == '__main__':
