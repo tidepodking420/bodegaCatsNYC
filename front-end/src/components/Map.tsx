@@ -26,7 +26,6 @@ type Pin = {
 id: number,
 lat: number
 lng: number,
-cats: Array<number>
 };
 
 // 0 for admin, 1 for user

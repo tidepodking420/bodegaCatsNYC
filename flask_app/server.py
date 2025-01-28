@@ -19,7 +19,8 @@ connection_pool = pooling.MySQLConnectionPool(
     database=app.config['MYSQL_DB']
 )
 
-def execute_query(query):
+
+def read_query(query):
     mydb = connection_pool.get_connection()
     cursor = mydb.cursor()
     cursor.execute(query)
@@ -27,10 +28,30 @@ def execute_query(query):
     mydb.close()
     return rows
 
+def post_query(query):
+    mydb = connection_pool.get_connection()
+    cursor = mydb.cursor()
+    cursor.execute(query)
+    mydb.commit()
+    
+    last_inserted_id = cursor.lastrowid  # Retrieve the last inserted ID
+    mydb.close()
+    return last_inserted_id
+
+def delete_query(query):
+    mydb = connection_pool.get_connection()
+    cursor = mydb.cursor()
+    cursor.execute(query)
+    mydb.commit()
+    
+    affected_rows = cursor.rowcount  # Get the number of rows affected by the DELETE query
+    mydb.close()
+    return affected_rows
+
 
 @app.route('/')
 def index():
-    return execute_query("SELECT * FROM cat")
+    return read_query("SELECT * FROM cat")
 
 
 class Cat(object):
@@ -54,44 +75,38 @@ class Cat(object):
     def map_to_cat(rows):
         return [Cat(id=row[0], name=row[1], desc=row[2], pin_id=row[3]).to_dict() for row in rows]
 
-# class pin(db.Model):
-#     __tablename__ = 'pin'
-#     id = db.Column("id", db.Integer, primary_key=True)
-#     lat = db.Column(db.Float, nullable=False)
-#     lng = db.Column(db.Float, nullable=False)
-#     # address field to implement google maps stuff
-#     # name of the business
+class Pin(object):
+    # One-to-many relationship to cats
 
-#     # One-to-many relationship to cats; deletes associated cats
-#     # when the pin gets deleted
-#     cats = db.relationship('cat', backref='pin', lazy=True, cascade="all, delete-orphan")
+    def __init__(self, id, lat, lng):
+        self.id = id
+        self.lat = lat
+        self.lng = lng
+        # maybe add later address field to implement google maps stuff
+        # name of the business
 
-#     def __init__(self, lat, lng):
-#         self.lat = lat
-#         self.lng = lng
-
-#     def __repr__(self):
-#         return f"<Pin(id={self.id}, lat={self.lat}, lng={self.lng}, cats={[cat.id for cat in self.cats]})>"
+    def __repr__(self):
+        return f"<Pin(id={self.id}, lat={self.lat}, lng={self.lng})>"
     
-    # def to_dict(self):
-    #     # Convert SQLAlchemy model to a dictionary
-    #     return {
-    #         "id": self.id,
-    #         "lat": self.lat,
-    #         "lng": self.lng,
-    #         "cats": [cat.id for cat in self.cats]
-    #     }
+    def to_dict(self):
+        # Convert SQLAlchemy model to a dictionary
+        return {
+            "id": self.id,
+            "lat": self.lat,
+            "lng": self.lng,
+        }
+    
+    def map_to_pin(rows):
+        return [Pin(id=row[0], lat=row[1], lng=row[2]).to_dict() for row in rows]
 
 
 
 @app.route('/cat', methods=['GET'])
 def cat_logic():
     # retrieving the cats at specific id
-    # return {'cats' : list(map(lambda x: x.to_dict(), cat.query.filter_by(pin_id=request.args.get('pin_id')).all()))}
-    pin_id=request.args.get('pin_id')
-    result = execute_query(f"SELECT * FROM cat where pin_id={pin_id}")
+    result = read_query(f"SELECT * FROM cat where pin_id={request.args.get('pin_id')}")
     cats = Cat.map_to_cat(result)
-    return jsonify(cats)
+    return {'cats': cats}
 
 
 
@@ -102,16 +117,19 @@ def pin_logic():
         # this method should create a new pin, and return an id
         lat = request.json.get('lat')
         lng = request.json.get('lng')
-        new_pin = pin(lat, lng)
-        db.session.add(new_pin)
-        db.session.commit()
-        return {'id': new_pin.id}
+        query = f"INSERT INTO pin (lat, lng) VALUE ({lat}, {lng});"
+        return {'id': post_query(query)}
     elif request.method == 'DELETE':
         id = request.json.get('id')
-        pin_to_delete = pin.query.filter_by(id=id).first()
-        db.session.delete(pin_to_delete)
-        db.session.commit()
-        return {"message": f"Pin {id} deleted successfully."}
+        # pin_to_delete = pin.query.filter_by(id=id).first()
+        # db.session.delete(pin_to_delete)
+        # db.session.commit()
+        print(id)
+        pin_query = f"DELETE FROM pin WHERE id={id};"
+        cat_query = f"DELETE FROM cat WHERE pin_id={id}"
+        num_cats_deleted = delete_query(cat_query)
+        num_pins_deleted = delete_query(pin_query)
+        return {"message": f"Pin {id} {'deleted successfuly' if num_pins_deleted > 0 else 'not deleted'}. Deleted {num_cats_deleted} cats :("}
     elif request.method == 'PATCH':
         # what can I do in a patch
         # start with create a new cat, TODO modify an existing cat, or delete one of the cats
@@ -128,11 +146,10 @@ def pin_logic():
                 }
     else:
         # default is GET
-        # pin_list = [p.to_dict() for p in db.session.query(pin).all()]
-        # print(db.session.query(pin).all())
-        # return {'pins': pin_list}
-        result = execute_query()
-        return execute_query("SELECT * FROM pin")
+        result = read_query("SELECT * FROM pin")
+        print(result)
+        pins = Pin.map_to_pin(result)
+        return {'pins': pins}
 
 
 if __name__ == '__main__':
