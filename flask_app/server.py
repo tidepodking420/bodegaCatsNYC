@@ -137,10 +137,14 @@ def pin_logic():
         cat_name = request.json.get('name')
         cat_desc = request.json.get('desc')
         pin_id = request.json.get('id')
-        new_cat = cat(name=cat_name, desc=cat_desc, pin_id=pin_id)
-        db.session.add(new_cat)
-        db.session.commit()
-        all_cats = list(map(lambda x: x.to_dict(), cat.query.filter_by(pin_id=pin_id).all()))
+        print(cat_name, cat_desc, pin_id)
+        cat_query = f"INSERT INTO cat (name, `desc`, pin_id) VALUES ('{cat_name}', '{cat_desc}', {pin_id});"
+        post_query(cat_query)
+
+        result = read_query(f"SELECT * FROM cat where pin_id={pin_id}")
+        all_cats = Cat.map_to_cat(result)
+
+        # all_cats = list(map(lambda x: x.to_dict(), cat.query.filter_by(pin_id=pin_id).all()))
         return {'assoicated_cats': all_cats,
                 'pin_id': pin_id
                 }
