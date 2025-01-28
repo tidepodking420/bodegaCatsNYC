@@ -6,3 +6,8 @@ INSERT INTO cat (name, `desc`, pin_id) VALUES
 ('Zaza-car', 'Very Beautiful smoke shop cat', 1),
 ('Tufaah', 'Their names mean apple and apricot in Arabic :)', 2),
 ('Mishmish', 'Fluffy-tail Jackson Heights car', 2);
+
+INSERT INTO pin (lat, lng) VALUE
+    (41.7602666, -74.8603452);
+
+INSERT INTO cat (name, `desc`, pin_id) VALUES ({cat_name}, {cat_desc}, {pin_id});

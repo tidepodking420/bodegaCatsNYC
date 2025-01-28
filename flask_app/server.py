@@ -1,13 +1,16 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request
 from flask_cors import CORS
 from mysql.connector import pooling
 
 app = Flask(__name__)
 CORS(app)
-app.config['MYSQL_HOST'] = 'localhost'
+# I am connecting to local host always
+app.config['MYSQL_HOST'] = 'db'
 app.config['MYSQL_USER'] = 'root'
 app.config['MYSQL_PASSWORD'] = 'password'
 app.config['MYSQL_DB'] = 'cat_app'
+
+# TODO sanitize inputs so I can handle ' and "" and not be victim SQL injection
 
 # Function to get a database connection
 connection_pool = pooling.MySQLConnectionPool(
@@ -121,9 +124,6 @@ def pin_logic():
         return {'id': post_query(query)}
     elif request.method == 'DELETE':
         id = request.json.get('id')
-        # pin_to_delete = pin.query.filter_by(id=id).first()
-        # db.session.delete(pin_to_delete)
-        # db.session.commit()
         print(id)
         pin_query = f"DELETE FROM pin WHERE id={id};"
         cat_query = f"DELETE FROM cat WHERE pin_id={id}"
@@ -144,7 +144,6 @@ def pin_logic():
         result = read_query(f"SELECT * FROM cat where pin_id={pin_id}")
         all_cats = Cat.map_to_cat(result)
 
-        # all_cats = list(map(lambda x: x.to_dict(), cat.query.filter_by(pin_id=pin_id).all()))
         return {'assoicated_cats': all_cats,
                 'pin_id': pin_id
                 }

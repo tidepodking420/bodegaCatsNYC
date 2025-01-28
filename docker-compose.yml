@@ -1,4 +1,4 @@
-version: '1.0'
+version: '2.0'
 
 services:
   frontend:
@@ -14,3 +14,21 @@ services:
       - "5000:5000"
     build:
       context: ./flask_app   # Path to the directory containing the Dockerfile
+    depends_on:
+      - db
+
+  db:
+    image: mysql:latest
+    restart: always
+    ports:
+      - "3306:3306"  # Expose MySQL on localhost port 3306
+    environment:
+      MYSQL_ROOT_PASSWORD: password   # Root password
+      MYSQL_DATABASE: cat_app         # Database to be created
+    volumes:
+      - db_data:/var/lib/mysql  # Named volume for data persistence
+
+volumes:
+  db_data:
+
+# note; i started these indiviudllay and I had to create the tables by connecting to docker container via terminal

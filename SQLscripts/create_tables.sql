@@ -1,7 +1,9 @@
+-- google maps uses 7 decimal places, and need to go up to 180
+
 CREATE TABLE pin (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    lat FLOAT NOT NULL,
-    lng FLOAT NOT NULL
+    lat DECIMAL(10, 7) NOT NULL,
+    lng DECIMAL(10, 7) NOT NULL
 );
 
 CREATE TABLE cat (
@@ -11,5 +13,3 @@ CREATE TABLE cat (
     pin_id INT NOT NULL,
     FOREIGN KEY (pin_id) REFERENCES pin(id)
 );
-
-
