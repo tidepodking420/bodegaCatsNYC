@@ -1,19 +1,22 @@
 from flask import Flask, request
 from flask_cors import CORS
 from mysql.connector import pooling
+import time
 
 app = Flask(__name__)
 CORS(app)
-# I am connecting to local host always
+# I am connecting to local host always; TODO read from docker env bars to set MYSQL_HOST
 app.config['MYSQL_HOST'] = 'db'
 app.config['MYSQL_USER'] = 'root'
 app.config['MYSQL_PASSWORD'] = 'password'
 app.config['MYSQL_DB'] = 'cat_app'
 
 # TODO sanitize inputs so I can handle ' and "" and not be victim SQL injection
-
-# Function to get a database connection
-connection_pool = pooling.MySQLConnectionPool(
+def get_db_connection():
+    # TODO get rid of this sleep function; depends_on property not working in docker-compose
+    time.sleep(5)
+    # Function to get a database connection
+    return pooling.MySQLConnectionPool(
     pool_name="Swimming_Pools_Drank",
     pool_size=5,
     host=app.config['MYSQL_HOST'],
@@ -21,6 +24,8 @@ connection_pool = pooling.MySQLConnectionPool(
     password=app.config['MYSQL_PASSWORD'],
     database=app.config['MYSQL_DB']
 )
+
+connection_pool = get_db_connection()
 
 
 def read_query(query):
