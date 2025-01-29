@@ -6,8 +6,8 @@ import ReactDOM from 'react-dom/client';
 import { CatViewer } from './CatViewer';
 import { subwayLayerStyles } from './data/subway-layer-styles.ts';
 
-const SERVER_URL = "http://127.0.0.1:5000";
-const PIN_URL = SERVER_URL + "/pin";
+const VITE_SERVER_URL = "http://127.0.0.1:5000";
+const PIN_URL = VITE_SERVER_URL + "/pin";
 const apiKey = import.meta.env.VITE_MAPTILER_API_KEY;
 
 // next steps

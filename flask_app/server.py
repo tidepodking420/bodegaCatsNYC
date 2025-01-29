@@ -5,8 +5,7 @@ import time
 
 app = Flask(__name__)
 CORS(app)
-# I am connecting to local host always; TODO read from docker env bars to set MYSQL_HOST
-app.config['MYSQL_HOST'] = 'db'
+app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'
 app.config['MYSQL_PASSWORD'] = 'password'
 app.config['MYSQL_DB'] = 'cat_app'
