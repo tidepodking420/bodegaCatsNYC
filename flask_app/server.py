@@ -1,7 +1,6 @@
 from flask import Flask, request
 from flask_cors import CORS
 from mysql.connector import pooling
-import time
 
 app = Flask(__name__)
 CORS(app)
@@ -13,7 +12,7 @@ app.config['MYSQL_DB'] = 'cat_app'
 # TODO sanitize inputs so I can handle ' and "" and not be victim SQL injection
 def get_db_connection():
     # TODO get rid of this sleep function; depends_on property not working in docker-compose
-    time.sleep(5)
+    # time.sleep(5)
     # Function to get a database connection
     return pooling.MySQLConnectionPool(
     pool_name="Swimming_Pools_Drank",
@@ -27,28 +26,28 @@ def get_db_connection():
 connection_pool = get_db_connection()
 
 
-def read_query(query):
+def read_query(query, params=()):
     mydb = connection_pool.get_connection()
     cursor = mydb.cursor()
-    cursor.execute(query)
+    cursor.execute(query, params)
     rows = cursor.fetchall()
     mydb.close()
     return rows
 
-def post_query(query):
+def post_query(query, params=()):
     mydb = connection_pool.get_connection()
     cursor = mydb.cursor()
-    cursor.execute(query)
+    cursor.execute(query, params)
     mydb.commit()
     
     last_inserted_id = cursor.lastrowid  # Retrieve the last inserted ID
     mydb.close()
     return last_inserted_id
 
-def delete_query(query):
+def delete_query(query, params=()):
     mydb = connection_pool.get_connection()
     cursor = mydb.cursor()
-    cursor.execute(query)
+    cursor.execute(query, params)
     mydb.commit()
     
     affected_rows = cursor.rowcount  # Get the number of rows affected by the DELETE query
@@ -111,7 +110,10 @@ class Pin(object):
 @app.route('/cat', methods=['GET'])
 def cat_logic():
     # retrieving the cats at specific id
-    result = read_query(f"SELECT * FROM cat where pin_id={request.args.get('pin_id')}")
+    query = "SELECT * FROM cat WHERE pin_id = %s"
+    pin_id = request.args.get('pin_id')
+
+    result = read_query(query, (pin_id,))
     cats = Cat.map_to_cat(result)
     return {'cats': cats}
 
@@ -124,15 +126,14 @@ def pin_logic():
         # this method should create a new pin, and return an id
         lat = request.json.get('lat')
         lng = request.json.get('lng')
-        query = f"INSERT INTO pin (lat, lng) VALUE ({lat}, {lng});"
-        return {'id': post_query(query)}
+        query = "INSERT INTO pin (lat, lng) VALUE (%s, %s);"
+        return {'id': post_query(query, params=(lat, lng))}
     elif request.method == 'DELETE':
         id = request.json.get('id')
-        print(id)
-        pin_query = f"DELETE FROM pin WHERE id={id};"
-        cat_query = f"DELETE FROM cat WHERE pin_id={id}"
-        num_cats_deleted = delete_query(cat_query)
-        num_pins_deleted = delete_query(pin_query)
+        pin_query = "DELETE FROM pin WHERE id=%s;"
+        cat_query = "DELETE FROM cat WHERE pin_id=%s"
+        num_cats_deleted = delete_query(cat_query, params=(id,))
+        num_pins_deleted = delete_query(pin_query, params=(id,))
         return {"message": f"Pin {id} {'deleted successfuly' if num_pins_deleted > 0 else 'not deleted'}. Deleted {num_cats_deleted} cats :("}
     elif request.method == 'PATCH':
         # what can I do in a patch
@@ -142,10 +143,11 @@ def pin_logic():
         cat_desc = request.json.get('desc')
         pin_id = request.json.get('id')
         print(cat_name, cat_desc, pin_id)
-        cat_query = f"INSERT INTO cat (name, `desc`, pin_id) VALUES ('{cat_name}', '{cat_desc}', {pin_id});"
-        post_query(cat_query)
+        cat_query = "INSERT INTO cat (name, `desc`, pin_id) VALUES (%s, %s, %s);"
+        post_query(cat_query, params=(cat_name, cat_desc, pin_id))
 
-        result = read_query(f"SELECT * FROM cat where pin_id={pin_id}")
+        updated_cats_query = "SELECT * FROM cat WHERE pin_id = %s"
+        result = read_query(updated_cats_query, params=(pin_id,))
         all_cats = Cat.map_to_cat(result)
 
         return {'assoicated_cats': all_cats,
