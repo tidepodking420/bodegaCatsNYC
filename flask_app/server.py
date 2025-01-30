@@ -5,7 +5,7 @@ import time
 
 app = Flask(__name__)
 CORS(app)
-app.config['MYSQL_HOST'] = 'db'
+app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'
 app.config['MYSQL_PASSWORD'] = 'password'
 app.config['MYSQL_DB'] = 'cat_app'
@@ -106,16 +106,24 @@ class Pin(object):
         return [Pin(id=row[0], lat=row[1], lng=row[2]).to_dict() for row in rows]
 
 
-
-@app.route('/cat', methods=['GET'])
+# TODO modify an existing cat, or delete one of the cats
+@app.route('/cat', methods=['GET', 'DELETE'])
 def cat_logic():
-    # retrieving the cats at specific id
-    query = "SELECT * FROM cat WHERE pin_id = %s"
-    pin_id = request.args.get('pin_id')
-
-    result = read_query(query, (pin_id,))
-    cats = Cat.map_to_cat(result)
-    return {'cats': cats}
+    if request.method == 'GET':
+        # retrieving the cats at specific id
+        query = "SELECT * FROM cat WHERE pin_id = %s"
+        pin_id = request.args.get('pin_id')
+        result = read_query(query, (pin_id,))
+        cats = Cat.map_to_cat(result)
+        return {'cats': cats}
+    elif request.method == 'DELETE':
+        query = "DELETE FROM cat WHERE id=%s"
+        cat_id = request.args.get('cat_id')
+        num_cats_deleted = delete_query(query, params=(cat_id,))
+        return {'message': f"{num_cats_deleted} cats deleted"}
+    else: 
+        return {'stub', 'else'}
+        
 
 
 
@@ -136,9 +144,7 @@ def pin_logic():
         num_pins_deleted = delete_query(pin_query, params=(id,))
         return {"message": f"Pin {id} {'deleted successfuly' if num_pins_deleted > 0 else 'not deleted'}. Deleted {num_cats_deleted} cats :("}
     elif request.method == 'PATCH':
-        # what can I do in a patch
-        # start with create a new cat, TODO modify an existing cat, or delete one of the cats
-        # 1. create a new cat
+        # creates a new cat and associates it with a locatino 
         cat_name = request.json.get('name')
         cat_desc = request.json.get('desc')
         pin_id = request.json.get('id')

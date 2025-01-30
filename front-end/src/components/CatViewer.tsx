@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-const SERVER_URL = "http://127.0.0.1:443";
+const SERVER_URL = "http://127.0.0.1:5000";
 const CAT_URL = SERVER_URL + "/cat"
 
  type Cat = {
@@ -9,30 +9,39 @@ const CAT_URL = SERVER_URL + "/cat"
     pin_id: number;
 };
 
-
-export function CatViewer({pin_id}: {pin_id: number}){
-        //  {
-        //     "id": self.id,
-        //     "name": self.name,
-        //     "desc": self.desc, these are all strings except pin_id
-        //     "pin_id": self.pin_id
-        // }
-    // array of cat dictionaries
+// add a permissions , 0 is for admin 1 for viewer
+export function CatViewer({pin_id, permissions}: {pin_id: number, permissions: number}){
+    const adminMode = permissions === 0;
+    console.log(adminMode)
     const [cats, setCats] = useState<Array<Cat>>([]);
-    const FULL_URL = `${CAT_URL}?pin_id=${pin_id}`
+    const CATS_AT_LOCATION_URL = `${CAT_URL}?pin_id=${pin_id}`
     useEffect(() => {
-        fetch(FULL_URL, {
+        fetch(CATS_AT_LOCATION_URL, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
             }
         }).then(res => res.json()).then(data => {console.log(data.cats);setCats(data.cats)})
-    }, [pin_id, FULL_URL])
+    }, [pin_id, CATS_AT_LOCATION_URL])
+
+    function deleteCat(cat_id: string) {
+            const deleteCatURL = `${CAT_URL}?cat_id=${cat_id}`;
+            fetch(deleteCatURL, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            }).then(res => res.json()).then(_data => {
+                setCats(cats.filter(x => x.id !== cat_id))
+            })
+        }
+   
     return (
         <div>
             {cats.length > 0 ? (
                 cats.map((cat) => (
                     <div key={cat.id}>
+                        {adminMode && <button onClick={() => deleteCat(cat.id)}>Delete {cat.name}</button>}
                         <h3>name: {cat.name}</h3>
                         <p>desc: {cat.desc}</p>
                     </div>

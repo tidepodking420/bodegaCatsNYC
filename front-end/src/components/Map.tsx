@@ -6,7 +6,7 @@ import ReactDOM from 'react-dom/client';
 import { CatViewer } from './CatViewer';
 import { subwayLayerStyles } from './data/subway-layer-styles.ts';
 
-const VITE_SERVER_URL = "http://127.0.0.1:443";
+const VITE_SERVER_URL = "http://127.0.0.1:5000";
 const PIN_URL = VITE_SERVER_URL + "/pin";
 const apiKey = "SnBrO5ngtGNXyvdH2O0e";
 
@@ -47,7 +47,7 @@ export default function Map({permissions}: {permissions: number}){
        const [catName, setCatName] = useState("");
  const [catDesc, setCatDesc] = useState("");
  const [selectedOption, setSelectedOption] = useState('admin');
- const catViewer = lngLat.id && <CatViewer pin_id={lngLat.id}/>;
+ const catViewer = lngLat.id && <CatViewer pin_id={lngLat.id} permissions={permissions}/>;
        if(permissions === 0){
         // ADMIN
     return <div> 
