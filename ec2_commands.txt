@@ -1,0 +1,35 @@
+sudo yum update -y
+sudo amazon-linux-extras install docker
+sudo service docker start
+sudo usermod -a -G docker ec2-user
+sudo docker build -t vite_app:1.0 -f Dockerfile .
+
+### Note -> ports 80 & 443 are the only ones open by default
+sudo docker run -d -p 80:5173 vite_app:1.0
+
+### docker-compose installation
+sudo curl -L "https://github.com/docker/compose/releases/download/v2.32.4/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
+sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
+
+### start docker db, connect to it, connect to docker mysql, create tables (pin, cat), OPTIONAL: insert data
+docker-compose up --no-deps db
+docker-compose exec db bash
+### the password is password
+mysql -u root -p 
+
+locally
+### read only
+chmod 600 cat-app-keys.pem
+
+### front end files
+scp -i ../cat-app-keys.pem -r src/ ec2-user@3.145.19.72:/home/ec2-user/downloads/front-end/
+scp -i ../cat-app-keys.pem Dockerfile index.html *.ts *.js *.json ec2-user@3.145.19.72:/home/ec2-user/downloads/front-end/
+
+### flask files
+scp -i ../cat-app-keys.pem Dockerfile requirements.txt server.py  ec2-user@3.145.19.72:/home/ec2-user/downloads/flask_app/
+
+
+### docker-compose file
+scp -i ../cat-app-keys.pem docker-compose.yml ec2-user@3.145.19.72:/home/ec2-user/downloads/
+

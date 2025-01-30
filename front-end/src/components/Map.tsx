@@ -6,7 +6,7 @@ import ReactDOM from 'react-dom/client';
 import { CatViewer } from './CatViewer';
 import { subwayLayerStyles } from './data/subway-layer-styles.ts';
 
-const VITE_SERVER_URL = "http://127.0.0.1:5000";
+const VITE_SERVER_URL = "http://127.0.0.1:443";
 const PIN_URL = VITE_SERVER_URL + "/pin";
 const apiKey = "SnBrO5ngtGNXyvdH2O0e";
 
