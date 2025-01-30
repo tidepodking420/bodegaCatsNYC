@@ -94,7 +94,7 @@ export default function Map({permissions}: {permissions: number}){
                 })
                 }}>Yes</button>
                 <h3>Add a cat instead?</h3>
-                <input 
+                <input
                 type="text"
                 value={catName}
                 onChange={(e) => setCatName(e.target.value)}
@@ -117,9 +117,10 @@ export default function Map({permissions}: {permissions: number}){
                     },
                     body: JSON.stringify({'id': lngLat.id, 'name': catName, 'desc': catDesc})
                   }).then(res => res.json()).then(data => {
-                    console.log(data);
+                    console.log(data);setCatDesc('');setCatName('');
                   })
                 }}>Add cat</button>
+                <button onClick={() => console.log(`${catName} ${catDesc}`)} >debug</button>
                   </center>
               </div>}
           </div>
