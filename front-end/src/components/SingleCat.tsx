@@ -19,12 +19,16 @@ export function SingleCat({permissions, cat, cats, catSetter}: {permissions: num
         function modifyCat(cat_id: string) {
             const deleteCatURL = `${CAT_URL}?cat_id=${cat_id}`;
             fetch(deleteCatURL, {
-                method: 'DELETE',
+                method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
-                }
-            }).then(res => res.json()).then(_data => {
-                catSetter(cats.filter(x => x.id !== cat_id))
+                },
+                body: JSON.stringify({
+                    cat_id,
+                    fieldToUpdate,
+                    newValue: catTextField
+                })
+            }).then(res => res.json()).then(data => {
             })
         }
 
@@ -37,12 +41,18 @@ export function SingleCat({permissions, cat, cats, catSetter}: {permissions: num
         return (
             <div>
                 {adminMode && <button style={{position: 'relative', top: '1em'}} onClick={() => deleteCat(cat.id)}>Delete {cat.name}</button>}
-                <h3>name: {cat.name}</h3>
-                <h4>desc: {cat.desc}</h4>
+                <p style={{fontWeight: 'bold', marginBottom: '0px'}}>name: {cat.name}</p>
+                <p style={{fontWeight: 'bold', marginTop: '1px', marginBottom: '1px'}}>desc: {cat.desc}</p>
                 {adminMode && 
                 <div>
                     <div>
-                        <p>Field to update: {fieldToUpdate}</p>
+                        <div style={{display: 'flex'}}>
+                            <p>Updating: {fieldToUpdate}</p> 
+                            <div style={{position: 'relative', top: '.9vw', left: '1vw'}}>
+                                <button onClick={() => modifyCat(cat.id)}
+                                disabled={!catTextField.length}>Update</button>
+                            </div>
+                        </div>
                         <div>
                             <label>
                                 <input
@@ -51,7 +61,7 @@ export function SingleCat({permissions, cat, cats, catSetter}: {permissions: num
                                 checked={fieldToUpdate === 'name'}
                                 onChange={handleFieldChange}
                                 />
-                                Option 1
+                                Name
                             </label>
 
                             <label>
@@ -61,7 +71,7 @@ export function SingleCat({permissions, cat, cats, catSetter}: {permissions: num
                                 checked={fieldToUpdate === 'desc'}
                                 onChange={handleFieldChange}
                                 />
-                                Option 2
+                                Description
                             </label>
                         </div>
                     </div>

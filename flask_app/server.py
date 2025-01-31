@@ -107,7 +107,7 @@ class Pin(object):
 
 
 # TODO modify an existing cat, or delete one of the cats
-@app.route('/cat', methods=['GET', 'DELETE'])
+@app.route('/cat', methods=['GET', 'DELETE', 'PATCH'])
 def cat_logic():
     if request.method == 'GET':
         # retrieving the cats at specific id
@@ -121,8 +121,19 @@ def cat_logic():
         cat_id = request.args.get('cat_id')
         num_cats_deleted = delete_query(query, params=(cat_id,))
         return {'message': f"{num_cats_deleted} cats deleted"}
+    elif request.method == 'PATCH':
+        # current fields are name and desc
+        field = request.json.get('fieldToUpdate')
+        value = request.json.get('newValue')
+        cat_id = request.json.get('cat_id')
+        if field == 'desc':
+            query = f"UPDATE cat SET `{field}` = %s WHERE id= %s"
+        else:
+            query = f"UPDATE cat SET {field} = %s WHERE id= %s"
+        num_cats_updated = delete_query(query, params=(value, cat_id))
+        return {'message': f"updated {num_cats_updated} cats"}
     else: 
-        return {'stub', 'else'}
+        return {'stub': 'else'}
         
 
 
