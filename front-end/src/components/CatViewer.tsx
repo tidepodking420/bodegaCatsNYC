@@ -14,13 +14,18 @@ export type Cat = {
 export function CatViewer({pin_id, permissions}: {pin_id: number, permissions: number}){
     const [cats, setCats] = useState<Array<Cat>>([]);
     const CATS_AT_LOCATION_URL = `${CAT_URL}?pin_id=${pin_id}`
-    useEffect(() => {
+
+    function fetchCats(){
         fetch(CATS_AT_LOCATION_URL, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
             }
         }).then(res => res.json()).then(data => {console.log(data.cats);setCats(data.cats)})
+    }
+
+    useEffect(() => {
+        fetchCats();
     }, [pin_id, CATS_AT_LOCATION_URL])
 
    
@@ -29,7 +34,7 @@ export function CatViewer({pin_id, permissions}: {pin_id: number, permissions: n
             {cats.length > 0 ? (
                 cats.map((cat) => (
                     <div key={cat.id}>
-                        <SingleCat permissions={permissions} cat={cat} cats={cats} catSetter={setCats}/>
+                        <SingleCat permissions={permissions} cat={cat} cats={cats} catSetter={setCats} fetchCats={fetchCats}/>
                     </div>
                 ))
             ) : (

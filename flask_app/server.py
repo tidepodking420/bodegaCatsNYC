@@ -106,7 +106,6 @@ class Pin(object):
         return [Pin(id=row[0], lat=row[1], lng=row[2]).to_dict() for row in rows]
 
 
-# TODO modify an existing cat, or delete one of the cats
 @app.route('/cat', methods=['GET', 'DELETE', 'PATCH'])
 def cat_logic():
     if request.method == 'GET':

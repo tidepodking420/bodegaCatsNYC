@@ -3,7 +3,7 @@ const SERVER_URL = "http://127.0.0.1:5000";
 const CAT_URL = SERVER_URL + "/cat"
 import type {Cat} from './CatViewer'
 
-export function SingleCat({permissions, cat, cats, catSetter}: {permissions: number, cat: Cat,cats: Array<Cat>, catSetter: any}){
+export function SingleCat({permissions, cat, cats, catSetter, fetchCats}: {permissions: number, cat: Cat,cats: Array<Cat>, catSetter: any, fetchCats: any}){
       function deleteCat(cat_id: string) {
                 const deleteCatURL = `${CAT_URL}?cat_id=${cat_id}`;
                 fetch(deleteCatURL, {
@@ -28,7 +28,8 @@ export function SingleCat({permissions, cat, cats, catSetter}: {permissions: num
                     fieldToUpdate,
                     newValue: catTextField
                 })
-            }).then(res => res.json()).then(data => {
+            }).then(res => res.json()).then(_ => {
+                fetchCats()
             })
         }
 
