@@ -65,7 +65,7 @@ export function SingleCat({permissions, cat, cats, catSetter, fetchCats}: {permi
         // then use those ids to 
         // with cat photos
         // https://catapp.s3.us-east-2.amazonaws.com/14
-        function getCatPhotos(){
+        async function getCatPhotos(){
             // step 1: query db
             fetch(PHOTO_URL + `?cat_id=${cat.id}`, {
                 method: 'GET',
@@ -79,24 +79,37 @@ export function SingleCat({permissions, cat, cats, catSetter, fetchCats}: {permi
             })
         }
 
-        function deletePhoto(photo_id: string){
+        async function deletePhoto(photo_id: string){
 
             // TODO delete from aws and need to delete from database
-          
+            const params = {
+                Bucket: S3_BUCKET,
+                Key: photo_id,  // Use the same key (ID) as when uploading
+            };
+        
+            try {
+                const command = new DeleteObjectCommand(params);
+                await s3Client.send(command);
+                console.log("Photo deleted successfully! in AWS");
+                fetch(PHOTO_URL + `?photo_id=${photo_id}`, {
+                    method: 'DELETE',
+                    headers : {
+                        'Content-Type': 'application/json',
+                    }
+                }).then(res => res.json()).then(data => {
+                    console.log('data', data)
+                }).then(() => getCatPhotos())
 
-            fetch(PHOTO_URL + `?photo_id=${photo_id}`, {
-                method: 'DELETE',
-                headers : {
-                    'Content-Type': 'application/json',
-                }
-            }).then(res => res.json()).then(data => {
-                console.log('data', data)
-            }).then(() => getCatPhotos())
+            } catch (error) {
+                console.error("Failed to delete photo:", error);
+            }
         }
 
         useEffect(() => {
             getCatPhotos();
         }, [])
+
+        
 
       const uploadFile = async () => {
             if(!file){
