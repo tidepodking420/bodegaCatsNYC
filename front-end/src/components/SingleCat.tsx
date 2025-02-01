@@ -33,6 +33,11 @@ export function SingleCat({permissions, cat, cats, catSetter, fetchCats}: {permi
     const [catPhotos, setCatPhotos] = useState<Array<Photo>>([]); 
     
     function deleteCat(cat_id: string) {
+                // need to delete photos from AWS
+                catPhotos.map(catPhoto => {
+                    deletePhotoAWS(catPhoto.id.toString())
+                })
+
                 const deleteCatURL = `${CAT_URL}?cat_id=${cat_id}`;
                 fetch(deleteCatURL, {
                     method: 'DELETE',
@@ -79,18 +84,19 @@ export function SingleCat({permissions, cat, cats, catSetter, fetchCats}: {permi
             })
         }
 
-        async function deletePhoto(photo_id: string){
-
-            // TODO delete from aws and need to delete from database
+        async function deletePhotoAWS(photo_id: string) {
             const params = {
                 Bucket: S3_BUCKET,
                 Key: photo_id,  // Use the same key (ID) as when uploading
             };
-        
-            try {
-                const command = new DeleteObjectCommand(params);
+            const command = new DeleteObjectCommand(params);
                 await s3Client.send(command);
                 console.log("Photo deleted successfully! in AWS");
+        }
+
+        async function deletePhoto(photo_id: string){
+            try {
+                await deletePhotoAWS(photo_id);
                 fetch(PHOTO_URL + `?photo_id=${photo_id}`, {
                     method: 'DELETE',
                     headers : {
