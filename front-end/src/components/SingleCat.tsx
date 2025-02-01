@@ -203,24 +203,20 @@ export function SingleCat({permissions, cat, cats, catSetter, fetchCats}: {permi
                     <input type="file"
                     ref={fileInputRef}
                     onChange={(e) => {
-                    // setFile(e.target.files[0])
                     setFile(e.target.files[0])
-                    // console.log(e.target.files[0])
                     }} />
                     
-                    <button onClick={uploadFile}>Upload to S3</button>
-                    {/* <button onClick={() => console.log(file)}>Upload to S3</button> */}
+                    <button onClick={uploadFile}>Save it!</button>
                 </div>
                 }
                 {catPhotos.map(catPhoto => {
                    return (
                     <div key={`${catPhoto.id}-catPhoto`}>
-                        <img  src={GET_PHOTO_URL(catPhoto.id)} alt={`${catPhoto.file_name}`} />
-                        <button onClick={() => deletePhoto(catPhoto.id.toString())}>asdf</button>
+                        <img src={GET_PHOTO_URL(catPhoto.id)} alt={`${catPhoto.file_name}`} width={'100%'}/>
+                        <button onClick={() => deletePhoto(catPhoto.id.toString())}>Delete {`${catPhoto.file_name}`}</button>
                    </div>
                  )
                 })}
-                <button onClick={() => console.log(catPhotos)}>debug cat photos</button>
                 <div style={{border: 'none', height: '.3em', backgroundColor: 'black', marginTop: '.4em'}}> </div>
             </div>
         );

@@ -137,6 +137,7 @@ class Pin(object):
     def map_to_pin(rows):
         return [Pin(id=row[0], lat=row[1], lng=row[2]).to_dict() for row in rows]
 
+# TODO cascade deletion?
 
 @app.route('/cat', methods=['GET', 'DELETE', 'PATCH'])
 def cat_logic():
@@ -148,10 +149,12 @@ def cat_logic():
         cats = Cat.map_to_cat(result)
         return {'cats': cats}
     elif request.method == 'DELETE':
-        query = "DELETE FROM cat WHERE id=%s"
+        cat_query = "DELETE FROM cat WHERE id=%s"
+        photo_query = "DELETE FROM photo where cat_id=%s"
         cat_id = request.args.get('cat_id')
-        num_cats_deleted = delete_query(query, params=(cat_id,))
-        return {'message': f"{num_cats_deleted} cats deleted"}
+        num_photos_deleted = delete_query(photo_query, params=(cat_id,))
+        num_cats_deleted = delete_query(cat_query, params=(cat_id,))
+        return {'message': f"{num_cats_deleted} cats deleted and {num_photos_deleted} photos deleted"}
     elif request.method == 'PATCH':
         # current fields are name and desc
         field = request.json.get('fieldToUpdate')
@@ -208,12 +211,6 @@ def pin_logic():
         pins = Pin.map_to_pin(result)
         return {'pins': pins}
     
-# CREATE TABLE photo (
-#     id INT AUTO_INCREMENT PRIMARY KEY,
-#     file_name VARCHAR(50) NOT NULL,
-#     cat_id INT NOT NULL,
-#     FOREIGN KEY (cat_id) REFERENCES cat(id)
-# );
 @app.route('/photo', methods=['GET', 'POST', 'DELETE'])
 def photo_logic():
     if request.method == 'POST':
