@@ -229,8 +229,12 @@ def photo_logic():
         return {'photos': all_photos}
     else:
         # delete
-        pass
-    
+        photo_id = request.args.get('photo_id')
+        print(photo_id)
+        delete_photo_query = "DELETE FROM photo WHERE id = %s"
+        num_photos_deleted = delete_query(delete_photo_query, params=(photo_id,))
+        return {'num_photos_deleted': num_photos_deleted}
+
 
 
 

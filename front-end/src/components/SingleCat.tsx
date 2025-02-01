@@ -1,5 +1,5 @@
 import {useState, useRef, useEffect} from 'react';
-import {PutObjectCommand, S3Client} from '@aws-sdk/client-s3';
+import {DeleteObjectCommand, PutObjectCommand, S3Client} from '@aws-sdk/client-s3';
 
 const SERVER_URL = "http://127.0.0.1:5000";
 const CAT_URL = SERVER_URL + "/cat"
@@ -78,6 +78,22 @@ export function SingleCat({permissions, cat, cats, catSetter, fetchCats}: {permi
                 // catSetter(cats.filter(x => x.id !== cat_id))
             })
         }
+
+        function deletePhoto(photo_id: string){
+
+            // TODO delete from aws and need to delete from database
+          
+
+            fetch(PHOTO_URL + `?photo_id=${photo_id}`, {
+                method: 'DELETE',
+                headers : {
+                    'Content-Type': 'application/json',
+                }
+            }).then(res => res.json()).then(data => {
+                console.log('data', data)
+            }).then(() => getCatPhotos())
+        }
+
         useEffect(() => {
             getCatPhotos();
         }, [])
@@ -184,7 +200,12 @@ export function SingleCat({permissions, cat, cats, catSetter, fetchCats}: {permi
                 </div>
                 }
                 {catPhotos.map(catPhoto => {
-                   return (<img key={`${catPhoto.id}-catPhoto`} src={GET_PHOTO_URL(catPhoto.id)} alt={`${catPhoto.file_name}`} /> )
+                   return (
+                    <div key={`${catPhoto.id}-catPhoto`}>
+                        <img  src={GET_PHOTO_URL(catPhoto.id)} alt={`${catPhoto.file_name}`} />
+                        <button onClick={() => deletePhoto(catPhoto.id.toString())}>asdf</button>
+                   </div>
+                 )
                 })}
                 <button onClick={() => console.log(catPhotos)}>debug cat photos</button>
                 <div style={{border: 'none', height: '.3em', backgroundColor: 'black', marginTop: '.4em'}}> </div>
