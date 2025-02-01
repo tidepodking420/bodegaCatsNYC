@@ -1,7 +1,9 @@
-from flask import Flask, request
+from flask import Flask, request, send_file, jsonify
 from flask_cors import CORS
 from mysql.connector import pooling
 import time
+import boto3
+from io import BytesIO
 
 app = Flask(__name__)
 CORS(app)
@@ -10,7 +12,18 @@ app.config['MYSQL_USER'] = 'root'
 app.config['MYSQL_PASSWORD'] = 'password'
 app.config['MYSQL_DB'] = 'cat_app'
 
-# TODO sanitize inputs so I can handle ' and "" and not be victim SQL injection
+# AWS S3 credentials and bucket name
+AWS_ACCESS_KEY_ID = 'AKIA2CUNLWDYSNUCDVM4'
+AWS_SECRET_ACCESS_KEY = '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'
+BUCKET_NAME = 'catapp'
+
+# Initialize the S3 client
+s3_client = boto3.client(
+    's3',
+    aws_access_key_id=AWS_ACCESS_KEY_ID,
+    aws_secret_access_key=AWS_SECRET_ACCESS_KEY
+)
+
 def get_db_connection():
     time.sleep(5)
     # Function to get a database connection
@@ -175,6 +188,26 @@ def pin_logic():
         print(result)
         pins = Pin.map_to_pin(result)
         return {'pins': pins}
+    
+@app.route('/download/<filename>')
+def download_file(filename):
+    try:
+        print(filename)
+        # Retrieve the file from S3
+        file_obj = s3_client.get_object(Bucket=BUCKET_NAME, Key=filename)
+        print('file_obj', file_obj)
+        file_content = file_obj['Body'].read()
+        print('file_content', file_content)
+        
+        # Send the file to the client
+        return send_file(
+            BytesIO(file_content),
+            as_attachment=True,
+            download_name=filename
+        )
+    except Exception as e:
+        return str(e), 404
+    
 
 
 if __name__ == '__main__':

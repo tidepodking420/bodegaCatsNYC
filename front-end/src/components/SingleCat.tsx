@@ -84,6 +84,7 @@ export function SingleCat({permissions, cat, cats, catSetter, fetchCats}: {permi
                 />
                 </div>
                 }
+                <img src="http://localhost:5000/download/download.jpeg" alt="My Image" />
                 <div style={{border: 'none', height: '.3em', backgroundColor: 'black', marginTop: '.4em'}}> </div>
             </div>
         );
