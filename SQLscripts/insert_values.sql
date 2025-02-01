@@ -11,3 +11,6 @@ INSERT INTO pin (lat, lng) VALUE
     (41.7602666, -74.8603452);
 
 INSERT INTO cat (name, `desc`, pin_id) VALUES ({cat_name}, {cat_desc}, {pin_id});
+
+INSERT INTO photo (file_name, cat_id) VALUE 
+ ('apple_car_photo.png', 2);

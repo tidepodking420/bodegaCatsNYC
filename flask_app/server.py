@@ -208,6 +208,19 @@ def download_file(filename):
     except Exception as e:
         return str(e), 404
     
+# CREATE TABLE photo (
+#     id INT AUTO_INCREMENT PRIMARY KEY,
+#     file_name VARCHAR(50) NOT NULL,
+#     cat_id INT NOT NULL,
+#     FOREIGN KEY (cat_id) REFERENCES cat(id)
+# );
+@app.route('/photo', methods=['POST'])
+def photo_logic():
+    file_name = request.json.get('file_name')
+    cat_id = request.json.get('cat_id')
+    insert_photo_query = "INSERT INTO photo (file_name, cat_id) VALUE (%s, %s);"
+    return {'new_photo_id': str(post_query(insert_photo_query, params=(file_name, cat_id)))}
+
 
 
 if __name__ == '__main__':

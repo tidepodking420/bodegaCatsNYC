@@ -5,7 +5,6 @@ import '../assets/Map.css';
 import ReactDOM from 'react-dom/client';
 import { CatViewer } from './CatViewer';
 import { subwayLayerStyles } from './data/subway-layer-styles.ts';
-import {PutObjectCommand, S3Client} from '@aws-sdk/client-s3';
 
 const VITE_SERVER_URL = "http://127.0.0.1:5000";
 const PIN_URL = VITE_SERVER_URL + "/pin";
@@ -29,17 +28,6 @@ lat: number
 lng: number,
 };
 
-const AWS_ACCESS_KEY_ID = 'AKIA2CUNLWDYSNUCDVM4';
-const AWS_SECRET_ACCESS_KEY = 'EvS3YPFtAfhTM9kdnwv6eHbuGfFDNEpdGOqRpdr/';
-const S3_BUCKET = 'catapp';
-const REGION = "us-east-2";
-const s3Client = new S3Client({
-  region: REGION, // Change to your S3 region
-  credentials: {
-    accessKeyId: AWS_ACCESS_KEY_ID,
-    secretAccessKey: AWS_SECRET_ACCESS_KEY,
-  },
-});
 
 
 
@@ -59,35 +47,11 @@ export default function Map({permissions}: {permissions: number}){
  
      // see note; be careful about assumptions with lngLat
      function MarkerPopup({mapInstance, lngLat} : {mapInstance : any, lngLat: LngLatWithID}){      
-      const [file, setFile] = useState(null);    
       const [catName, setCatName] = useState("");
       const [catDesc, setCatDesc] = useState("");
       const [selectedOption, setSelectedOption] = useState('admin');
       const catViewer = lngLat.id && <CatViewer pin_id={lngLat.id} permissions={permissions}/>;
 
-      // ✅ Solution: Insert into Database First, Then Upload to S3
-      // Insert a new photo record into the database (get the auto-generated ID).
-      // Use the returned ID as the S3 key for uploading.
-      // Update the database with the correct file name (if needed).
-
-      const uploadFile = async () => {
-        const arrayBuffer = await file.arrayBuffer(); // Convert File to ArrayBuffer
-        const uint8Array = new Uint8Array(arrayBuffer);
-        const params = {
-          Bucket: S3_BUCKET,
-          Key: file.name,
-          Body: uint8Array,
-          ContentType: file.type,
-        };
-      console.log(params)
-        try {
-          const command = new PutObjectCommand(params);
-          await s3Client.send(command);
-          console.log("Upload successful!");
-        } catch (error) {
-          console.error("Upload failed:", error);
-        }
-      };
        if(permissions === 0){
         // ADMIN
     return <div> 
@@ -147,11 +111,6 @@ export default function Map({permissions}: {permissions: number}){
                 rows={7}
                 cols={20}
                 />
-                 <input type="file" onChange={(e) => {
-                  setFile(e.target.files[0])
-                  // console.log(e.target.files[0])
-                  }} />
-                  <button onClick={uploadFile}>Upload to S3</button>
                 <button 
                 disabled={!catName.length || !catDesc.length}
                 onClick={() => {

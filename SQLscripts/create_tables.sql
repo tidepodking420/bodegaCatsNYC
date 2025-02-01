@@ -11,5 +11,16 @@ CREATE TABLE cat (
     name VARCHAR(50) NOT NULL,
     `desc` VARCHAR(120) NOT NULL,
     pin_id INT NOT NULL,
-    FOREIGN KEY (pin_id) REFERENCES pin(id)
+    FOREIGN KEY (pin_id) REFERENCES pin(id),
+);
+
+-- one to many relationship from pin to cat
+
+-- one to many from cat to photo
+
+CREATE TABLE photo (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    file_name VARCHAR(50) NOT NULL,
+    cat_id INT NOT NULL,
+    FOREIGN KEY (cat_id) REFERENCES cat(id)
 );
