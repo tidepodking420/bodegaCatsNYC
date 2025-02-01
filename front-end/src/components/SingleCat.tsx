@@ -1,4 +1,4 @@
-import {useState, useRef} from 'react';
+import {useState, useRef, useEffect} from 'react';
 import {PutObjectCommand, S3Client} from '@aws-sdk/client-s3';
 
 const SERVER_URL = "http://127.0.0.1:5000";
@@ -16,9 +16,23 @@ const s3Client = new S3Client({
     secretAccessKey: AWS_SECRET_ACCESS_KEY,
   },
 });
+const GET_PHOTO_URL = (key: number) => `https://${S3_BUCKET}.s3.${REGION}.amazonaws.com/${key}`
+
+type Photo = {
+    id: number,
+    file_name: string,
+    cat_id: number
+};
 
 export function SingleCat({permissions, cat, cats, catSetter, fetchCats}: {permissions: number, cat: Cat,cats: Array<Cat>, catSetter: any, fetchCats: any}){
-      function deleteCat(cat_id: string) {
+    const adminMode = permissions === 0;
+    const [catTextField, setCatTextField] = useState('');
+    const [fieldToUpdate, setFieldToUpdate] = useState('name');
+    const [file, setFile] = useState(null); 
+    const fileInputRef = useRef(null); 
+    const [catPhotos, setCatPhotos] = useState<Array<Photo>>([]); 
+    
+    function deleteCat(cat_id: string) {
                 const deleteCatURL = `${CAT_URL}?cat_id=${cat_id}`;
                 fetch(deleteCatURL, {
                     method: 'DELETE',
@@ -43,9 +57,30 @@ export function SingleCat({permissions, cat, cats, catSetter, fetchCats}: {permi
                     newValue: catTextField
                 })
             }).then(res => res.json()).then(_ => {
-                fetchCats()
+                fetchCats();setCatTextField('');
             })
         }
+
+        // this function needs to retrieve all of the photo ids from my database at cat.cat_id
+        // then use those ids to 
+        // with cat photos
+        // https://catapp.s3.us-east-2.amazonaws.com/14
+        function getCatPhotos(){
+            // step 1: query db
+            fetch(PHOTO_URL + `?cat_id=${cat.id}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            }).then(res => res.json()).then(data => {
+                console.log(data)
+                setCatPhotos(data.photos)
+                // catSetter(cats.filter(x => x.id !== cat_id))
+            })
+        }
+        useEffect(() => {
+            getCatPhotos();
+        }, [])
 
       const uploadFile = async () => {
             if(!file){
@@ -86,13 +121,8 @@ export function SingleCat({permissions, cat, cats, catSetter, fetchCats}: {permi
             if (fileInputRef.current) {
                 fileInputRef.current.value = ""; // Reset input field
               }
+              getCatPhotos();
       };
-
-        const adminMode = permissions === 0;
-        const [catTextField, setCatTextField] = useState('');
-        const [fieldToUpdate, setFieldToUpdate] = useState('name');
-        const [file, setFile] = useState(null); 
-        const fileInputRef = useRef(null); 
         
 
         const handleFieldChange = (e) => {
@@ -153,8 +183,10 @@ export function SingleCat({permissions, cat, cats, catSetter, fetchCats}: {permi
                     {/* <button onClick={() => console.log(file)}>Upload to S3</button> */}
                 </div>
                 }
-                
-                {/* <img src="http://localhost:5000/download/download.jpeg" alt="My Image" /> */}
+                {catPhotos.map(catPhoto => {
+                   return (<img key={`${catPhoto.id}-catPhoto`} src={GET_PHOTO_URL(catPhoto.id)} alt={`${catPhoto.file_name}`} /> )
+                })}
+                <button onClick={() => console.log(catPhotos)}>debug cat photos</button>
                 <div style={{border: 'none', height: '.3em', backgroundColor: 'black', marginTop: '.4em'}}> </div>
             </div>
         );

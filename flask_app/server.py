@@ -1,9 +1,10 @@
-from flask import Flask, request, send_file, jsonify
+from flask import Flask, request
 from flask_cors import CORS
 from mysql.connector import pooling
 import time
 import boto3
-from io import BytesIO
+
+# TODO need to delete all associated photos before deleting a cat
 
 app = Flask(__name__)
 CORS(app)
@@ -72,6 +73,24 @@ def delete_query(query, params=()):
 def index():
     return read_query("SELECT * FROM cat")
 
+class Photo(object):
+    def __init__(self, id, file_name, cat_id):
+        self.id = id
+        self.file_name = file_name
+        self.cat_id = cat_id
+
+    def __repr__(self):
+        return f"<Photo(id={self.id}, file_name={self.file_name}, cat_id={self.cat_id})>"
+    
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "file_name": self.file_name,
+            "cat_id": self.cat_id
+        }
+    
+    def map_to_photo(rows):
+        return [Photo(id=row[0], file_name=row[1], cat_id=row[2]).to_dict() for row in rows]
 
 class Cat(object):
     def __init__(self, id, name, desc, pin_id):
@@ -189,37 +208,29 @@ def pin_logic():
         pins = Pin.map_to_pin(result)
         return {'pins': pins}
     
-@app.route('/download/<filename>')
-def download_file(filename):
-    try:
-        print(filename)
-        # Retrieve the file from S3
-        file_obj = s3_client.get_object(Bucket=BUCKET_NAME, Key=filename)
-        print('file_obj', file_obj)
-        file_content = file_obj['Body'].read()
-        print('file_content', file_content)
-        
-        # Send the file to the client
-        return send_file(
-            BytesIO(file_content),
-            as_attachment=True,
-            download_name=filename
-        )
-    except Exception as e:
-        return str(e), 404
-    
 # CREATE TABLE photo (
 #     id INT AUTO_INCREMENT PRIMARY KEY,
 #     file_name VARCHAR(50) NOT NULL,
 #     cat_id INT NOT NULL,
 #     FOREIGN KEY (cat_id) REFERENCES cat(id)
 # );
-@app.route('/photo', methods=['POST'])
+@app.route('/photo', methods=['GET', 'POST', 'DELETE'])
 def photo_logic():
-    file_name = request.json.get('file_name')
-    cat_id = request.json.get('cat_id')
-    insert_photo_query = "INSERT INTO photo (file_name, cat_id) VALUE (%s, %s);"
-    return {'new_photo_id': str(post_query(insert_photo_query, params=(file_name, cat_id)))}
+    if request.method == 'POST':
+        file_name = request.json.get('file_name')
+        cat_id = request.json.get('cat_id')
+        insert_photo_query = "INSERT INTO photo (file_name, cat_id) VALUE (%s, %s);"
+        return {'new_photo_id': str(post_query(insert_photo_query, params=(file_name, cat_id)))}
+    elif request.method == 'GET':
+        cat_id = request.args.get('cat_id')
+        query = "SELECT * FROM photo WHERE cat_id = %s"
+        result = read_query(query, (cat_id,))
+        all_photos = Photo.map_to_photo(result)
+        return {'photos': all_photos}
+    else:
+        # delete
+        pass
+    
 
 
 
