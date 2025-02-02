@@ -183,11 +183,22 @@ def pin_logic():
         return {'id': post_query(query, params=(lat, lng))}
     elif request.method == 'DELETE':
         id = request.json.get('id')
-        pin_query = "DELETE FROM pin WHERE id=%s;"
-        cat_query = "DELETE FROM cat WHERE pin_id=%s"
-        num_cats_deleted = delete_query(cat_query, params=(id,))
-        num_pins_deleted = delete_query(pin_query, params=(id,))
-        return {"message": f"Pin {id} {'deleted successfuly' if num_pins_deleted > 0 else 'not deleted'}. Deleted {num_cats_deleted} cats :("}
+        # read the number cats before deleting
+        query = "SELECT count(*) FROM cat WHERE pin_id = %s"
+        num_cats = read_query(query, (id,))[0][0]
+        print(num_cats)
+        if num_cats > 0:
+            return {'num_cats': num_cats}
+
+
+
+        return {'dev_work': 'stub'}
+        # 
+        # pin_query = "DELETE FROM pin WHERE id=%s;"
+        # cat_query = "DELETE FROM cat WHERE pin_id=%s"
+        # num_cats_deleted = delete_query(cat_query, params=(id,))
+        # num_pins_deleted = delete_query(pin_query, params=(id,))
+        # return {"message": f"Pin {id} {'deleted successfuly' if num_pins_deleted > 0 else 'not deleted'}. Deleted {num_cats_deleted} cats :("}
     elif request.method == 'PATCH':
         # creates a new cat and associates it with a locatino 
         cat_name = request.json.get('name')

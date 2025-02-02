@@ -11,7 +11,7 @@ CREATE TABLE cat (
     name VARCHAR(50) NOT NULL,
     `desc` VARCHAR(120) NOT NULL,
     pin_id INT NOT NULL,
-    FOREIGN KEY (pin_id) REFERENCES pin(id),
+    FOREIGN KEY (pin_id) REFERENCES pin(id)
 );
 
 -- one to many relationship from pin to cat

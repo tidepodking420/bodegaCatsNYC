@@ -62,7 +62,7 @@ export default function Map({permissions}: {permissions: number}){
                       checked={selectedOption === 'admin'} 
                       onChange={(e) => setSelectedOption(e.target.value)} 
                   />
-                  Option 1
+                  Add/Remove Pins
               </label>
               <label>
                   <input 
@@ -71,7 +71,7 @@ export default function Map({permissions}: {permissions: number}){
                       checked={selectedOption === 'viewer'} 
                       onChange={(e) => setSelectedOption(e.target.value)} 
                   />
-                  Option 2
+                  Add Photos and update cats
               </label>
               {selectedOption === 'viewer' ? <div>
                 {catViewer}
@@ -81,7 +81,9 @@ export default function Map({permissions}: {permissions: number}){
                 <p><strong>Latitude:</strong> {lngLat.lat}</p>
                 <p><strong>Longitude:</strong> {lngLat.lng}</p>
                 <center>
-                <button onClick={() => {
+                <button 
+                onClick={() => {
+                  // make this do a delete on cascade
                 fetch(PIN_URL, {
                   method: 'DELETE',
                   headers: {
@@ -90,11 +92,17 @@ export default function Map({permissions}: {permissions: number}){
                   body: JSON.stringify({'id': lngLat.id})
                 }).then(res => res.json()).then(data => {
                   console.log(data);
-                  const markerToDelete = markersRef.current.filter(pin => pin.id === lngLat.id)[0].marker;
-                  markerToDelete.remove();
-                  const filteredMarkers = markersRef.current.filter(pin => pin.id !== lngLat.id);
-                  markersRef.current = filteredMarkers;
-                  setMarkers(filteredMarkers)
+
+                  const num_cats: number = data.num_cats;
+                  if (num_cats > 0){
+                    alert('There are ' + num_cats + 'cats at this pin')
+                  } else{
+                    const markerToDelete = markersRef.current.filter(pin => pin.id === lngLat.id)[0].marker;
+                    markerToDelete.remove();
+                    const filteredMarkers = markersRef.current.filter(pin => pin.id !== lngLat.id);
+                    markersRef.current = filteredMarkers;
+                    setMarkers(filteredMarkers)
+                  }
                 })
                 }}>Yes</button>
                 <h3>Add a cat instead?</h3>
