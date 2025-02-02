@@ -4,7 +4,6 @@ from mysql.connector import pooling
 import time
 import boto3
 
-# TODO need to delete all associated photos before deleting a cat
 
 app = Flask(__name__)
 CORS(app)
@@ -137,7 +136,6 @@ class Pin(object):
     def map_to_pin(rows):
         return [Pin(id=row[0], lat=row[1], lng=row[2]).to_dict() for row in rows]
 
-# TODO cascade deletion?
 
 @app.route('/cat', methods=['GET', 'DELETE', 'PATCH'])
 def cat_logic():

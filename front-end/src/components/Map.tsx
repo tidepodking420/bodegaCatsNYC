@@ -5,6 +5,7 @@ import '../assets/Map.css';
 import ReactDOM from 'react-dom/client';
 import { CatViewer } from './CatViewer';
 import { subwayLayerStyles } from './data/subway-layer-styles.ts';
+import { NavigationPanel } from './NavigationPanel.tsx';
 
 const VITE_SERVER_URL = "http://127.0.0.1:5000";
 const PIN_URL = VITE_SERVER_URL + "/pin";
@@ -186,7 +187,6 @@ export default function Map({permissions}: {permissions: number}){
           <div style={{ padding: '10px', maxWidth: '200px' }}>
             <button onClick={() => {
                 subwayLayerStyles.forEach((style) => {
-                  // TODO get toggle feature working
                   map.current!.removeLayer(style.id)
                 })
         
@@ -242,6 +242,7 @@ export default function Map({permissions}: {permissions: number}){
 
 
         // wait for the initial mapbox style to load before loading our own data
+        // TODO use map On event to navigate around
       map.current.on('style.load', () => {
         // fitbounds to NYC
         map.current!.fitBounds([
@@ -320,6 +321,7 @@ export default function Map({permissions}: {permissions: number}){
       return (
         <div className="map-wrap">
         <div ref={mapContainer} className="map" />
+        <NavigationPanel/>
         </div>
       );
 }
