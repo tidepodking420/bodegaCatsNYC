@@ -185,32 +185,6 @@ export default function Map({permissions}: {permissions: number}){
     
       return added ? <h4>Please close the window</h4> : (
           <div style={{ padding: '10px', maxWidth: '200px' }}>
-            <button onClick={() => {
-                subwayLayerStyles.forEach((style) => {
-                  map.current!.removeLayer(style.id)
-                })
-        
-                map.current!.removeSource('nyc-subway-routes');
-        
-                map.current!.removeSource('nyc-subway-stops');
-            }}>turn off yellow</button>
-             <button onClick={() => {
-                // add geojson sources for subway routes and stops
-        map.current!.addSource('nyc-subway-routes', {
-          type: 'geojson',
-          data: 'src/components/data/nyc-subway-routes.geojson'
-        });
-
-        map.current!.addSource('nyc-subway-stops', {
-          type: 'geojson',
-          data: 'src/components/data/nyc-subway-stops.geojson'
-        });
-
-        // add layers by iterating over the styles in the array defined in subway-layer-styles.js
-        subwayLayerStyles.forEach((style) => {
-          map.current!.addLayer(style)
-        })
-            }}>turn on</button>
               <h3>Adding a new Marker</h3>
               <p><strong>Latitude:</strong> {lngLat.lat}</p>
               <p><strong>Longitude:</strong> {lngLat.lng}</p>
@@ -321,7 +295,7 @@ export default function Map({permissions}: {permissions: number}){
       return (
         <div className="map-wrap">
         <div ref={mapContainer} className="map" />
-        <NavigationPanel/>
+        <NavigationPanel map={map}/>
         </div>
       );
 }
