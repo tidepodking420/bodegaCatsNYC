@@ -11,7 +11,7 @@ services:
   backend:
     image: flask_app:1.1
     ports:
-      - "443:5000"
+      - "5000:5000"
     build:
       context: ./flask_app   # Path to the directory containing the Dockerfile
     depends_on:
