@@ -216,7 +216,6 @@ export default function Map({permissions}: {permissions: number}){
 
 
         // wait for the initial mapbox style to load before loading our own data
-        // TODO use map On event to navigate around
       map.current.on('style.load', () => {
         // fitbounds to NYC
         map.current!.fitBounds([
