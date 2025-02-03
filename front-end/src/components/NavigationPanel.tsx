@@ -31,19 +31,29 @@ const boroughs = {
 
 export function NavigationPanel({map}: {map: any}){
     return (
-        <div className="navigation-panel">
-                <center>
-                    <h1>Navigation Panel</h1>
-                    <SubwayToggleButton map={map}/>
-                    <div style={{marginTop: '3em'}}>
-                        <button onClick={() => map.current!.fitBounds([
-                            [-74.270056,40.494061],
-                            [-73.663062,40.957187]
-                        ])}>Reset View</button>
-                        <h3>Move between boroughs</h3>  
-                        {Object.keys(boroughs).map(boro => <button key={boro} onClick={() => map.current!.fitBounds(boroughs[boro])}>{boro}</button>)}
-                    </div>
-                </center>
-        </div>
+            <div style={{ position: 'relative',
+                width: '100%',
+                backgroundColor: 'hwb(0 82% 8%)',
+                height: '20%'}}>
+                        <div style={{display: 'flex', width: '100%', justifyContent: 'space-evenly', position: 'absolute', top: '20px'}}>
+                            <SubwayToggleButton map={map}/>
+                            <button className='button' onClick={() => map.current!.fitBounds([
+                                [-74.270056,40.494061],
+                                [-73.663062,40.957187]
+                            ])}>Reset View</button>
+                        </div>
+                        <div style={{ height: '40px' }}></div>
+                        <center>
+                            <p>Move between boroughs</p>  
+                        </center>
+                        <div style={{ 
+        display: 'grid', 
+        gridTemplateColumns: 'repeat(3, 1fr)', /* 3 columns */
+        gap: '10px', /* Space between buttons */
+      }}>
+                            {Object.keys(boroughs).map(boro => <button className='button' key={boro} onClick={() => map.current!.fitBounds(boroughs[boro])}>{boro}</button>)}
+                            <div style={{ height: '15px' }}></div>
+                        </div>
+            </div>
     )
 }

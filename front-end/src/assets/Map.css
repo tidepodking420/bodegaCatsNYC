@@ -1,20 +1,3 @@
-.map-wrap {
-    position: relative;
-    width: 83%;
-    height: calc(95vh); /* calculate height of the screen minus the heading */
-  }
-
-  .navigation-panel {
-    position: relative;
-    width: 20%;
-    height: calc(95vh); /* calculate height of the screen minus the heading */
-    background-color: hwb(0 82% 8%);
-    left: 82.5vw;
-    padding: 2px;
-  }
-
-  .map {
-    position: absolute;
-    width: 100%;
-    height: 100%;
+  .button {
+    border-radius: 5px;
   }

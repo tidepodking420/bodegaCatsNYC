@@ -120,8 +120,10 @@ export default function Map({permissions}: {permissions: number}){
                 rows={7}
                 cols={20}
                 />
+                {/* TODO how to handle having no name or description? */}
                 <button 
-                disabled={!catName.length || !catDesc.length}
+                // TODO fix bug where description longer than expected in my database is crashing it
+                disabled={!catName.length || !catDesc.length || catDesc.length > 240}
                 onClick={() => {
                   fetch(PIN_URL, {
                     method: 'PATCH',
@@ -290,11 +292,16 @@ export default function Map({permissions}: {permissions: number}){
       // eslint-disable-next-line react-hooks/exhaustive-deps
       }, [lng, lat, zoom]);
 
+      const [isPanelExpanded, setIsPanelExpanded] = useState(true); // Initially expanded
 
+      const togglePanel = () => {
+        setIsPanelExpanded(!isPanelExpanded); // Toggle visibility
+      };
       return (
-        <div className="map-wrap">
-        <div ref={mapContainer} className="map" />
-        <NavigationPanel map={map}/>
+        <div>
+          <NavigationPanel map={map}/>
+          <div style={{  position: 'absolute', width: '95%', height: '80%'}}
+            ref={mapContainer} className="map" />
         </div>
       );
 }
