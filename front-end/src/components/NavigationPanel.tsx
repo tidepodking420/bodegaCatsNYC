@@ -29,12 +29,12 @@ const boroughs = {
     ],
 };
 
-export function NavigationPanel({map}: {map: any}){
+export function NavigationPanel({map, isPanelExpanded}: {map: any, isPanelExpanded: boolean}){
     return (
             <div style={{ position: 'relative',
                 width: '100%',
                 backgroundColor: 'hwb(0 82% 8%)',
-                height: '20%'}}>
+                height: isPanelExpanded ? '20%' : '0'}}>
                         <div style={{display: 'flex', width: '100%', justifyContent: 'space-evenly', position: 'absolute', top: '20px'}}>
                             <SubwayToggleButton map={map}/>
                             <button className='button' onClick={() => map.current!.fitBounds([

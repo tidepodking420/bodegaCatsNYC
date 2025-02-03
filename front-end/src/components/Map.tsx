@@ -295,12 +295,29 @@ export default function Map({permissions}: {permissions: number}){
       const [isPanelExpanded, setIsPanelExpanded] = useState(true); // Initially expanded
 
       const togglePanel = () => {
+        console.log('setting isPanelExpanded to', !isPanelExpanded)
         setIsPanelExpanded(!isPanelExpanded); // Toggle visibility
       };
+
       return (
         <div>
-          <NavigationPanel map={map}/>
-          <div style={{  position: 'absolute', width: '95%', height: '80%'}}
+          <NavigationPanel isPanelExpanded={isPanelExpanded} map={map}/>
+          <button 
+            onClick={togglePanel} 
+            style={{
+              position: 'absolute',
+              top: '10px',
+              left: '10px',
+              zIndex: 1000,
+              background: 'gray',
+              border: 'none',
+              padding: '10px',
+              cursor: 'pointer',
+            }}
+               >
+            ☰ {/* Hamburger Icon */}
+          </button>
+          <div style={{  position: 'absolute', width: '97%', height: isPanelExpanded ?'80%' :'98%'}}
             ref={mapContainer} className="map" />
         </div>
       );
