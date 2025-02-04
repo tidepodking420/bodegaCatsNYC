@@ -6,6 +6,7 @@ import ReactDOM from 'react-dom/client';
 import { CatViewer } from './CatViewer';
 import { subwayLayerStyles } from './data/subway-layer-styles.ts';
 import { NavigationPanel } from './NavigationPanel.tsx';
+import { SidePanel } from './SidePanel.tsx';
 
 const VITE_SERVER_URL = "http://127.0.0.1:5000";
 const PIN_URL = VITE_SERVER_URL + "/pin";
@@ -293,14 +294,18 @@ export default function Map({permissions}: {permissions: number}){
       }, [lng, lat, zoom]);
 
       const [isPanelExpanded, setIsPanelExpanded] = useState(true); // Initially expanded
+      const [isPanelExpanded2, setIsPanelExpanded2] = useState(true); // Initially expanded
 
       const togglePanel = () => {
-        console.log('setting isPanelExpanded to', !isPanelExpanded)
         setIsPanelExpanded(!isPanelExpanded); // Toggle visibility
+      };
+      const togglePanel2 = () => {
+        console.log('setting isPanelExpanded to', !isPanelExpanded)
+        setIsPanelExpanded2(!isPanelExpanded2); // Toggle visibility
       };
 
       return (
-        <div>
+        <div style={{overflow: 'hidden'}}>
           <NavigationPanel isPanelExpanded={isPanelExpanded} map={map}/>
           <button 
             onClick={togglePanel} 
@@ -317,8 +322,24 @@ export default function Map({permissions}: {permissions: number}){
                >
             ☰ {/* Hamburger Icon */}
           </button>
-          <div style={{  position: 'absolute', width: '97%', height: isPanelExpanded ?'80%' :'98%'}}
+          <div style={{  position: 'absolute', width: '97%', height: isPanelExpanded ?'73%' :'98%'}}
             ref={mapContainer} className="map" />
+          <button 
+            onClick={togglePanel2} 
+            style={{
+              position: 'absolute',
+              zIndex: 999,
+              bottom: '30px',
+              left:'10px',
+              background: 'gray',
+              border: 'none',
+              padding: '10px',
+              cursor: 'pointer',
+            }}
+               >
+            ☰ {/* Hamburger Icon */}
+          </button>
+          <SidePanel isPanelExpanded2={isPanelExpanded2}/>
         </div>
       );
 }
