@@ -20,7 +20,7 @@ type Marker = {
     marker: maplibregl.Marker,
     id: number
 };
-type LngLatWithID = {
+export type LngLatWithID = {
   id: number | null, lat: number, lng: number
 };
 type Mapish = maplibregl.Map | null;
@@ -34,7 +34,7 @@ lng: number,
 
 
 // 0 for admin, 1 for user
-export default function Map({permissions}: {permissions: number}){
+export function Map({permissions}: {permissions: number}){
     const mapContainer = useRef(null);
     const map = useRef<Mapish>(null);
     const lat = 40.7632571;
@@ -46,6 +46,11 @@ export default function Map({permissions}: {permissions: number}){
     // }
     const [markers, setMarkers] = useState<Array<Marker>>([]);
     const markersRef = useRef([]);
+    const [currentLngLat, setCurrentLngLat] = useState<LngLatWithID>({
+      id: -1,
+      lat: -1,
+      lng: -1
+    });
  
      // see note; be careful about assumptions with lngLat
      function MarkerPopup({mapInstance, lngLat} : {mapInstance : any, lngLat: LngLatWithID}){      
@@ -271,13 +276,15 @@ export default function Map({permissions}: {permissions: number}){
 
         map.current.addControl(new maplibregl.NavigationControl(), 'top-right');
 
-        map.current.on('dblclick', (e) => {
+        map.current.on('click', (e) => {
             const { lngLat } = e;
             const lngLatProp: LngLatWithID = {
               id: null,
               lng: lngLat.lng,
               lat: lngLat.lat
             }
+            setCurrentLngLat(lngLatProp);
+            console.log('asfasdf')
             console.log(markersRef.current)
 
             const popupNode = document.createElement('div');
@@ -339,7 +346,7 @@ export default function Map({permissions}: {permissions: number}){
                >
             ☰ {/* Hamburger Icon */}
           </button>
-          <SidePanel isPanelExpanded2={isPanelExpanded2}/>
+          <SidePanel isPanelExpanded2={isPanelExpanded2} currentLngLat={currentLngLat}/>
         </div>
       );
 }

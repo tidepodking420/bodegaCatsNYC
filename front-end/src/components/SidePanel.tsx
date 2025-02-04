@@ -1,4 +1,6 @@
-export function SidePanel({isPanelExpanded2}, {isPanelExpanded2: boolean}) {
+import type { LngLatWithID } from "./Map"
+
+export function SidePanel({isPanelExpanded2, currentLngLat}, {isPanelExpanded2: boolean, currentLngLat: LngLatWithID}) {
     return (
         <div style={{
             position: 'absolute',
@@ -11,6 +13,9 @@ export function SidePanel({isPanelExpanded2}, {isPanelExpanded2: boolean}) {
             borderColor: 'black',
             borderStyle: 'solid'
           }}>
+            <div>
+                {`${currentLngLat.lng} ${currentLngLat.lat}`}
+            </div>
         </div>
     )
 }
