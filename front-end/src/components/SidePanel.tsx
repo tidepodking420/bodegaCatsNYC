@@ -16,6 +16,7 @@ export function SidePanel({isPanelExpanded2, currentLngLat}, {isPanelExpanded2: 
             <div>
                 {`${currentLngLat.lng} ${currentLngLat.lat}`}
             </div>
+            <div>Make a small change</div>
         </div>
     )
 }
