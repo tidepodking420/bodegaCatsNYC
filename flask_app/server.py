@@ -3,19 +3,27 @@ from flask_cors import CORS
 from mysql.connector import pooling
 import time
 import boto3
+from dotenv import load_dotenv
+import os
 
+# TODO env vars for ports, URLS, AWS credentials
+# TODO create default database with some cats
+# TODO how to go about creating users -> Amazon Cognito
+# TODO mobile specific UI
+
+load_dotenv()
 
 app = Flask(__name__)
 CORS(app)
-app.config['MYSQL_HOST'] = 'db'
-app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = 'password'
-app.config['MYSQL_DB'] = 'cat_app'
+app.config['MYSQL_HOST'] = os.getenv('MYSQL_HOST')
+app.config['MYSQL_USER'] = os.getenv('MYSQL_USER')
+app.config['MYSQL_PASSWORD'] = os.getenv('MYSQL_PASSWORD')
+app.config['MYSQL_DB'] = os.getenv('MYSQL_DB')
 
 # AWS S3 credentials and bucket name
-AWS_ACCESS_KEY_ID = 'AKIA2CUNLWDYSNUCDVM4'
-AWS_SECRET_ACCESS_KEY = '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'
-BUCKET_NAME = 'catapp'
+AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
+BUCKET_NAME = os.getenv('BUCKET_NAME')
 
 # Initialize the S3 client
 s3_client = boto3.client(

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-const SERVER_URL = "http://127.0.0.1:5000";
+const SERVER_URL = import.meta.env.VITE_SERVER_URL;
 const CAT_URL = SERVER_URL + "/cat"
 import { SingleCat } from './SingleCat';
 

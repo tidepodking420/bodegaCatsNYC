@@ -9,7 +9,7 @@ CREATE TABLE pin (
 CREATE TABLE cat (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(50) NOT NULL,
-    `desc` VARCHAR(120) NOT NULL,
+    `desc` VARCHAR(240) NOT NULL,
     pin_id INT NOT NULL,
     FOREIGN KEY (pin_id) REFERENCES pin(id)
 );

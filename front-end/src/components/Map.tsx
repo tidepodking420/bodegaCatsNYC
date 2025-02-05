@@ -8,7 +8,7 @@ import { subwayLayerStyles } from './data/subway-layer-styles.ts';
 import { NavigationPanel } from './NavigationPanel.tsx';
 import { SidePanel } from './SidePanel.tsx';
 
-const VITE_SERVER_URL = "http://127.0.0.1:5000";
+const VITE_SERVER_URL = import.meta.env.VITE_SERVER_URL;
 const PIN_URL = VITE_SERVER_URL + "/pin";
 const apiKey = "SnBrO5ngtGNXyvdH2O0e";
 
@@ -291,10 +291,10 @@ export function Map({permissions}: {permissions: number}){
             const root = ReactDOM.createRoot(popupNode);
             root.render(<MapPopup lngLat={lngLatProp} mapInstance={map.current}/>);
 
-            new maplibregl.Popup({closeOnClick: true})
-            .setLngLat([lngLatProp.lng, lngLatProp.lat])
-            .setDOMContent(popupNode)
-            .addTo(map.current!);
+            // new maplibregl.Popup({closeOnClick: true})
+            // .setLngLat([lngLatProp.lng, lngLatProp.lat])
+            // .setDOMContent(popupNode)
+            // .addTo(map.current!);
           });
 
       // eslint-disable-next-line react-hooks/exhaustive-deps
