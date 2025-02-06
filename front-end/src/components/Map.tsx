@@ -7,10 +7,15 @@ import { CatViewer } from './CatViewer';
 import { subwayLayerStyles } from './data/subway-layer-styles.ts';
 import { NavigationPanel } from './NavigationPanel.tsx';
 import { SidePanel } from './SidePanel.tsx';
+import { useDispatch, useSelector } from "react-redux";
+import type {Cat} from './CatViewer'
+import { addCat } from "./redux/CatSlice";
 
 const VITE_SERVER_URL = import.meta.env.VITE_SERVER_URL;
 const PIN_URL = VITE_SERVER_URL + "/pin";
 const apiKey = "SnBrO5ngtGNXyvdH2O0e";
+const CAT_URL = VITE_SERVER_URL + "/cat"
+const ALL_CATS = CAT_URL + "?pin_id=all"
 
 // next steps
 // figure out how I can deploy my flask/react application
@@ -18,7 +23,9 @@ const apiKey = "SnBrO5ngtGNXyvdH2O0e";
 // how to associate the pins with cats, how to represent the cats
 export type Marker = {
     marker: maplibregl.Marker,
-    id: number
+    id: number,
+    // user: string,
+
 };
 export type LngLatWithID = {
   id: number | null, lat: number, lng: number
@@ -51,6 +58,21 @@ export function Map({permissions}: {permissions: number}){
       lat: -1,
       lng: -1
     });
+
+    const dispatch = useDispatch();
+
+    function fetchAllCats(){
+      fetch(ALL_CATS, {
+          method: 'GET',
+          headers: {
+              'Content-Type': 'application/json',
+          }
+      }).then(res => res.json()).then(data => {
+          console.log(data.cats);
+          const allCats: Array<Cat> = data.cats;
+          allCats.forEach(cat => dispatch(addCat(cat)));
+      })
+  }
  
      // see note; be careful about assumptions with lngLat
      function MarkerPopup({mapInstance, lngLat} : {mapInstance : any, lngLat: LngLatWithID}){      
@@ -254,6 +276,8 @@ export function Map({permissions}: {permissions: number}){
         // add pins from dbmapInstance
         fetch(PIN_URL).then(res => res.json()).then(data => {
           const {pins} = data;
+          console.log('pins');
+          console.log(data)
           const initMarkerState = pins.map((pin: Pin) => {
             const deleteNode = document.createElement('div');
             const root = ReactDOM.createRoot(deleteNode);
@@ -274,6 +298,8 @@ export function Map({permissions}: {permissions: number}){
           markersRef.current = initMarkerState; 
           setMarkers(initMarkerState);
         })
+
+        fetchAllCats();
 
         map.current.addControl(new maplibregl.NavigationControl(), 'top-right');
 
