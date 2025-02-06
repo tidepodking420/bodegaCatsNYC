@@ -7,7 +7,7 @@ import { CatViewer } from './CatViewer';
 import { subwayLayerStyles } from './data/subway-layer-styles.ts';
 import { NavigationPanel } from './NavigationPanel.tsx';
 import { SidePanel } from './SidePanel.tsx';
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import type {Cat} from './CatViewer'
 import { addCat } from "./redux/CatSlice";
 
@@ -17,15 +17,12 @@ const apiKey = "SnBrO5ngtGNXyvdH2O0e";
 const CAT_URL = VITE_SERVER_URL + "/cat"
 const ALL_CATS = CAT_URL + "?pin_id=all"
 
-// next steps
-// figure out how I can deploy my flask/react application
-// how to make mobile friendly interfaces
-// how to associate the pins with cats, how to represent the cats
 export type Marker = {
     marker: maplibregl.Marker,
     id: number,
-    // user: string,
-
+    user_id: string,
+    created_at: Date,
+    visibility: boolean, // in order to support filtering later on
 };
 export type LngLatWithID = {
   id: number | null, lat: number, lng: number
@@ -278,7 +275,7 @@ export function Map({permissions}: {permissions: number}){
           const {pins} = data;
           console.log('pins');
           console.log(data)
-          const initMarkerState = pins.map((pin: Pin) => {
+          const initMarkerState = pins.map((pin: any) => {
             const deleteNode = document.createElement('div');
             const root = ReactDOM.createRoot(deleteNode);
             const lngLatProp  : LngLatWithID = {
@@ -292,7 +289,7 @@ export function Map({permissions}: {permissions: number}){
             .setLngLat([pin.lng, pin.lat])
             // .setPopup(new maplibregl.Popup().setDOMContent(deleteNode)) 
             .addTo(map.current!);
-            return {'marker': newMarker, 'id': pin.id};
+            return {'marker': newMarker, 'id': pin.id, 'user_id': pin.user_id, 'created_at': new Date(pin.created_at), 'visibility': true};
           })
           console.log(initMarkerState)
           markersRef.current = initMarkerState; 
