@@ -3,6 +3,7 @@ from flask_cors import CORS
 from mysql.connector import pooling
 import time
 import boto3
+from models import Cat, Pin, Photo
 from dotenv import load_dotenv
 import os
 
@@ -80,78 +81,16 @@ def delete_query(query, params=()):
 def index():
     return read_query("SELECT * FROM cat")
 
-class Photo(object):
-    def __init__(self, id, file_name, cat_id):
-        self.id = id
-        self.file_name = file_name
-        self.cat_id = cat_id
-
-    def __repr__(self):
-        return f"<Photo(id={self.id}, file_name={self.file_name}, cat_id={self.cat_id})>"
-    
-    def to_dict(self):
-        return {
-            "id": self.id,
-            "file_name": self.file_name,
-            "cat_id": self.cat_id
-        }
-    
-    def map_to_photo(rows):
-        return [Photo(id=row[0], file_name=row[1], cat_id=row[2]).to_dict() for row in rows]
-
-class Cat(object):
-    def __init__(self, id, name, desc, pin_id):
-        self.id = id
-        self.name = name
-        self.desc = desc
-        self.pin_id = pin_id
-
-    def __repr__(self):
-        return f"<Cat(id={self.id}, name={self.name}, desc={self.desc}, pin_id={self.pin_id})>"
-    
-    def to_dict(self):
-        return {
-            "id": self.id,
-            "name": self.name,
-            "desc": self.desc,
-            "pin_id": self.pin_id
-        }
-    
-    def map_to_cat(rows):
-        return [Cat(id=row[0], name=row[1], desc=row[2], pin_id=row[3]).to_dict() for row in rows]
-
-class Pin(object):
-    # One-to-many relationship to cats
-
-    def __init__(self, id, lat, lng):
-        self.id = id
-        self.lat = lat
-        self.lng = lng
-        # maybe add later address field to implement google maps stuff
-        # name of the business
-
-    def __repr__(self):
-        return f"<Pin(id={self.id}, lat={self.lat}, lng={self.lng})>"
-    
-    def to_dict(self):
-        # Convert SQLAlchemy model to a dictionary
-        return {
-            "id": self.id,
-            "lat": self.lat,
-            "lng": self.lng,
-        }
-    
-    def map_to_pin(rows):
-        return [Pin(id=row[0], lat=row[1], lng=row[2]).to_dict() for row in rows]
-
-
 @app.route('/cat', methods=['GET', 'DELETE', 'PATCH'])
 def cat_logic():
     if request.method == 'GET':
         # retrieving the cats at specific id
         query = "SELECT * FROM cat WHERE pin_id = %s"
         pin_id = request.args.get('pin_id')
-        result = read_query(query, (pin_id,))
+        if pin_id == 'all':
+            result = read_query("SELECT * FROM cat")
+        else:
+            result = read_query(query, (pin_id,))
         cats = Cat.map_to_cat(result)
         return {'cats': cats}
     elif request.method == 'DELETE':
@@ -220,6 +159,7 @@ def pin_logic():
     else:
         # default is GET
         result = read_query("SELECT * FROM pin")
+        print('resssulTT')
         print(result)
         pins = Pin.map_to_pin(result)
         return {'pins': pins}

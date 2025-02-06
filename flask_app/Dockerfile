@@ -8,6 +8,8 @@ COPY server.py .
 
 COPY .env .
 
+COPY models/*.py .
+
 RUN pip install --no-cache-dir -r requirements.txt
 
 EXPOSE 5000
