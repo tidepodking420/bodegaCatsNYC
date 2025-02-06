@@ -1,9 +1,9 @@
 import { configureStore } from "@reduxjs/toolkit";
-import pinReducer from "./PinSlice.ts";
+import catReducer from "./CatSlice.ts";
 
 export const store = configureStore({
   reducer: {
-    pins: pinReducer,
+    cats: catReducer,
   },
 });
 

@@ -1,6 +1,6 @@
 import {Map} from './components/Map.tsx';
 import { Provider } from "react-redux";
-import { store } from "./components/redux/PinStore";
+import { store } from "./components/redux/CatStore.ts";
 
 
 function App() {

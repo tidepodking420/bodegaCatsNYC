@@ -16,7 +16,7 @@ const apiKey = "SnBrO5ngtGNXyvdH2O0e";
 // figure out how I can deploy my flask/react application
 // how to make mobile friendly interfaces
 // how to associate the pins with cats, how to represent the cats
-type Marker = {
+export type Marker = {
     marker: maplibregl.Marker,
     id: number
 };
@@ -24,7 +24,7 @@ export type LngLatWithID = {
   id: number | null, lat: number, lng: number
 };
 type Mapish = maplibregl.Map | null;
-export type Pin = {
+type Pin = {
 id: number,
 lat: number
 lng: number,
@@ -347,7 +347,7 @@ export function Map({permissions}: {permissions: number}){
                >
             ☰ {/* Hamburger Icon */}
           </button>
-          <SidePanel isPanelExpanded2={isPanelExpanded2} currentLngLat={currentLngLat}/>
+          <SidePanel isPanelExpanded2={isPanelExpanded2} currentLngLat={currentLngLat} markers={markers}/>
         </div>
       );
 }
