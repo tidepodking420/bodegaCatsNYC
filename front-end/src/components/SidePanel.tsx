@@ -1,6 +1,17 @@
 import type { LngLatWithID } from "./Map"
+import { useDispatch, useSelector } from "react-redux";
+import { addPin, removePin } from "./redux/PinSlice";
+import { RootState } from "./redux/PinStore";
+
+
+// Show all of the cats
 
 export function SidePanel({isPanelExpanded2, currentLngLat}, {isPanelExpanded2: boolean, currentLngLat: LngLatWithID}) {
+
+    const dispatch = useDispatch();
+    const pins = useSelector((state: RootState) => state.pins.pins);
+
+    console.log('pins', pins);
     return (
         <div style={{
             position: 'absolute',

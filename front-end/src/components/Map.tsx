@@ -24,7 +24,7 @@ export type LngLatWithID = {
   id: number | null, lat: number, lng: number
 };
 type Mapish = maplibregl.Map | null;
-type Pin = {
+export type Pin = {
 id: number,
 lat: number
 lng: number,
@@ -59,6 +59,7 @@ export function Map({permissions}: {permissions: number}){
       const [selectedOption, setSelectedOption] = useState('admin');
       const catViewer = lngLat.id && <CatViewer pin_id={lngLat.id} permissions={permissions}/>;
 
+      // prompts the user to create a new pin?
        if(permissions === 0){
         // ADMIN
     return <div> 
@@ -261,11 +262,11 @@ export function Map({permissions}: {permissions: number}){
               lng: pin.lng,
               lat: pin.lat
             }
-            root.render(<MarkerPopup  mapInstance={map.current} lngLat={lngLatProp}/>);
+            // root.render(<MarkerPopup  mapInstance={map.current} lngLat={lngLatProp}/>);
             
             const newMarker = new maplibregl.Marker({color: "#FF0000"})
             .setLngLat([pin.lng, pin.lat])
-            .setPopup(new maplibregl.Popup().setDOMContent(deleteNode)) 
+            // .setPopup(new maplibregl.Popup().setDOMContent(deleteNode)) 
             .addTo(map.current!);
             return {'marker': newMarker, 'id': pin.id};
           })
@@ -287,9 +288,9 @@ export function Map({permissions}: {permissions: number}){
             console.log('asfasdf')
             console.log(markersRef.current)
 
-            const popupNode = document.createElement('div');
-            const root = ReactDOM.createRoot(popupNode);
-            root.render(<MapPopup lngLat={lngLatProp} mapInstance={map.current}/>);
+            // const popupNode = document.createElement('div');
+            // const root = ReactDOM.createRoot(popupNode);
+            // root.render(<MapPopup lngLat={lngLatProp} mapInstance={map.current}/>);
 
             // new maplibregl.Popup({closeOnClick: true})
             // .setLngLat([lngLatProp.lng, lngLatProp.lat])
