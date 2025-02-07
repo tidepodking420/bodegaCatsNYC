@@ -55,7 +55,7 @@ export function NavigationPanel({map, isPanelExpanded, currentUser, toggleShowSi
                             <div style={{ height: '3px' }}></div>
                         </div>
                         <div style={{ paddingBottom: '10px', paddingLeft: '5%'}}>
-                            <button style={{fontWeight: 'bolder', display: showSignIn ? 'none' : currentUser.length > 0 ? 'none' :'inline-block', backgroundColor: '#00BB00', color: 'whitesmoke', marginRight: '5%'}} onClick={toggleShowSignIn}>Sign in</button>
+                            <button style={{fontWeight: 'bolder', display: showSignIn ? 'none' : currentUser.length > 0 ? 'none' :'inline-block', backgroundColor: '#00BB00', color: 'whitesmoke', marginRight: '5%', borderRadius: '3px'}} onClick={toggleShowSignIn}>Sign in</button>
                             <div style={{display: 'inline-block'}}>{currentUser.length === 0 ? 'Not signed in  ':`Signed in as: ${currentUser}`} </div>
                         </div>
             </div>

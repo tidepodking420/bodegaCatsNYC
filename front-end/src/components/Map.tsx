@@ -421,6 +421,9 @@ export function Map({permissions}: {permissions: number}){
              border: 'none',
              padding: '10px',
              cursor: 'pointer',
+             borderWidth: '1px',
+             borderStyle: 'solid',
+             borderColor: 'black'
             }}>
               <UserSignOn toggleShowSignIn={toggleShowSignIn} setCurrentUser={setCurrentUser}/>
             </div>
