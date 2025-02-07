@@ -63,11 +63,11 @@ export function UserSignOn({toggleShowSignIn, setCurrentUser}: {toggleShowSignIn
                         placeholder="Password"
                         />
                 </div>
-                <button style={{backgroundColor: '#00BB00', color: 'whitesmoke', marginRight: '5%', fontWeight: 'bolder', position: 'relative', top: '10px', left: '10px', borderRadius: '3px'}} onClick={() => {login();console.log('singing ing');}}>Sign in</button>
+                <button style={{backgroundColor: '#00BB00', color: 'whitesmoke', marginRight: '5%', fontWeight: 'bolder', position: 'relative', top: '10px', left: '10px', borderRadius: '3px', padding: '3px'}} onClick={() => {login()}}>Sign in</button>
                 <br/>
                 <div style={{position: 'relative', top: '20px'}}>
                     <p style={{display: 'inline-block', marginRight: '2%'}}>Don't have an account?</p>
-                    <button style={{display: 'inline-block', backgroundColor: '#0096FF', color: 'whitesmoke', marginRight: '5%', fontWeight: 'bolder', position: 'relative', borderRadius: '3px'}}>Sign Up</button>
+                    <button style={{display: 'inline-block', backgroundColor: '#0096FF', color: 'whitesmoke', marginRight: '5%', fontWeight: 'bolder', position: 'relative', borderRadius: '3px', padding: '3px'}}>Sign Up</button>
                 </div>
             </center>
         </div>
