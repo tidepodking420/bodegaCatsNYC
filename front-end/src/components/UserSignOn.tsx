@@ -11,8 +11,8 @@ export function UserSignOn({toggleShowSignIn, setCurrentUser}: {toggleShowSignIn
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                username,
-                password
+                username: username.trim(),
+                password: password.trim(),
             })
         }).then(res => res.json()).then(data => {
             if(data.message === 'successful-login'){
@@ -29,10 +29,33 @@ export function UserSignOn({toggleShowSignIn, setCurrentUser}: {toggleShowSignIn
         })
     }
 
+    function signUp(){
+        fetch(LOGIN_URL, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                username: username.trim(),
+                password: password.trim()
+            })
+        }).then(res => res.json()).then(data => {
+            console.log(data)
+            if(data.message !== 'success'){
+                setSignUpErrorMessage(data.message);
+            } else{
+                setCurrentUser(username);
+                setSignUpErrorMessage('');
+                toggleShowSignIn();
+             }
+        })
+    }
+
 
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
+    const [signUpErrorMessage, setSignUpErrorMessage] = useState('');
     const [doSignUp, setDoSignUp] = useState(false);
 
     // const []
@@ -85,9 +108,10 @@ export function UserSignOn({toggleShowSignIn, setCurrentUser}: {toggleShowSignIn
                             style={{backgroundColor: 'red', position: 'relative', top: '-45px', 
                             right: '40%', borderWidth: '1px', color: 'white', fontWeight: 'bolder',
                             borderRadius: '3px'}}>Go Back</button>
+                        <p style={{position: 'relative' ,color: 'red', fontSize: 'bolder', margin: '0px', left: '5%'}}>{signUpErrorMessage}</p>
                         {inputs}
                         <button 
-                            onClick={() => console.log('sign up')}
+                            onClick={() => signUp()}
                             style={{backgroundColor: '#0096FF', marginTop: '5px', padding: '4px', 
                             borderWidth: '1px', color: 'white', fontWeight: 'bolder',
                             borderRadius: '3px'}}>Sign up</button>

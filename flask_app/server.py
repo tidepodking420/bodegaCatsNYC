@@ -177,7 +177,7 @@ def user_logic():
     print(user_id[0]['username'])
     return {'username': user_id}
 
-@app.route('/login', methods=['POST'])
+@app.route('/login', methods=['POST', 'PATCH'])
 def login_logic():
     username = request.json.get('username')
     password = request.json.get('password')
@@ -186,19 +186,40 @@ def login_logic():
     # if it does not exist, then return error
     # if it does exist, verify password
 
-    query_username = "SELECT * FROM user where username = %s"
+    query_username = "SELECT * FROM user where BINARY username = %s"
     result = read_query(query_username, params=(username,))
     user_obj = User.map_to_user(result)
     print(user_obj)
-    if not len(user_obj):
-        return {'message': 'no-such-user'}
-    
-    print()
-    if user_obj[0]['password_hash'] == password:
-        return {'message': 'successful-login'}
+    if request.method == 'POST':
+        if not len(user_obj):
+            return {'message': 'no-such-user'}
+        
+        print()
+        if user_obj[0]['password_hash'] == password:
+            return {'message': 'successful-login'}
+        else:
+            return  {'message': 'bad-password'}
     else:
-        return  {'message': 'bad-password'}
-    
+        # PATCH
+        # registering a new user
+        if len(username) < 5:
+            return {'message': 'Username must be at least 5 characters'}
+        if len(username) > 50:
+            return {'message': 'Username cannot exceed 50 characters'}
+        if len(user_obj):
+            return {'message': f"{username} is already an existing user"}
+        if len(password) < 5:
+            return {'message': 'Password must be at least 5 characters '}
+        if len(password) > 255:
+            return {'message': 'Password cannot exceed 255 characters'}
+
+        
+        insert_user_query = "INSERT INTO user (username, email, password_hash, user_role) VALUE (%s, %s, %s, 'user');"
+        result = post_query(insert_user_query, params=(username, username, password))
+        print(result)
+        return {'message': 'success'}
+
+        # verify that the username does not already exist
     
 @app.route('/photo', methods=['GET', 'POST', 'DELETE'])
 def photo_logic():
