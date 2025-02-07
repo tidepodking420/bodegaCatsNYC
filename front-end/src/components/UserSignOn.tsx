@@ -14,6 +14,7 @@ export function UserSignOn({toggleShowSignIn}: {toggleShowSignIn: any}){
             <h2 >Sign in</h2>
             <p style={{margin: '0px', position: 'relative', bottom: '20px'}}>Note: This is only required to make cat submissions 😺</p>
             <label style={{marginRight: '2%'}} htmlFor="username">Username:</label>
+            <br/>
             <input
                 style={{marginBottom: '2%'}}
                 id="username"
