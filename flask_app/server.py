@@ -176,6 +176,29 @@ def user_logic():
     user_id = User.map_to_user(result)
     print(user_id[0]['username'])
     return {'username': user_id}
+
+@app.route('/login', methods=['POST'])
+def login_logic():
+    username = request.json.get('username')
+    password = request.json.get('password')
+    # check if that username exists in the database
+
+    # if it does not exist, then return error
+    # if it does exist, verify password
+
+    query_username = "SELECT * FROM user where username = %s"
+    result = read_query(query_username, params=(username,))
+    user_obj = User.map_to_user(result)
+    print(user_obj)
+    if not len(user_obj):
+        return {'message': 'no-such-user'}
+    
+    print()
+    if user_obj[0]['password_hash'] == password:
+        return {'message': 'successful-login'}
+    else:
+        return  {'message': 'bad-password'}
+    
     
 @app.route('/photo', methods=['GET', 'POST', 'DELETE'])
 def photo_logic():

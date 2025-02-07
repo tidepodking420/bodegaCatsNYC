@@ -1,8 +1,38 @@
 import {useState} from 'react';
+const VITE_SERVER_URL = import.meta.env.VITE_SERVER_URL;
+const LOGIN_URL = VITE_SERVER_URL + "/login";
 
-export function UserSignOn({toggleShowSignIn}: {toggleShowSignIn: any}){
+export function UserSignOn({toggleShowSignIn, setCurrentUser}: {toggleShowSignIn: any, setCurrentUser:any}){
+
+    function login(){
+        fetch(LOGIN_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                username,
+                password
+            })
+        }).then(res => res.json()).then(data => {
+            if(data.message === 'successful-login'){
+                setErrorMessage('');
+                setCurrentUser(username);
+                toggleShowSignIn();
+            } else if(data.message === 'no-such-user'){
+                setCurrentUser('');
+                setErrorMessage(`"${username}" is not an existing user`)
+            } else if(data.message === 'bad-password'){
+                setErrorMessage(`"${password}" is not the password`);
+                setCurrentUser('');
+            }
+        })
+    }
+
+
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
 
     return (
         <div style={{position: 'relative', bottom: '20px'}}>
@@ -10,9 +40,10 @@ export function UserSignOn({toggleShowSignIn}: {toggleShowSignIn: any}){
             <button 
                 onClick={toggleShowSignIn}
                 style={{backgroundColor: 'red', width: '13%', position: 'relative', top: '15px', 
-                right: '46%', borderWidth: '1px', color: 'white'}}>X</button>
+                right: '46%', borderWidth: '1px', color: 'white', fontWeight: 'bolder'}}>X</button>
             <h2 >Sign in</h2>
             <p style={{margin: '0px', position: 'relative', bottom: '20px'}}>Note: This is only required to make cat submissions 😺</p>
+            <p style={{position: 'relative' ,color: 'red', fontSize: 'bolder', margin: '0px', left: '5%'}}>{errorMessage}</p>
             <div>
             <label style={{marginRight: '2%'}} htmlFor="username">Username:</label>
                 <input
@@ -34,6 +65,7 @@ export function UserSignOn({toggleShowSignIn}: {toggleShowSignIn: any}){
                     placeholder="qwerty01"
                     />
             </div>
+            <button style={{backgroundColor: '#00BB00', color: 'whitesmoke', marginRight: '5%', fontWeight: 'bolder', position: 'relative', top: '10px', left: '10px'}} onClick={() => {login();console.log('singing ing');}}>Sign in</button>
                 </center>
         </div>
     );
