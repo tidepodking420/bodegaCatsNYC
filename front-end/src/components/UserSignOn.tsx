@@ -45,24 +45,21 @@ export function UserSignOn({toggleShowSignIn, setCurrentUser}: {toggleShowSignIn
             <p style={{margin: '0px', position: 'relative', bottom: '20px'}}>Note: This is only required to make cat submissions 😺</p>
             <p style={{position: 'relative' ,color: 'red', fontSize: 'bolder', margin: '0px', left: '5%'}}>{errorMessage}</p>
             <div>
-            <label style={{marginRight: '2%'}} htmlFor="username">Username:</label>
                 <input
-                    style={{marginBottom: '2%'}}
+                    style={{marginBottom: '2%', width: '65%', height: '20px'}}
                     id="username"
                     type="text"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
-                    placeholder="cat_lover24"
+                    placeholder="Username"
                     />
-            </div>
-            <div>
-                <label style={{marginRight: '2%'}} htmlFor="password">Password:</label>
                 <input
+                    style={{width: '65%',  height: '20px'}}
                     id="password"
                     type="text"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    placeholder="qwerty01"
+                    placeholder="Password"
                     />
             </div>
             <button style={{backgroundColor: '#00BB00', color: 'whitesmoke', marginRight: '5%', fontWeight: 'bolder', position: 'relative', top: '10px', left: '10px'}} onClick={() => {login();console.log('singing ing');}}>Sign in</button>
