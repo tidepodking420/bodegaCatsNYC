@@ -29,7 +29,7 @@ const boroughs = {
     ],
 };
 
-export function NavigationPanel({map, isPanelExpanded, currentUser}: {map: any, isPanelExpanded: boolean, currentUser: string}){
+export function NavigationPanel({map, isPanelExpanded, currentUser, toggleShowSignIn, showSignIn}: {map: any, isPanelExpanded: boolean, currentUser: string, toggleShowSignIn: any, showSignIn: boolean}){
     return (
             <div style={{ position: 'relative',
                 width: '100%',
@@ -55,7 +55,7 @@ export function NavigationPanel({map, isPanelExpanded, currentUser}: {map: any, 
                             <div style={{ height: '3px' }}></div>
                         </div>
                         <div style={{ paddingBottom: '10px', paddingLeft: '5%'}}>
-                            <button style={{display: 'inline-block', backgroundColor: '#00BB00', color: 'whitesmoke', marginRight: '5%'}} onClick={() => alert('sign in please')}>Sign in</button>
+                            <button style={{display: showSignIn ? 'none' : 'inline-block', backgroundColor: '#00BB00', color: 'whitesmoke', marginRight: '5%'}} onClick={toggleShowSignIn}>Sign in</button>
                             <div style={{display: 'inline-block'}}>{currentUser.length === 0 ? 'Not signed in  ':`Signed in as: ${currentUser}`} </div>
                         </div>
             </div>
