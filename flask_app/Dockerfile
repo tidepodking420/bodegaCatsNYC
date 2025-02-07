@@ -8,7 +8,7 @@ COPY server.py .
 
 COPY .env .
 
-COPY models/*.py .
+COPY models/ ./models/ 
 
 RUN pip install --no-cache-dir -r requirements.txt
 
