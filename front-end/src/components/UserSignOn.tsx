@@ -33,9 +33,32 @@ export function UserSignOn({toggleShowSignIn, setCurrentUser}: {toggleShowSignIn
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
+    const [doSignUp, setDoSignUp] = useState(false);
+
+    // const []
+    const inputs = <div>
+    <input
+        style={{marginBottom: '2%', width: '65%', height: '20px'}}
+        id="username"
+        type="text"
+        value={username}
+        onChange={(e) => setUsername(e.target.value)}
+        placeholder="Username"
+        />
+    <input
+        style={{width: '65%',  height: '20px'}}
+        id="password"
+        type="text"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        placeholder="Password"
+        />
+</div>;
+
 
     return (
         <div style={{position: 'relative', bottom: '20px'}}>
+                { !doSignUp ? 
             <center>
                 <button 
                     onClick={toggleShowSignIn}
@@ -45,31 +68,31 @@ export function UserSignOn({toggleShowSignIn, setCurrentUser}: {toggleShowSignIn
                 <h2 >Sign in</h2>
                 <p style={{margin: '0px', position: 'relative', bottom: '20px'}}>Note: This is only required to make cat submissions 😺</p>
                 <p style={{position: 'relative' ,color: 'red', fontSize: 'bolder', margin: '0px', left: '5%'}}>{errorMessage}</p>
-                <div>
-                    <input
-                        style={{marginBottom: '2%', width: '65%', height: '20px'}}
-                        id="username"
-                        type="text"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                        placeholder="Username"
-                        />
-                    <input
-                        style={{width: '65%',  height: '20px'}}
-                        id="password"
-                        type="text"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        placeholder="Password"
-                        />
-                </div>
+                {inputs}
                 <button style={{backgroundColor: '#00BB00', color: 'whitesmoke', marginRight: '5%', fontWeight: 'bolder', position: 'relative', top: '10px', left: '10px', borderRadius: '3px', padding: '3px'}} onClick={() => {login()}}>Sign in</button>
                 <br/>
                 <div style={{position: 'relative', top: '20px'}}>
                     <p style={{display: 'inline-block', marginRight: '2%'}}>Don't have an account?</p>
-                    <button style={{display: 'inline-block', backgroundColor: '#0096FF', color: 'whitesmoke', marginRight: '5%', fontWeight: 'bolder', position: 'relative', borderRadius: '3px', padding: '3px'}}>Sign Up</button>
-                </div>
-            </center>
+                    <button style={{display: 'inline-block', backgroundColor: '#0096FF', color: 'whitesmoke', marginRight: '5%', fontWeight: 'bolder', position: 'relative', borderRadius: '3px', padding: '3px'}}
+                        onClick={() => setDoSignUp(!doSignUp)}>Sign Up</button>
+                </div> 
+            </center>:
+                <div style={{position: 'relative', top: '20px'}}>
+                    <center>
+                        <h2 style={{marginBottom: '0px'}}>Sign up</h2>
+                        <button 
+                            onClick={() => setDoSignUp(!doSignUp)}
+                            style={{backgroundColor: 'red', position: 'relative', top: '-45px', 
+                            right: '40%', borderWidth: '1px', color: 'white', fontWeight: 'bolder',
+                            borderRadius: '3px'}}>Go Back</button>
+                        {inputs}
+                        <button 
+                            onClick={() => console.log('sign up')}
+                            style={{backgroundColor: '#0096FF', marginTop: '5px', padding: '4px', 
+                            borderWidth: '1px', color: 'white', fontWeight: 'bolder',
+                            borderRadius: '3px'}}>Sign up</button>
+                    </center>
+                </div>}
         </div>
     );
 }

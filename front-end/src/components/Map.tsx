@@ -392,7 +392,7 @@ export function Map({permissions}: {permissions: number}){
                >
             ☰ {/* Hamburger Icon */}
           </button>
-          <div style={{  position: 'absolute', width: '97%', height: isPanelExpanded ?'70%' :'98%'}}
+          <div style={{  position: 'absolute', width: '97%', height: isPanelExpanded ?'73%' :'99%'}}
             ref={mapContainer} className="map" />
           <button 
             onClick={togglePanel2} 
