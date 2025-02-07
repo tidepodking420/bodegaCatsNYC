@@ -13,7 +13,7 @@ import { addCat } from "./redux/CatSlice";
 
 const VITE_SERVER_URL = import.meta.env.VITE_SERVER_URL;
 const PIN_URL = VITE_SERVER_URL + "/pin";
-const apiKey = "SnBrO5ngtGNXyvdH2O0e";
+const apiKey = import.meta.env.VITE_MAPTILER_API_KEY;
 const CAT_URL = VITE_SERVER_URL + "/cat"
 const ALL_CATS = CAT_URL + "?pin_id=all"
 
@@ -23,6 +23,7 @@ export type Marker = {
     user_id: string,
     created_at: Date,
     visibility: boolean, // in order to support filtering later on
+    selected: boolean,
 };
 export type LngLatWithID = {
   id: number | null, lat: number, lng: number
@@ -48,6 +49,8 @@ export function Map({permissions}: {permissions: number}){
     // marker: maplibregl.marker
     // id: int
     // }
+    const [isMarkerSelected, setIsMarkerSelected] = useState(false);
+    const isMarkersSelectedRef = useRef(isMarkerSelected);
     const [markers, setMarkers] = useState<Array<Marker>>([]);
     const markersRef = useRef([]);
     const [currentLngLat, setCurrentLngLat] = useState<LngLatWithID>({
@@ -289,9 +292,53 @@ export function Map({permissions}: {permissions: number}){
             .setLngLat([pin.lng, pin.lat])
             // .setPopup(new maplibregl.Popup().setDOMContent(deleteNode)) 
             .addTo(map.current!);
-            return {'marker': newMarker, 'id': pin.id, 'user_id': pin.user_id, 'created_at': new Date(pin.created_at), 'visibility': true};
+            // how to mkae all the other markers have lesser opacity?
+            // newMarker is a maplibre-gl marker
+            // markersRef is my markers type
+
+            // if no markers are selected, a click should deselect all markers except that on
+            // if a marker is selected and is clicked, de select it
+            // if a different marker is clicked that is not the selected one, then select that one 
+            newMarker.getElement().addEventListener('click', (e) => {
+              console.log('current value', isMarkersSelectedRef.current)
+              const isThereSelection =  isMarkersSelectedRef.current;
+              
+              const newValues = markersRef.current.map(marker => {
+                console.log(marker.marker.getElement())
+                if(marker.marker !== newMarker){
+                  marker.selected = false;
+                  // if you choose 
+                  if(isThereSelection){
+                    marker.marker.setOpacity('1');
+                  } else{
+                    marker.marker.setOpacity('0.5');
+                  }
+                } else{
+                  marker.marker.setOpacity('1');
+                  // change the if statement below
+                  // if there already is a selection but this is not that selected marker, 
+                  // then isIthereSelection should
+                  if(isThereSelection){
+                    marker.selected = false;
+                  } else{
+                    marker.selected = true;
+                  }
+                }
+                return marker;
+              });
+              const newSelection = markersRef.current.filter(marker => marker.selected).length > 0;
+              console.log('new value', newSelection)
+              // setIsMarkerSelected(true)
+              setIsMarkerSelected(newSelection);
+              isMarkersSelectedRef.current = newSelection; 
+
+              console.log('You just clicked on a marker')
+              console.log(e)
+              console.log(newValues)
+          });
+            return {'marker': newMarker, 'id': pin.id, 'user_id': pin.user_id, 'created_at': new Date(pin.created_at), 'visibility': true, 'selected': false };
           })
-          console.log(initMarkerState)
+          // console.log(initMarkerState)
           markersRef.current = initMarkerState; 
           setMarkers(initMarkerState);
         })
@@ -308,8 +355,8 @@ export function Map({permissions}: {permissions: number}){
               lat: lngLat.lat
             }
             setCurrentLngLat(lngLatProp);
-            console.log('asfasdf')
-            console.log(markersRef.current)
+            // console.log('asfasdf')
+            // console.log(markersRef.current)
 
             // const popupNode = document.createElement('div');
             // const root = ReactDOM.createRoot(popupNode);

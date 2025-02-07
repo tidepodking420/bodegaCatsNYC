@@ -20,8 +20,10 @@ export function SidePanel({isPanelExpanded2, currentLngLat, markers}: SidePanelP
     // const dispatch = useDispatch();
     const cats = useSelector((state: RootState) => state.cats.cats);
 
-    
+    const selectedPin = markers.filter(marker => marker.selected).map(marker => marker.id);
 
+    
+    console.log('markers in side panel', markers)
     console.log('cats', cats);
 
     return (
@@ -39,10 +41,12 @@ export function SidePanel({isPanelExpanded2, currentLngLat, markers}: SidePanelP
             flexDirection: "column", // Stack children vertically
             overflow: 'scroll'
           }}>
+            {selectedPin[0]}
+            {markers.filter(marker => marker.selected).map(marker => marker.id)}
             <div>
-                {cats.map(cat => <BasicCat key={cat.id} cat={cat}/>)}
+                {selectedPin[0] ? cats.filter(cat => cat.pin_id === selectedPin[0]).map(cat => <BasicCat key={cat.id} cat={cat}/>) : cats.map(cat => <BasicCat key={cat.id} cat={cat}/>)}
             </div>
-            {/* <button onClick={() => fetchCats()}>text</button> */}
+            {/* <button onClick={() => console.log(selectedPin)}>text</button> */}
         </div>
     )
 }
