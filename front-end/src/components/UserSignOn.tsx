@@ -13,24 +13,27 @@ export function UserSignOn({toggleShowSignIn}: {toggleShowSignIn: any}){
                 right: '46%', borderWidth: '1px', color: 'white'}}>X</button>
             <h2 >Sign in</h2>
             <p style={{margin: '0px', position: 'relative', bottom: '20px'}}>Note: This is only required to make cat submissions 😺</p>
+            <div>
             <label style={{marginRight: '2%'}} htmlFor="username">Username:</label>
-            <br/>
-            <input
-                style={{marginBottom: '2%'}}
-                id="username"
-                type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                placeholder="cat_lover24"
-                />
-            <label style={{marginRight: '2%'}} htmlFor="password">Password:</label>
-            <input
-                id="password"
-                type="text"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="qwerty01"
-                />
+                <input
+                    style={{marginBottom: '2%'}}
+                    id="username"
+                    type="text"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    placeholder="cat_lover24"
+                    />
+            </div>
+            <div>
+                <label style={{marginRight: '2%'}} htmlFor="password">Password:</label>
+                <input
+                    id="password"
+                    type="text"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="qwerty01"
+                    />
+            </div>
                 </center>
         </div>
     );
