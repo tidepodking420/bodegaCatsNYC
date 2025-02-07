@@ -49,6 +49,7 @@ export function Map({permissions}: {permissions: number}){
     // marker: maplibregl.marker
     // id: int
     // }
+    const [currentUser, setCurrentUser] = useState('');
     const [isMarkerSelected, setIsMarkerSelected] = useState(false);
     const isMarkersSelectedRef = useRef(isMarkerSelected);
     const [markers, setMarkers] = useState<Array<Marker>>([]);
@@ -374,7 +375,7 @@ export function Map({permissions}: {permissions: number}){
 
       return (
         <div style={{overflow: 'hidden'}}>
-          <NavigationPanel isPanelExpanded={isPanelExpanded} map={map}/>
+          <NavigationPanel isPanelExpanded={isPanelExpanded} map={map} currentUser={currentUser}/>
           <button 
             onClick={togglePanel} 
             style={{
