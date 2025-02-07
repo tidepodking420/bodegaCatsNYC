@@ -399,7 +399,7 @@ export function Map({permissions}: {permissions: number}){
             style={{
               position: 'absolute',
               zIndex: 999,
-              bottom: '30px',
+              bottom: '2px',
               left:'10px',
               background: 'gray',
               border: 'none',
