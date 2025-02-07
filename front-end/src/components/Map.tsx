@@ -1,5 +1,5 @@
 import { useRef, useEffect, useState } from 'react';
-import maplibregl from 'maplibre-gl';
+import maplibregl, { Marker } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import '../assets/Map.css';
 import ReactDOM from 'react-dom/client';
@@ -304,7 +304,7 @@ export function Map({permissions}: {permissions: number}){
               const isThereSelection =  isMarkersSelectedRef.current;
               
               const newValues = markersRef.current.map(marker => {
-                console.log(marker.marker.getElement())
+
                 if(marker.marker !== newMarker){
                   marker.selected = false;
                   // if you choose 
@@ -320,6 +320,7 @@ export function Map({permissions}: {permissions: number}){
                   // then isIthereSelection should
                   if(isThereSelection){
                     marker.selected = false;
+                    // marker.marker.getElement().style.color = "blue";
                   } else{
                     marker.selected = true;
                   }
@@ -355,17 +356,6 @@ export function Map({permissions}: {permissions: number}){
               lat: lngLat.lat
             }
             setCurrentLngLat(lngLatProp);
-            // console.log('asfasdf')
-            // console.log(markersRef.current)
-
-            // const popupNode = document.createElement('div');
-            // const root = ReactDOM.createRoot(popupNode);
-            // root.render(<MapPopup lngLat={lngLatProp} mapInstance={map.current}/>);
-
-            // new maplibregl.Popup({closeOnClick: true})
-            // .setLngLat([lngLatProp.lng, lngLatProp.lat])
-            // .setDOMContent(popupNode)
-            // .addTo(map.current!);
           });
 
       // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -11,21 +11,26 @@ class User(object):
 # );
     def __init__(self, id, username, email, password_hash, user_role, created_at, updated_at):
         self.id = id
-        self.lat = user_role
-        self.lng = username
-        # maybe add later address field to implement google maps stuff
-        # name of the business
+        self.username = username
+        self.email = email
+        self.password_hash = password_hash
+        self.user_role = user_role
+        self.created_at = created_at
+        self.updated_at = updated_at
 
     def __repr__(self):
-        return f"<Pin(id={self.id}, lat={self.lat}, lng={self.lng})>"
+        return f"<User(id={self.id}, username={self.username}, email={self.email} password_hash={self.password_hash} user_role={self.user_role} created_at={self.created_at} updated_at={self.updated_at})>"
     
     def to_dict(self):
-        # Convert SQLAlchemy model to a dictionary
         return {
             "id": self.id,
-            "lat": self.lat,
-            "lng": self.lng,
+            "username": self.username,
+            "email": self.email,
+            "password_hash": self.password_hash,
+            "user_role": self.user_role,
+            "created_at": self.created_at,
+            "updated_at": self.updated_at
         }
     
-    def map_to_pin(rows):
-        return [User(id=row[0], lat=row[1], lng=row[2]).to_dict() for row in rows]
+    def map_to_user(rows):
+        return [User(id=row[0], username=row[1], email=row[2], password_hash=row[3], user_role=row[4], created_at=row[5], updated_at=row[6]).to_dict() for row in rows]

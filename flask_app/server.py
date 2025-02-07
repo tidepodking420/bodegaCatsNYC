@@ -3,7 +3,7 @@ from flask_cors import CORS
 from mysql.connector import pooling
 import time
 import boto3
-from models import Cat, Pin, Photo
+from models import Cat, Pin, Photo, User
 from dotenv import load_dotenv
 import os
 
@@ -158,11 +158,24 @@ def pin_logic():
                 }
     else:
         # default is GET
-        result = read_query("SELECT * FROM pin")
+        result = read_query("SELECT pin.id, pin.lat, pin.lng, pin.created_at, user.username FROM pin INNER JOIN user on pin.user_id = user.id")
         print('resssulTT')
         print(result)
         pins = Pin.map_to_pin(result)
         return {'pins': pins}
+    
+    
+@app.route('/user', methods=['GET'])
+def user_logic():
+    query = "SELECT * FROM user WHERE id = %s"
+    user_id = request.args.get('user_id')
+    if user_id == 'all':
+        result = read_query("SELECT * FROM user")
+    else:
+        result = read_query(query, (user_id,))
+    user_id = User.map_to_user(result)
+    print(user_id[0]['username'])
+    return {'username': user_id}
     
 @app.route('/photo', methods=['GET', 'POST', 'DELETE'])
 def photo_logic():
