@@ -33,3 +33,8 @@
     width: 65%;
     height: 20px;
   }
+
+  .create-cats {
+    margin-top: 2%;
+    position: relative;
+  }

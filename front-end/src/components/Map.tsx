@@ -391,7 +391,8 @@ export function Map({permissions}: {permissions: number}){
             style={{ bottom: '2px', left:'6px'}}>
             ☰ {/* Hamburger Icon */}
           </button>
-          <SidePanel isPanelExpanded2={isPanelExpanded2} currentLngLat={currentLngLat} markers={markers}/>
+          <SidePanel isPanelExpanded2={isPanelExpanded2} currentLngLat={currentLngLat}
+            markers={markers}  currentUser={currentUser}/>
           <div style={{
              position: 'absolute',
              zIndex: 999,

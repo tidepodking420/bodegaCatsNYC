@@ -10,12 +10,13 @@ interface SidePanelProps {
     isPanelExpanded2: boolean;
     currentLngLat: LngLatWithID;
     markers: Array<Marker>;
+    currentUser: string;
   }
 // Show all of the cats
 
 
 // next step: show the user and the 
-export function SidePanel({isPanelExpanded2, currentLngLat, markers}: SidePanelProps) {
+export function SidePanel({isPanelExpanded2, currentLngLat, markers, currentUser}: SidePanelProps) {
 
     // const dispatch = useDispatch();
     const cats = useSelector((state: RootState) => state.cats.cats);
@@ -40,8 +41,20 @@ export function SidePanel({isPanelExpanded2, currentLngLat, markers}: SidePanelP
             flexDirection: "column", // Stack children vertically
             overflow: 'scroll'
           }}>
-
-            {selectedPin[0] ? `Added by ${selectedPin[0].user_id} on ${selectedPin[0].created_at.toLocaleDateString()}` : 'All cats view'}
+            <div>
+                <div style={{display: 'inline-block'}}>
+                    {selectedPin[0] ? `Added by ${selectedPin[0].user_id} on ${selectedPin[0].created_at.toLocaleDateString()}` : 'All cats view'}
+                </div>
+                <div
+                className="create-cats"
+                style={{display: 'inline-block', left: currentUser.length > 0 ? '150px' : '100px'}}>
+                    {currentUser.length > 0 ?
+                    <button
+                        className="mobile-button user-login-button"
+                        style={{backgroundColor: 'yellowgreen'}}
+                        >Add a cat</button> : <p id='qer'>Sign in to submit cats</p>}
+                </div>
+            </div>
             <div>
                 {selectedPin[0] ? cats.filter(cat => cat.pin_id === selectedPin[0].id).map(cat => <BasicCat key={cat.id} cat={cat} markers={markers}/>) : cats.map(cat => <BasicCat key={cat.id} cat={cat} markers={markers}/>)}
             </div>

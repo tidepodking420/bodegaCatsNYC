@@ -57,7 +57,7 @@ export function NavigationPanel({map, isPanelExpanded, currentUser, toggleShowSi
                         <div style={{ paddingBottom: '10px', paddingLeft: '5%'}}>
                             <button 
                             className='mobile-button user-login-button'
-                            style={{display: showSignIn ? 'none' : 'inline-block', backgroundColor: currentUser ? '#BB0000' :'#00BB00', marginRight: '5%'}} onClick={() => currentUser.length > 0 ? setCurrentUser('') : toggleShowSignIn()}>{currentUser ? 'Sign Out': 'Sign in'}</button>
+                            style={{backgroundColor: currentUser ? '#BB0000' :'#00BB00', marginRight: '5%'}} onClick={() => currentUser.length > 0 ? setCurrentUser('') : toggleShowSignIn()}>{currentUser ? 'Sign Out': 'Sign in'}</button>
                             <div style={{display: 'inline-block'}}>{currentUser.length === 0 ? 'Not signed in  ':`Signed in as: ${currentUser}`} </div>
                         </div>
             </div>
