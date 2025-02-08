@@ -37,7 +37,7 @@ export function NavigationPanel({map, isPanelExpanded, currentUser, toggleShowSi
                 height: isPanelExpanded ? '20%' : '0'}}>
                         <div style={{display: 'flex', width: '100%', justifyContent: 'space-evenly', position: 'absolute', top: '20px'}}>
                             <SubwayToggleButton map={map}/>
-                            <button className='mobile-button' onClick={() => map.current!.fitBounds([
+                            <button className='mobile-button nav-button' onClick={() => map.current!.fitBounds([
                                 [-74.270056,40.494061],
                                 [-73.663062,40.957187]
                             ])}>Reset View</button>
@@ -51,12 +51,12 @@ export function NavigationPanel({map, isPanelExpanded, currentUser, toggleShowSi
         gridTemplateColumns: 'repeat(3, 1fr)', /* 3 columns */
         gap: '10px', /* Space between buttons */
       }}>
-                            {Object.keys(boroughs).map(boro => <button className='mobile-button' key={boro} onClick={() => map.current!.fitBounds(boroughs[boro])}>{boro}</button>)}
+                            {Object.keys(boroughs).map(boro => <button className='mobile-button nav-button' key={boro} onClick={() => map.current!.fitBounds(boroughs[boro])}>{boro}</button>)}
                             <div style={{ height: '3px' }}></div>
                         </div>
                         <div style={{ paddingBottom: '10px', paddingLeft: '5%'}}>
                             <button 
-                            className='mobile-button'
+                            className='mobile-button user-login-button'
                             style={{display: showSignIn ? 'none' : 'inline-block', backgroundColor: currentUser ? '#BB0000' :'#00BB00', marginRight: '5%'}} onClick={() => currentUser.length > 0 ? setCurrentUser('') : toggleShowSignIn()}>{currentUser ? 'Sign Out': 'Sign in'}</button>
                             <div style={{display: 'inline-block'}}>{currentUser.length === 0 ? 'Not signed in  ':`Signed in as: ${currentUser}`} </div>
                         </div>

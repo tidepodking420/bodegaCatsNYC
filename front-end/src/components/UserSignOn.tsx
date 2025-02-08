@@ -88,7 +88,7 @@ export function UserSignOn({toggleShowSignIn, setCurrentUser}: {toggleShowSignIn
                 { !doSignUp ? 
             <center>
                 <button 
-                    className='mobile-button'
+                    className='mobile-button user-login-button'
                     onClick={toggleShowSignIn}
                     style={{backgroundColor: 'red', width: '13%', 
                     position: 'relative', top: '15px', right: '46%'}}>X</button>
@@ -97,14 +97,14 @@ export function UserSignOn({toggleShowSignIn, setCurrentUser}: {toggleShowSignIn
                 <p style={{position: 'relative' ,color: 'red', fontSize: 'bolder', margin: '0px', left: '5%'}}>{errorMessage}</p>
                 {inputs}
                 <button 
-                    className='mobile-button'
+                    className='mobile-button user-login-button'
                     style={{backgroundColor: '#00BB00', marginRight: '5%', position: 'relative', top: '10px', left: '10px'}}
                     onClick={() => {login()}}>Sign in</button>
                 <br/>
                 <div style={{position: 'relative', top: '20px'}}>
                     <p style={{display: 'inline-block', marginRight: '2%'}}>Don't have an account?</p>
                     <button
-                        className='mobile-button'
+                        className='mobile-button user-login-button'
                         style={{display: 'inline-block', backgroundColor: '#0096FF', marginRight: '5%'}}
                         onClick={() => setDoSignUp(!doSignUp)}>Sign Up</button>
                 </div> 
@@ -113,14 +113,14 @@ export function UserSignOn({toggleShowSignIn, setCurrentUser}: {toggleShowSignIn
                     <center>
                         <h2 style={{marginBottom: '0px'}}>Sign up</h2>
                         <button 
-                            className='mobile-button'
+                            className='mobile-button user-login-button'
                             onClick={() => setDoSignUp(!doSignUp)}
                             style={{backgroundColor: 'red', position: 'relative', top: '-45px', 
                             right: '40%'}}>Go Back</button>
                         <p style={{position: 'relative' ,color: 'red', fontSize: 'bolder', margin: '0px', left: '5%'}}>{signUpErrorMessage}</p>
                         {inputs}
                         <button 
-                            className='mobile-button'
+                            className='mobile-button user-login-button'
                             onClick={() => signUp()}
                             style={{backgroundColor: '#0096FF', marginTop: '5px'
                             }}>Sign up</button>
