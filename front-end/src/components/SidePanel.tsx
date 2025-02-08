@@ -2,9 +2,22 @@ import type { LngLatWithID, Marker } from "./Map"
 import {useSelector } from "react-redux";
 import { RootState } from "./redux/CatStore";
 import { BasicCat } from "./BasicCat";
-import { useEffect, useState } from "react";
+import { useRef, useState } from "react";
 const VITE_SERVER_URL = import.meta.env.VITE_SERVER_URL;
-const USER_URL = VITE_SERVER_URL + '/user';
+const PHOTO_URL = VITE_SERVER_URL + "/photo"
+import {DeleteObjectCommand, PutObjectCommand, S3Client} from '@aws-sdk/client-s3';
+const AWS_ACCESS_KEY_ID = import.meta.env.VITE_AWS_ACCESS_KEY_ID;
+const AWS_SECRET_ACCESS_KEY = import.meta.env.VITE_AWS_SECRET_ACCESS_KEY;
+const S3_BUCKET = import.meta.env.VITE_S3_BUCKET;
+const REGION = import.meta.env.VITE_REGION;
+const s3Client = new S3Client({
+  region: REGION, // Change to your S3 region
+  credentials: {
+    accessKeyId: AWS_ACCESS_KEY_ID,
+    secretAccessKey: AWS_SECRET_ACCESS_KEY,
+  },
+});
+
 
 interface SidePanelProps {
     isPanelExpanded2: boolean;
@@ -13,7 +26,6 @@ interface SidePanelProps {
     currentUser: string;
   }
 // Show all of the cats
-
 
 // next step: show the user and the 
 export function SidePanel({isPanelExpanded2, currentLngLat, markers, currentUser}: SidePanelProps) {
@@ -30,6 +42,77 @@ export function SidePanel({isPanelExpanded2, currentLngLat, markers, currentUser
 
     const [catName, setCatName] = useState('');
     const [catDesc, setCatDesc] = useState('');
+
+    const [file, setFile] = useState(null); 
+    const fileInputRef = useRef(null); 
+    const [loading, setLoading] = useState(false);
+
+    // start out with designing for just one cat
+    // TODO create pin before creating a cat
+    // TODO create a cat to associate with before file upload
+    const uploadFile = async () => {
+                // originally built this on the assumption of just one cat
+                // one-to-many relationship between cats
+                if(!file){
+                    alert('Upload a file please :)')
+                    return;
+                }
+                // TODO only set a pin before doing upload,
+                // disable the button while doing an upload
+                //
+                const res = await fetch(PHOTO_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        file_name: file.name,
+                        // cat_id: cat.id,
+                        // TODO don;'t hard code thos
+                        cat_id: "2",
+                    })
+                })
+                const data = await res.json();
+                console.log(data)
+    
+                const arrayBuffer = await file.arrayBuffer(); // Convert File to ArrayBuffer
+                const uint8Array = new Uint8Array(arrayBuffer);
+                const params = {
+                    Bucket: S3_BUCKET,
+                    Key: data.new_photo_id,
+                    Body: uint8Array,
+                    ContentType: file.type,
+                };
+                console.log(params)
+                try {
+                    const command = new PutObjectCommand(params);
+                    await s3Client.send(command);
+                    console.log("Upload successful!");
+                } catch (error) {
+                    console.error("Upload failed:", error);
+                }
+    
+                setFile(null);
+                if (fileInputRef.current) {
+                    fileInputRef.current.value = ""; // Reset input field
+                  }
+                setLoading(false);
+                //   getCatPhotos();
+          };
+
+        //   async function getCatPhotos(){
+        //     // step 1: query db
+        //     fetch(PHOTO_URL + `?cat_id=${cat.id}`, {
+        //         method: 'GET',
+        //         headers: {
+        //             'Content-Type': 'application/json',
+        //         }
+        //     }).then(res => res.json()).then(data => {
+        //         console.log(data)
+        //         setCatPhotos(data.photos)
+        //         // catSetter(cats.filter(x => x.id !== cat_id))
+        //     })
+        // }
 
     return (
         <div style={{
@@ -70,7 +153,7 @@ export function SidePanel({isPanelExpanded2, currentLngLat, markers, currentUser
                     <button
                         onClick={() => setAddingCatMode(!addingCatMode)}
                         className="mobile-button user-login-button"
-                        style={{backgroundColor: '#BB0000', left: '200px', display: 'inline-block', position: 'relative', paddingLeft: '2px', paddingRight: '2px'}}
+                        style={{backgroundColor: '#BB0000', left: '200px', display: 'inline-block', position: 'relative', padding: '5px'}}
                         >Exit</button>
                     <div>
                         <center>
@@ -96,6 +179,18 @@ export function SidePanel({isPanelExpanded2, currentLngLat, markers, currentUser
                                 rows={7}
                                 cols={20}
                             />
+                            <input type="file"
+                                ref={fileInputRef}
+                                onChange={(e) => {
+                                setFile(e.target.files[0])
+                                }} />
+                                
+                            <button 
+                                disabled={loading}
+                                onClick={() => {
+                                    setLoading(true)
+                                    uploadFile();
+                                }}>Save it!</button>
                         </center>
                     </div>
                 </div>}   

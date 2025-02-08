@@ -31,7 +31,8 @@ CREATE TABLE cat (
 -- one to many from cat to photo
 
 CREATE TABLE photo (
-    id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    awsuuid CHAR(36) NOT NULL,
     file_name VARCHAR(50) NOT NULL,
     cat_id INT NOT NULL,
     FOREIGN KEY (cat_id) REFERENCES cat(id)

@@ -6,6 +6,7 @@ import boto3
 from models import Cat, Pin, Photo, User
 from dotenv import load_dotenv
 import os
+import uuid
 
 # TODO env vars for ports, URLS, AWS credentials
 # TODO create default database with some cats
@@ -237,8 +238,10 @@ def photo_logic():
     if request.method == 'POST':
         file_name = request.json.get('file_name')
         cat_id = request.json.get('cat_id')
-        insert_photo_query = "INSERT INTO photo (file_name, cat_id) VALUE (%s, %s);"
-        return {'new_photo_id': str(post_query(insert_photo_query, params=(file_name, cat_id)))}
+        insert_photo_query = "INSERT INTO photo (file_name, cat_id, awsuuid) VALUE (%s, %s, %s);"
+        new_uuid = str(uuid.uuid4())
+        result = str(post_query(insert_photo_query, params=(file_name, cat_id, new_uuid)))
+        return {'new_photo_id': new_uuid}
     elif request.method == 'GET':
         cat_id = request.args.get('cat_id')
         query = "SELECT * FROM photo WHERE cat_id = %s"
