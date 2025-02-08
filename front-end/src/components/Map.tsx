@@ -49,10 +49,12 @@ export function Map({permissions}: {permissions: number}){
     // marker: maplibregl.marker
     // id: int
     // }
+    const [placingPin, setPlacingPin] = useState(false);
     const [currentUser, setCurrentUser] = useState('');
     const [isMarkerSelected, setIsMarkerSelected] = useState(false);
     const isMarkersSelectedRef = useRef(isMarkerSelected);
     const [markers, setMarkers] = useState<Array<Marker>>([]);
+    const placingPinRef = useRef(placingPin);
     const markersRef = useRef([]);
     const [currentLngLat, setCurrentLngLat] = useState<LngLatWithID>({
       id: -1,
@@ -296,9 +298,10 @@ export function Map({permissions}: {permissions: number}){
             // if a marker is selected and is clicked, de select it
             // if a different marker is clicked that is not the selected one, then select that one 
             newMarker.getElement().addEventListener('click', (e) => {
-              console.log('current value', isMarkersSelectedRef.current)
+              // console.log('current value', isMarkersSelectedRef.current)
               const isThereSelection =  isMarkersSelectedRef.current;
-              
+              // disable pin selection when placing a pin
+              if(!placingPinRef.current){
               const newValues = markersRef.current.map(marker => {
 
                 if(marker.marker !== newMarker){
@@ -332,6 +335,10 @@ export function Map({permissions}: {permissions: number}){
               console.log('You just clicked on a marker')
               console.log(e)
               console.log(newValues)
+
+            } else{
+              // in placing pin mode
+            }
           });
             return {'marker': newMarker, 'id': pin.id, 'user_id': pin.user_id, 'created_at': new Date(pin.created_at), 'visibility': true, 'selected': false };
           })
@@ -392,7 +399,8 @@ export function Map({permissions}: {permissions: number}){
             ☰ {/* Hamburger Icon */}
           </button>
           <SidePanel isPanelExpanded2={isPanelExpanded2} currentLngLat={currentLngLat}
-            markers={markers}  currentUser={currentUser}/>
+            markers={markers}  currentUser={currentUser} placingPin={placingPin}
+             setPlacingPin={setPlacingPin} placingPinRef={placingPinRef}/>
           <div style={{
              position: 'absolute',
              zIndex: 999,

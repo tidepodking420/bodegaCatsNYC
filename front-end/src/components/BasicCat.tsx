@@ -6,10 +6,11 @@ const PHOTO_URL = VITE_SERVER_URL + "/photo";
 const S3_BUCKET = import.meta.env.VITE_S3_BUCKET;
 const REGION = import.meta.env.VITE_REGION;
 
-const GET_PHOTO_URL = (key: number) => `https://${S3_BUCKET}.s3.${REGION}.amazonaws.com/${key}`
+const GET_PHOTO_URL = (key: number | string) => `https://${S3_BUCKET}.s3.${REGION}.amazonaws.com/${key}`
 
 type Photo = {
     id: number,
+    awsuuid: string,
     file_name: string,
     cat_id: number
 };
@@ -19,6 +20,7 @@ export function BasicCat({cat, markers}: {cat: Cat, markers: Array<Marker>}){
 
     const [catPhotos, setCatPhotos] = useState<Array<Photo>>([]); 
         
+    // update this API to return the uuid of the photos
     async function getCatPhotos(){
         // step 1: query db
         fetch(PHOTO_URL + `?cat_id=${cat.id}`, {
@@ -43,8 +45,8 @@ return (
         <p style={{fontWeight: 'bold', marginTop: '1px', marginBottom: '1px'}}>desc: {cat.desc}</p>
         {catPhotos.map(catPhoto => {
                    return (
-                    <div key={`${catPhoto.id}-catPhoto`}>
-                        <img src={GET_PHOTO_URL(catPhoto.id)} alt={`${catPhoto.file_name}`} width={'100%'}/>
+                    <div key={`${catPhoto.awsuuid}-catPhoto`}>
+                        <img src={GET_PHOTO_URL(catPhoto.awsuuid)} alt={`${catPhoto.file_name}`} width={'100%'}/>
                         {/* <button onClick={() => deletePhoto(catPhoto.id.toString())}>Delete {`${catPhoto.file_name}`}</button> */}
                    </div>
                  )

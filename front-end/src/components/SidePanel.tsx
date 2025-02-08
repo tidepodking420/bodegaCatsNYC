@@ -24,11 +24,14 @@ interface SidePanelProps {
     currentLngLat: LngLatWithID;
     markers: Array<Marker>;
     currentUser: string;
+    placingPin: boolean;
+    setPlacingPin: any;
+    placingPinRef: any;
   }
 // Show all of the cats
 
 // next step: show the user and the 
-export function SidePanel({isPanelExpanded2, currentLngLat, markers, currentUser}: SidePanelProps) {
+export function SidePanel({isPanelExpanded2, currentLngLat, markers, currentUser, placingPin, setPlacingPin, placingPinRef}: SidePanelProps) {
 
     // const dispatch = useDispatch();
     const cats = useSelector((state: RootState) => state.cats.cats);
@@ -46,6 +49,9 @@ export function SidePanel({isPanelExpanded2, currentLngLat, markers, currentUser
     const [file, setFile] = useState(null); 
     const fileInputRef = useRef(null); 
     const [loading, setLoading] = useState(false);
+    // TODO Need to create a draggable pin
+    // while in placing pin mode, be able to move the pin
+    // make the pin the same color as the button thats placing it
 
     // start out with designing for just one cat
     // TODO create pin before creating a cat
@@ -156,6 +162,17 @@ export function SidePanel({isPanelExpanded2, currentLngLat, markers, currentUser
                         style={{backgroundColor: '#BB0000', left: '200px', display: 'inline-block', position: 'relative', padding: '5px'}}
                         >Exit</button>
                     <div>
+
+                        <button
+                            onClick={() => {
+                                const newValue = !placingPinRef.current;
+                                placingPinRef.current = newValue;
+                                setPlacingPin(newValue)
+                            }}
+                            className="mobile-button user-login-button"
+                            style={{backgroundColor: '#0000BB', marginBottom: '1%', position: 'relative', left: '20px', display: 'inline-block'}}
+                            >{placingPinRef.current ? 'Placing pin' : 'Place Pin'}</button>
+                        <p style={{display: 'inline-block', marginLeft: '8%'}} >{currentLngLat.lat === -1 && currentLngLat.lng == -1 ? 'Not chosen' :`Lat: ${currentLngLat.lat.toPrecision(3).toString()} Lng: ${currentLngLat.lng.toPrecision(3).toString()}`}</p>
                         <center>
                             <button
                                 onClick={() => alert('submitting to database')}
@@ -190,7 +207,7 @@ export function SidePanel({isPanelExpanded2, currentLngLat, markers, currentUser
                                 onClick={() => {
                                     setLoading(true)
                                     uploadFile();
-                                }}>Save it!</button>
+                                }}>Save Image</button>
                         </center>
                     </div>
                 </div>}   
