@@ -172,7 +172,7 @@ export function SidePanel({isPanelExpanded2, currentLngLat, markers, currentUser
                             className="mobile-button user-login-button"
                             style={{backgroundColor: '#0000BB', marginBottom: '1%', position: 'relative', left: '20px', display: 'inline-block'}}
                             >{placingPinRef.current ? 'Placing pin' : 'Place Pin'}</button>
-                        <p style={{display: 'inline-block', marginLeft: '8%'}} >{currentLngLat.lat === -1 && currentLngLat.lng == -1 ? 'Not chosen' :`Lat: ${currentLngLat.lat.toPrecision(3).toString()} Lng: ${currentLngLat.lng.toPrecision(3).toString()}`}</p>
+                        <p style={{display: 'inline-block', marginLeft: '8%'}} >{currentLngLat.lat === -1 && currentLngLat.lng == -1 ? 'Not chosen' :`Lat: ${currentLngLat.lat.toPrecision(6).toString()} Lng: ${currentLngLat.lng.toPrecision(6).toString()}`}</p>
                         <center>
                             <button
                                 onClick={() => alert('submitting to database')}

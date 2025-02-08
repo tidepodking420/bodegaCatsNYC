@@ -49,6 +49,8 @@ export function Map({permissions}: {permissions: number}){
     // marker: maplibregl.marker
     // id: int
     // }
+    const [newPin, setNewPin] = useState<maplibregl.Marker | null>(null);
+    const newPinRef = useRef(newPin);
     const [placingPin, setPlacingPin] = useState(false);
     const [currentUser, setCurrentUser] = useState('');
     const [isMarkerSelected, setIsMarkerSelected] = useState(false);
@@ -314,12 +316,8 @@ export function Map({permissions}: {permissions: number}){
                   }
                 } else{
                   marker.marker.setOpacity('1');
-                  // change the if statement below
-                  // if there already is a selection but this is not that selected marker, 
-                  // then isIthereSelection should
                   if(isThereSelection){
                     marker.selected = false;
-                    // marker.marker.getElement().style.color = "blue";
                   } else{
                     marker.selected = true;
                   }
@@ -352,13 +350,25 @@ export function Map({permissions}: {permissions: number}){
         map.current.addControl(new maplibregl.NavigationControl(), 'top-right');
 
         map.current.on('click', (e) => {
+            // I want to only allow 1 pin
             const { lngLat } = e;
             const lngLatProp: LngLatWithID = {
               id: null,
               lng: lngLat.lng,
               lat: lngLat.lat
             }
-            setCurrentLngLat(lngLatProp);
+            
+            // how to create a draggable pin
+            if(placingPinRef.current){
+              setCurrentLngLat(lngLatProp);
+              if(newPinRef.current === null){
+                const newMarker = new maplibregl.Marker({color:     "#0000BB"}).setDraggable(true).setLngLat([lngLat.lng, lngLat.lat]).addTo(map. current!);
+                newPinRef.current = newMarker;
+                setNewPin(newMarker);
+              }
+            }
+
+
           });
 
       // eslint-disable-next-line react-hooks/exhaustive-deps
