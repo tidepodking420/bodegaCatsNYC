@@ -28,11 +28,12 @@ interface SidePanelProps {
     setPlacingPin: any;
     placingPinRef: any;
     newPinRef: any;
+    setIsPanelExpanded: any;
   }
 // Show all of the cats
 
 // next step: show the user and the 
-export function SidePanel({isPanelExpanded2, currentLngLat, markers, currentUser, placingPin, setPlacingPin, placingPinRef, newPinRef}: SidePanelProps) {
+export function SidePanel({isPanelExpanded2, currentLngLat, markers, currentUser, placingPin, setPlacingPin, placingPinRef, newPinRef, setIsPanelExpanded}: SidePanelProps) {
 
     // const dispatch = useDispatch();
     const cats = useSelector((state: RootState) => state.cats.cats);
@@ -50,9 +51,8 @@ export function SidePanel({isPanelExpanded2, currentLngLat, markers, currentUser
     const [file, setFile] = useState(null); 
     const fileInputRef = useRef(null); 
     const [loading, setLoading] = useState(false);
-    // TODO Need to create a draggable pin
-    // while in placing pin mode, be able to move the pin
-    // make the pin the same color as the button thats placing it
+    // TODO close the navigation panel when the user goes to add a cat
+    // and make this panel even larger
 
     // start out with designing for just one cat
     // TODO create pin before creating a cat
@@ -123,10 +123,11 @@ export function SidePanel({isPanelExpanded2, currentLngLat, markers, currentUser
 
     return (
         <div style={{
+            // TODO use addingCatMode to make this panel
             position: 'absolute',
             width: '97%',
             bottom: '0px',
-            height: isPanelExpanded2 ?'40%' : '0%',
+            height: isPanelExpanded2 ? addingCatMode ? '60%': '40%' : '0%',
             right: '3px',
             background: 'white',
             borderWidth: '1px',
@@ -134,7 +135,7 @@ export function SidePanel({isPanelExpanded2, currentLngLat, markers, currentUser
             borderStyle: 'solid',
             display: "flex",
             flexDirection: "column", // Stack children vertically
-            overflow: 'scroll'
+            overflow: 'scroll',
           }}>
             {!addingCatMode ?
             <div>
@@ -145,7 +146,10 @@ export function SidePanel({isPanelExpanded2, currentLngLat, markers, currentUser
                     <div className="create-cats">
                         {currentUser.length > 0 ?
                         <button
-                            onClick={() => setAddingCatMode(!addingCatMode)}
+                            onClick={() => {
+                                setIsPanelExpanded(false);
+                                setAddingCatMode(!addingCatMode)
+                            }}
                             className="mobile-button user-login-button"
                             style={{backgroundColor: 'yellowgreen'}}
                             >Add a cat</button> : <p id='qer'>Sign in to submit cats</p>}
@@ -177,7 +181,7 @@ export function SidePanel({isPanelExpanded2, currentLngLat, markers, currentUser
                             className="mobile-button user-login-button"
                             style={{backgroundColor: '#0000BB', marginBottom: '1%', position: 'relative', left: '20px', display: 'inline-block'}}
                             >{placingPinRef.current ? 'Placing pin' : 'Place Pin'}</button>
-                        <p style={{position: 'absolute', fontSize: '13px', left: '4%', top: '27%'}}>{placingPinRef.current ? '🔒 Lock in Place' : 'Touch Map & Drag Pin'}</p>
+                        <p style={{position: 'absolute', fontSize: '13px', left: '4%', top: '27%', marginTop: '4%'}}>{placingPinRef.current ? '🔒 Lock in Place' : 'Touch Map & Drag Pin'}</p>
                         <p style={{display: 'inline-block', marginLeft: '8%'}} >{currentLngLat.lat === -1 && currentLngLat.lng == -1 ? 'Not chosen' :`Lat: ${currentLngLat.lat.toPrecision(6).toString()} Lng: ${currentLngLat.lng.toPrecision(6).toString()}`}</p>
                         <center>
                             <button
@@ -203,6 +207,7 @@ export function SidePanel({isPanelExpanded2, currentLngLat, markers, currentUser
                                 cols={20}
                             />
                             <input type="file"
+                                style={{position: 'relative', marginTop: '10px', left: '10%'}}
                                 ref={fileInputRef}
                                 onChange={(e) => {
                                 setFile(e.target.files[0])
@@ -210,6 +215,7 @@ export function SidePanel({isPanelExpanded2, currentLngLat, markers, currentUser
                                 
                             <button 
                                 disabled={loading}
+                                style={{position: 'relative', right: '10%'}}
                                 onClick={() => {
                                     setLoading(true)
                                     uploadFile();

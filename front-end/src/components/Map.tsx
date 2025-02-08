@@ -417,7 +417,8 @@ export function Map({permissions}: {permissions: number}){
           </button>
           <SidePanel isPanelExpanded2={isPanelExpanded2} currentLngLat={currentLngLat}
             markers={markers}  currentUser={currentUser} placingPin={placingPin}
-             setPlacingPin={setPlacingPin} placingPinRef={placingPinRef} newPinRef={newPinRef}/>
+             setPlacingPin={setPlacingPin} placingPinRef={placingPinRef} newPinRef={newPinRef}
+             setIsPanelExpanded={setIsPanelExpanded}/>
           <div style={{
              position: 'absolute',
              zIndex: 999,
