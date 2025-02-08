@@ -10,6 +10,7 @@
 
   .nav-button {
     color: black;
+    font-size: 14px;
   }
 
   .user-login-button {
@@ -25,4 +26,10 @@
     border-width: 2px;
     font-weight: bold;
     font-size: 20px;
+  }
+
+  .sign-in {
+    margin-bottom: 2%;
+    width: 65%;
+    height: 20px;
   }

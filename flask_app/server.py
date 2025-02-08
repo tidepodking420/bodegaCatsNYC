@@ -202,6 +202,8 @@ def login_logic():
     else:
         # PATCH
         # registering a new user
+
+        email = request.json.get('email')
         if len(username) < 5:
             return {'message': 'Username must be at least 5 characters'}
         if len(username) > 50:
@@ -212,10 +214,19 @@ def login_logic():
             return {'message': 'Password must be at least 5 characters '}
         if len(password) > 255:
             return {'message': 'Password cannot exceed 255 characters'}
+        if len(email) < 1 or len(email) > 100:
+            return {'message': 'Invalid Email'}
+        
+          # do not allow re-using an email
+        query_email = "SELECT * FROM user where BINARY email = %s"
+        result = read_query(query_email, params=(email,))
+        email_obj = User.map_to_user(result)
+        if len(email_obj):
+            return {'message': f"Email {email} already in Use"}
 
         
         insert_user_query = "INSERT INTO user (username, email, password_hash, user_role) VALUE (%s, %s, %s, 'user');"
-        result = post_query(insert_user_query, params=(username, username, password))
+        result = post_query(insert_user_query, params=(username, email, password))
         print(result)
         return {'message': 'success'}
 

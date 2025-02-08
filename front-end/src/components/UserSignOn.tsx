@@ -39,7 +39,8 @@ export function UserSignOn({toggleShowSignIn, setCurrentUser}: {toggleShowSignIn
             },
             body: JSON.stringify({
                 username: username.trim(),
-                password: password.trim()
+                password: password.trim(),
+                email: email.trim()
             })
         }).then(res => res.json()).then(data => {
             console.log(data)
@@ -51,6 +52,7 @@ export function UserSignOn({toggleShowSignIn, setCurrentUser}: {toggleShowSignIn
                 toggleShowSignIn();
                 setUsername('');
                 setPassword('');
+                setEmail('');
              }
         })
     }
@@ -58,30 +60,38 @@ export function UserSignOn({toggleShowSignIn, setCurrentUser}: {toggleShowSignIn
 
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [email, setEmail] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
     const [signUpErrorMessage, setSignUpErrorMessage] = useState('');
     const [doSignUp, setDoSignUp] = useState(false);
 
     // const []
-    const inputs = <div>
-    <input
-        style={{marginBottom: '2%', width: '65%', height: '20px'}}
-        id="username"
-        type="text"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-        placeholder="Username"
-        />
-    <input
-        style={{width: '65%',  height: '20px'}}
-        id="password"
-        type="text"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        placeholder="Password"
-        />
-</div>;
-
+    const inputChildren = [<input
+    className='sign-in'
+    id="username"
+    type="text"
+    value={username}
+    onChange={(e) => setUsername(e.target.value)}
+    placeholder="Username"
+    />, 
+<input
+    className='sign-in'
+    id="password"
+    type="text"
+    value={password}
+    onChange={(e) => setPassword(e.target.value)}
+    placeholder="Password"
+    />, 
+<input
+    className='sign-in'
+    id="email"
+    type="text"
+    value={email}
+    onChange={(e) => setEmail(e.target.value)}
+    placeholder="crazyCatLady@aol.com"
+    />];
+    const loginInputs = <div>{inputChildren[0]}{inputChildren[1]} </div>;
+    const signUpInputs = <div>{inputChildren[0]}{inputChildren[1]}{inputChildren[2]}</div>
 
     return (
         <div style={{position: 'relative', bottom: '20px'}}>
@@ -95,7 +105,7 @@ export function UserSignOn({toggleShowSignIn, setCurrentUser}: {toggleShowSignIn
                 <h2 >Sign in</h2>
                 <p style={{margin: '0px', position: 'relative', bottom: '20px'}}>Note: This is only required to make cat submissions 😺</p>
                 <p style={{position: 'relative' ,color: 'red', fontSize: 'bolder', margin: '0px', left: '5%'}}>{errorMessage}</p>
-                {inputs}
+                {loginInputs}
                 <button 
                     className='mobile-button user-login-button'
                     style={{backgroundColor: '#00BB00', marginRight: '5%', position: 'relative', top: '10px', left: '10px'}}
@@ -118,7 +128,7 @@ export function UserSignOn({toggleShowSignIn, setCurrentUser}: {toggleShowSignIn
                             style={{backgroundColor: 'red', position: 'relative', top: '-45px', 
                             right: '40%'}}>Go Back</button>
                         <p style={{position: 'relative' ,color: 'red', fontSize: 'bolder', margin: '0px', left: '5%'}}>{signUpErrorMessage}</p>
-                        {inputs}
+                        {signUpInputs}
                         <button 
                             className='mobile-button user-login-button'
                             onClick={() => signUp()}
