@@ -171,14 +171,13 @@ export function SidePanel({isPanelExpanded2, currentLngLat, markers, currentUser
                                 setPlacingPin(newValue)
 
                                 if(newPinRef.current !== null){
-                                    console.log('newPin is not null')
                                     newPinRef.current.setDraggable(!newPinRef.current.isDraggable());
                                 }
-                                // 
                             }}
                             className="mobile-button user-login-button"
                             style={{backgroundColor: '#0000BB', marginBottom: '1%', position: 'relative', left: '20px', display: 'inline-block'}}
                             >{placingPinRef.current ? 'Placing pin' : 'Place Pin'}</button>
+                        <p style={{position: 'absolute', fontSize: '13px', left: '4%', top: '27%'}}>{placingPinRef.current ? '🔒 Lock in Place' : 'Touch Map & Drag Pin'}</p>
                         <p style={{display: 'inline-block', marginLeft: '8%'}} >{currentLngLat.lat === -1 && currentLngLat.lng == -1 ? 'Not chosen' :`Lat: ${currentLngLat.lat.toPrecision(6).toString()} Lng: ${currentLngLat.lng.toPrecision(6).toString()}`}</p>
                         <center>
                             <button
