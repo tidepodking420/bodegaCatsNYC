@@ -22,8 +22,5 @@
   .hamburger {
     position: absolute;
     z-index: 1000;
-    background: gray;
-    border: none;
     padding: 10px;
-    cursor: pointer;
   }

@@ -388,7 +388,7 @@ export function Map({permissions}: {permissions: number}){
           <button 
             className='hamburger'
             onClick={togglePanel2} 
-            style={{ bottom: '2px', left:'10px'}}>
+            style={{ bottom: '2px', left:'6px'}}>
             ☰ {/* Hamburger Icon */}
           </button>
           <SidePanel isPanelExpanded2={isPanelExpanded2} currentLngLat={currentLngLat} markers={markers}/>
