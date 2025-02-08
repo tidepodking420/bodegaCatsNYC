@@ -27,11 +27,12 @@ interface SidePanelProps {
     placingPin: boolean;
     setPlacingPin: any;
     placingPinRef: any;
+    newPinRef: any;
   }
 // Show all of the cats
 
 // next step: show the user and the 
-export function SidePanel({isPanelExpanded2, currentLngLat, markers, currentUser, placingPin, setPlacingPin, placingPinRef}: SidePanelProps) {
+export function SidePanel({isPanelExpanded2, currentLngLat, markers, currentUser, placingPin, setPlacingPin, placingPinRef, newPinRef}: SidePanelProps) {
 
     // const dispatch = useDispatch();
     const cats = useSelector((state: RootState) => state.cats.cats);
@@ -168,6 +169,12 @@ export function SidePanel({isPanelExpanded2, currentLngLat, markers, currentUser
                                 const newValue = !placingPinRef.current;
                                 placingPinRef.current = newValue;
                                 setPlacingPin(newValue)
+
+                                if(newPinRef.current !== null){
+                                    console.log('newPin is not null')
+                                    newPinRef.current.setDraggable(!newPinRef.current.isDraggable());
+                                }
+                                // 
                             }}
                             className="mobile-button user-login-button"
                             style={{backgroundColor: '#0000BB', marginBottom: '1%', position: 'relative', left: '20px', display: 'inline-block'}}

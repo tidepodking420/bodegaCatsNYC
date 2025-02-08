@@ -352,19 +352,26 @@ export function Map({permissions}: {permissions: number}){
         map.current.on('click', (e) => {
             // I want to only allow 1 pin
             const { lngLat } = e;
-            const lngLatProp: LngLatWithID = {
-              id: null,
-              lng: lngLat.lng,
-              lat: lngLat.lat
-            }
-            
-            // how to create a draggable pin
             if(placingPinRef.current){
-              setCurrentLngLat(lngLatProp);
               if(newPinRef.current === null){
+                setCurrentLngLat({
+                  id: null,
+                  lat: lngLat.lat,
+                  lng: lngLat.lng
+                });
                 const newMarker = new maplibregl.Marker({color:     "#0000BB"}).setDraggable(true).setLngLat([lngLat.lng, lngLat.lat]).addTo(map. current!);
                 newPinRef.current = newMarker;
                 setNewPin(newMarker);
+                newMarker.on('drag', () => {
+                    const currentLngLat = newMarker.getLngLat(); // Get 
+                    // the current lngLat
+                    const lngLatProp: LngLatWithID = {
+                      id: null,
+                      lng: currentLngLat.lng,
+                      lat: currentLngLat.lat
+                    };
+                    setCurrentLngLat(lngLatProp);
+                });
               }
             }
 
@@ -410,7 +417,7 @@ export function Map({permissions}: {permissions: number}){
           </button>
           <SidePanel isPanelExpanded2={isPanelExpanded2} currentLngLat={currentLngLat}
             markers={markers}  currentUser={currentUser} placingPin={placingPin}
-             setPlacingPin={setPlacingPin} placingPinRef={placingPinRef}/>
+             setPlacingPin={setPlacingPin} placingPinRef={placingPinRef} newPinRef={newPinRef}/>
           <div style={{
              position: 'absolute',
              zIndex: 999,
