@@ -376,37 +376,19 @@ export function Map({permissions}: {permissions: number}){
       return (
         <div style={{overflow: 'hidden'}}>
           <NavigationPanel isPanelExpanded={isPanelExpanded} map={map} currentUser={currentUser} 
-          toggleShowSignIn={toggleShowSignIn} showSignIn={showSignIn}/>
-          <button 
+          toggleShowSignIn={toggleShowSignIn} showSignIn={showSignIn} setCurrentUser={setCurrentUser}/>
+          <button
+            className='hamburger'
             onClick={togglePanel} 
-            style={{
-              position: 'absolute',
-              top: '10px',
-              left: '10px',
-              zIndex: 1000,
-              background: 'gray',
-              border: 'none',
-              padding: '10px',
-              cursor: 'pointer',
-            }}
-               >
+            style={{top: '10px',left: '10px'}}>
             ☰ {/* Hamburger Icon */}
           </button>
-          <div style={{  position: 'absolute', width: '97%', height: isPanelExpanded ?'73%' :'99%'}}
+          <div style={{  position: 'absolute', width: '97%', height: isPanelExpanded ?'71%' :'99%'}}
             ref={mapContainer} className="map" />
           <button 
+            className='hamburger'
             onClick={togglePanel2} 
-            style={{
-              position: 'absolute',
-              zIndex: 999,
-              bottom: '2px',
-              left:'10px',
-              background: 'gray',
-              border: 'none',
-              padding: '10px',
-              cursor: 'pointer',
-            }}
-               >
+            style={{ bottom: '2px', left:'10px'}}>
             ☰ {/* Hamburger Icon */}
           </button>
           <SidePanel isPanelExpanded2={isPanelExpanded2} currentLngLat={currentLngLat} markers={markers}/>

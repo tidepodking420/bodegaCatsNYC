@@ -1,8 +1,29 @@
   .button {
     border-radius: 5px;
+    padding: 4px;
+    border-radius: 3px;
+    font-weight: bolder;
   }
 
   .invisibleMarker {
     border-color: yellow;
     border-width: 10px;
+  }
+
+  .mobile-button {
+    border-width: 1px;
+    color: white;
+    font-weight: bold;
+    font-size: 16px;
+    border-radius: 3px;
+    padding: 4px;
+  }
+
+  .hamburger {
+    position: absolute;
+    z-index: 1000;
+    background: gray;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
   }

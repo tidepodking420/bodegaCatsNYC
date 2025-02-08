@@ -29,7 +29,7 @@ const boroughs = {
     ],
 };
 
-export function NavigationPanel({map, isPanelExpanded, currentUser, toggleShowSignIn, showSignIn}: {map: any, isPanelExpanded: boolean, currentUser: string, toggleShowSignIn: any, showSignIn: boolean}){
+export function NavigationPanel({map, isPanelExpanded, currentUser, toggleShowSignIn, showSignIn, setCurrentUser}: {map: any, isPanelExpanded: boolean, currentUser: string, toggleShowSignIn: any, showSignIn: boolean, setCurrentUser: any}){
     return (
             <div style={{ position: 'relative',
                 width: '100%',
@@ -55,7 +55,9 @@ export function NavigationPanel({map, isPanelExpanded, currentUser, toggleShowSi
                             <div style={{ height: '3px' }}></div>
                         </div>
                         <div style={{ paddingBottom: '10px', paddingLeft: '5%'}}>
-                            <button style={{fontWeight: 'bolder', display: showSignIn ? 'none' : currentUser.length > 0 ? 'none' :'inline-block', backgroundColor: '#00BB00', color: 'whitesmoke', marginRight: '5%', borderRadius: '3px', padding: '3px'}} onClick={toggleShowSignIn}>Sign in</button>
+                            <button 
+                            className='mobile-button'
+                            style={{display: showSignIn ? 'none' : 'inline-block', backgroundColor: currentUser ? '#BB0000' :'#00BB00', color: 'whitesmoke', marginRight: '5%'}} onClick={() => currentUser.length > 0 ? setCurrentUser('') : toggleShowSignIn()}>{currentUser ? 'Sign Out': 'Sign in'}</button>
                             <div style={{display: 'inline-block'}}>{currentUser.length === 0 ? 'Not signed in  ':`Signed in as: ${currentUser}`} </div>
                         </div>
             </div>

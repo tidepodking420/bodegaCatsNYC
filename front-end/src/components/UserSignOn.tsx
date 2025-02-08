@@ -19,6 +19,8 @@ export function UserSignOn({toggleShowSignIn, setCurrentUser}: {toggleShowSignIn
                 setErrorMessage('');
                 setCurrentUser(username);
                 toggleShowSignIn();
+                setUsername('');
+                setPassword('');
             } else if(data.message === 'no-such-user'){
                 setCurrentUser('');
                 setErrorMessage(`"${username}" is not an existing user`)
@@ -47,6 +49,8 @@ export function UserSignOn({toggleShowSignIn, setCurrentUser}: {toggleShowSignIn
                 setCurrentUser(username);
                 setSignUpErrorMessage('');
                 toggleShowSignIn();
+                setUsername('');
+                setPassword('');
              }
         })
     }
@@ -84,19 +88,24 @@ export function UserSignOn({toggleShowSignIn, setCurrentUser}: {toggleShowSignIn
                 { !doSignUp ? 
             <center>
                 <button 
+                    className='mobile-button'
                     onClick={toggleShowSignIn}
-                    style={{backgroundColor: 'red', width: '13%', position: 'relative', top: '15px', 
-                    right: '46%', borderWidth: '1px', color: 'white', fontWeight: 'bolder',
-                    borderRadius: '3px'}}>X</button>
+                    style={{backgroundColor: 'red', width: '13%', 
+                    position: 'relative', top: '15px', right: '46%'}}>X</button>
                 <h2 >Sign in</h2>
                 <p style={{margin: '0px', position: 'relative', bottom: '20px'}}>Note: This is only required to make cat submissions 😺</p>
                 <p style={{position: 'relative' ,color: 'red', fontSize: 'bolder', margin: '0px', left: '5%'}}>{errorMessage}</p>
                 {inputs}
-                <button style={{backgroundColor: '#00BB00', color: 'whitesmoke', marginRight: '5%', fontWeight: 'bolder', position: 'relative', top: '10px', left: '10px', borderRadius: '3px', padding: '3px'}} onClick={() => {login()}}>Sign in</button>
+                <button 
+                    className='mobile-button'
+                    style={{backgroundColor: '#00BB00', marginRight: '5%', position: 'relative', top: '10px', left: '10px'}}
+                    onClick={() => {login()}}>Sign in</button>
                 <br/>
                 <div style={{position: 'relative', top: '20px'}}>
                     <p style={{display: 'inline-block', marginRight: '2%'}}>Don't have an account?</p>
-                    <button style={{display: 'inline-block', backgroundColor: '#0096FF', color: 'whitesmoke', marginRight: '5%', fontWeight: 'bolder', position: 'relative', borderRadius: '3px', padding: '3px'}}
+                    <button
+                        className='mobile-button'
+                        style={{display: 'inline-block', backgroundColor: '#0096FF', marginRight: '5%'}}
                         onClick={() => setDoSignUp(!doSignUp)}>Sign Up</button>
                 </div> 
             </center>:
@@ -104,17 +113,17 @@ export function UserSignOn({toggleShowSignIn, setCurrentUser}: {toggleShowSignIn
                     <center>
                         <h2 style={{marginBottom: '0px'}}>Sign up</h2>
                         <button 
+                            className='mobile-button'
                             onClick={() => setDoSignUp(!doSignUp)}
                             style={{backgroundColor: 'red', position: 'relative', top: '-45px', 
-                            right: '40%', borderWidth: '1px', color: 'white', fontWeight: 'bolder',
-                            borderRadius: '3px'}}>Go Back</button>
+                            right: '40%'}}>Go Back</button>
                         <p style={{position: 'relative' ,color: 'red', fontSize: 'bolder', margin: '0px', left: '5%'}}>{signUpErrorMessage}</p>
                         {inputs}
                         <button 
+                            className='mobile-button'
                             onClick={() => signUp()}
-                            style={{backgroundColor: '#0096FF', marginTop: '5px', padding: '4px', 
-                            borderWidth: '1px', color: 'white', fontWeight: 'bolder',
-                            borderRadius: '3px'}}>Sign up</button>
+                            style={{backgroundColor: '#0096FF', marginTop: '5px'
+                            }}>Sign up</button>
                     </center>
                 </div>}
         </div>
