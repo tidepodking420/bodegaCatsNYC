@@ -20,11 +20,16 @@ export function SidePanel({isPanelExpanded2, currentLngLat, markers, currentUser
 
     // const dispatch = useDispatch();
     const cats = useSelector((state: RootState) => state.cats.cats);
+    const [addingCatMode, setAddingCatMode] = useState(false);
+
 
     const selectedPin = markers.filter(marker => marker.selected);
     
-    console.log('markers in side panel', markers)
-    console.log('cats', cats);
+    // console.log('markers in side panel', markers)
+    // console.log('cats', cats);
+
+    const [catName, setCatName] = useState('');
+    const [catDesc, setCatDesc] = useState('');
 
     return (
         <div style={{
@@ -41,24 +46,61 @@ export function SidePanel({isPanelExpanded2, currentLngLat, markers, currentUser
             flexDirection: "column", // Stack children vertically
             overflow: 'scroll'
           }}>
+            {!addingCatMode ?
             <div>
-                <div style={{display: 'inline-block'}}>
-                    {selectedPin[0] ? `Added by ${selectedPin[0].user_id} on ${selectedPin[0].created_at.toLocaleDateString()}` : 'All cats view'}
+                <div>
+                    <div style={{display: 'inline-block'}}>
+                        {selectedPin[0] ? `Added by ${selectedPin[0].user_id} on ${selectedPin[0].created_at.toLocaleDateString()}` : 'All cats view'}
+                    </div>
+                    <div
+                    className="create-cats"
+                    style={{display: 'inline-block', left: currentUser.length > 0 ? '150px' : '100px'}}>
+                        {currentUser.length > 0 ?
+                        <button
+                            onClick={() => setAddingCatMode(!addingCatMode)}
+                            className="mobile-button user-login-button"
+                            style={{backgroundColor: 'yellowgreen'}}
+                            >Add a cat</button> : <p id='qer'>Sign in to submit cats</p>}
+                    </div>
                 </div>
-                <div
-                className="create-cats"
-                style={{display: 'inline-block', left: currentUser.length > 0 ? '150px' : '100px'}}>
-                    {currentUser.length > 0 ?
+                <div>
+                    {selectedPin[0] ? cats.filter(cat => cat.pin_id === selectedPin[0].id).map(cat => <BasicCat key={cat.id} cat={cat} markers={markers}/>) : cats.map(cat => <BasicCat key={cat.id} cat={cat} markers={markers}/>)}
+                </div>
+            </div>
+                : <div>
+                    <p style={{display: 'inline-block'}}>Adding Cat Mode</p> 
                     <button
+                        onClick={() => setAddingCatMode(!addingCatMode)}
                         className="mobile-button user-login-button"
-                        style={{backgroundColor: 'yellowgreen'}}
-                        >Add a cat</button> : <p id='qer'>Sign in to submit cats</p>}
-                </div>
-            </div>
-            <div>
-                {selectedPin[0] ? cats.filter(cat => cat.pin_id === selectedPin[0].id).map(cat => <BasicCat key={cat.id} cat={cat} markers={markers}/>) : cats.map(cat => <BasicCat key={cat.id} cat={cat} markers={markers}/>)}
-            </div>
-            {/* <button onClick={() => console.log(selectedPin)}>text</button> */}
+                        style={{backgroundColor: '#BB0000', left: '150px', display: 'inline-block', position: 'relative'}}
+                        >Exit</button>
+                    <div>
+                        <center>
+                            <button
+                                onClick={() => alert('submitting to database')}
+                                className="mobile-button user-login-button"
+                                style={{backgroundColor: '#00BB00', marginBottom: '1%'}}
+                                >Submit</button>
+                            <input
+                                style={{display: 'block'}}
+                                className="new-cat"
+                                type="text"
+                                value={catName}
+                                onChange={(e) => setCatName(e.target.value)}
+                                placeholder='Name of the Cat?'
+                            />
+                            <textarea
+                                className='new-cat'
+                                style={{display: 'block'}}
+                                value={catDesc}
+                                onChange={(e) => setCatDesc(e.target.value)}
+                                placeholder='Description...'
+                                rows={7}
+                                cols={20}
+                            />
+                        </center>
+                    </div>
+                </div>}   
         </div>
     )
 }

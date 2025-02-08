@@ -38,3 +38,14 @@
     margin-top: 2%;
     position: relative;
   }
+
+  .new-cat {
+    border-width: 3px;
+    border-style: solid;
+    border-color: black;
+    width: 60%;
+  }
+
+  input.new-cat {
+    margin-bottom: 1%;
+  }
