@@ -383,7 +383,7 @@ export function Map({permissions}: {permissions: number}){
             style={{top: '10px',left: '10px'}}>
             ☰ {/* Hamburger Icon */}
           </button>
-          <div style={{  position: 'absolute', width: '97%', height: isPanelExpanded ?'71%' :'99%'}}
+          <div style={{  position: 'absolute', width: '97%', height: isPanelExpanded ?'70%' :'98%'}}
             ref={mapContainer} className="map" />
           <button 
             className='hamburger'

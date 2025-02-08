@@ -7,7 +7,7 @@ export function SubwayToggleButton({map}: {map: any}){
 
     return (
         <div>
-        <button className='button' onClick={() => {
+        <button className='mobile-button' onClick={() => {
             if(showSubway){
             subwayLayerStyles.forEach((style) => {
             map.current!.removeLayer(style.id)
