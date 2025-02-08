@@ -52,9 +52,7 @@ export function SidePanel({isPanelExpanded2, currentLngLat, markers, currentUser
                     <div style={{display: 'inline-block'}}>
                         {selectedPin[0] ? `Added by ${selectedPin[0].user_id} on ${selectedPin[0].created_at.toLocaleDateString()}` : 'All cats view'}
                     </div>
-                    <div
-                    className="create-cats"
-                    style={{display: 'inline-block', left: currentUser.length > 0 ? '150px' : '100px'}}>
+                    <div className="create-cats">
                         {currentUser.length > 0 ?
                         <button
                             onClick={() => setAddingCatMode(!addingCatMode)}
