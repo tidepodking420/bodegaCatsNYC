@@ -70,7 +70,7 @@ export function SidePanel({isPanelExpanded2, currentLngLat, markers, currentUser
                     <button
                         onClick={() => setAddingCatMode(!addingCatMode)}
                         className="mobile-button user-login-button"
-                        style={{backgroundColor: '#BB0000', left: '150px', display: 'inline-block', position: 'relative'}}
+                        style={{backgroundColor: '#BB0000', left: '200px', display: 'inline-block', position: 'relative', paddingLeft: '2px', paddingRight: '2px'}}
                         >Exit</button>
                     <div>
                         <center>
