@@ -37,3 +37,15 @@ CREATE TABLE photo (
     cat_id INT NOT NULL,
     FOREIGN KEY (cat_id) REFERENCES cat(id)
 );
+
+create TABLE queue (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    lat DECIMAL(10, 7) NOT NULL,
+    lng DECIMAL(10, 7) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    catName VARCHAR(50) NOT NULL,
+    catDesc VARCHAR(240) NOT NULL,
+    -- pseudo foreign keys
+    username VARCHAR(50) NOT NULL,
+    awsuuid CHAR(36) NOT NULL
+);

@@ -5,6 +5,8 @@ import { BasicCat } from "./BasicCat";
 import { useRef, useState, useEffect } from "react";
 const VITE_SERVER_URL = import.meta.env.VITE_SERVER_URL;
 const PHOTO_URL = VITE_SERVER_URL + "/photo"
+const PIN_URL = VITE_SERVER_URL + "/pin"
+const QUEUE_URL = VITE_SERVER_URL + "/queue"
 import {DeleteObjectCommand, PutObjectCommand, S3Client} from '@aws-sdk/client-s3';
 const AWS_ACCESS_KEY_ID = import.meta.env.VITE_AWS_ACCESS_KEY_ID;
 const AWS_SECRET_ACCESS_KEY = import.meta.env.VITE_AWS_SECRET_ACCESS_KEY;
@@ -47,14 +49,12 @@ export function SidePanel({isPanelExpanded2, currentLngLat, markers, currentUser
 
     const [catName, setCatName] = useState('');
     const [catDesc, setCatDesc] = useState('');
+    const [photoId, setPhotoId] = useState('');
 
-    const [imageSource, setImageSource] = useState(localStorage.getItem('imagePreview') || '#');
+    const [imageSource, setImageSource] = useState(null);
     const [clicked, setClicked] = useState(false);
     // console.log(imageSource)
 
-    useEffect(() => {
-        localStorage.setItem('imagePreview', imageSource)
-    }, [imageSource])
 
 
     const [file, setFile] = useState(null); 
@@ -63,6 +63,49 @@ export function SidePanel({isPanelExpanded2, currentLngLat, markers, currentUser
     const [checked, setChecked] = useState(false);
     // TODO close the navigation panel when the user goes to add a cat
     // and make this panel even larger
+    async function deletePhotoAWS(photo_id: string) {
+                const params = {
+                    Bucket: S3_BUCKET,
+                    Key: photo_id,  // Use the same key (ID) as when uploading
+                };
+                const command = new DeleteObjectCommand(params);
+                    await s3Client.send(command);
+                    console.log("Photo deleted successfully! in AWS");
+            }
+
+      async function submitToQueue() {
+          // add marker to database
+          // TODO upload the file onSUbmit
+          console.log('inside add marker')
+        //   console.log(lat, lng)
+          // TODO the pin id needs the user id
+          setLoading(true)
+          const b = await uploadFile();
+          if(b.length > 0){
+            console.log(b)
+            setLoading(false)
+          } else{
+             fetch(QUEUE_URL, {
+            method: 'POST',
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                'lat': currentLngLat.lat,
+                'lng': currentLngLat.lng,
+                'username': currentUser,
+                catName, 
+                catDesc,
+                'awsuuid': photoId
+            })}).then(res => res.json()).then(data => {
+                console.log(data)
+                if(data.message !== 'success'){
+                    deletePhotoAWS(photoId);
+                }
+            })
+            .then(() => setLoading(false))
+        }
+        }
 
     // start out with designing for just one cat
     // TODO create pin before creating a cat
@@ -72,8 +115,7 @@ export function SidePanel({isPanelExpanded2, currentLngLat, markers, currentUser
                 // one-to-many relationship between cats
                 if(!file){
                     alert('Upload a file please :)')
-                    setLoading(false);
-                    return;
+                    return 'Upload a file please :)';
                 }
                 // TODO only set a pin before doing upload,
                 // disable the button while doing an upload
@@ -83,15 +125,10 @@ export function SidePanel({isPanelExpanded2, currentLngLat, markers, currentUser
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({
-                        file_name: file.name,
-                        // cat_id: cat.id,
-                        // TODO don;'t hard code thos
-                        cat_id: "2",
-                    })
                 })
                 const data = await res.json();
                 console.log(data)
+                setPhotoId(data.new_photo_id);
     
                 const arrayBuffer = await file.arrayBuffer(); // Convert File to ArrayBuffer
                 const uint8Array = new Uint8Array(arrayBuffer);
@@ -108,29 +145,16 @@ export function SidePanel({isPanelExpanded2, currentLngLat, markers, currentUser
                     console.log("Upload successful!");
                 } catch (error) {
                     console.error("Upload failed:", error);
+                    return "Upload failed";
                 }
     
                 setFile(null);
                 if (fileInputRef.current) {
                     fileInputRef.current.value = ""; // Reset input field
                   }
-                setLoading(false);
+                return '';
                 //   getCatPhotos();
           };
-
-        //   async function getCatPhotos(){
-        //     // step 1: query db
-        //     fetch(PHOTO_URL + `?cat_id=${cat.id}`, {
-        //         method: 'GET',
-        //         headers: {
-        //             'Content-Type': 'application/json',
-        //         }
-        //     }).then(res => res.json()).then(data => {
-        //         console.log(data)
-        //         setCatPhotos(data.photos)
-        //         // catSetter(cats.filter(x => x.id !== cat_id))
-        //     })
-        // }
 
     return (
         <div style={{
@@ -196,7 +220,8 @@ export function SidePanel({isPanelExpanded2, currentLngLat, markers, currentUser
                         {/* <p style={{display: 'inline-block', marginLeft: '8%'}} >{currentLngLat.lat === -1 && currentLngLat.lng == -1 ? 'Not chosen' :`Lat: ${currentLngLat.lat.toPrecision(6).toString()} Lng: ${currentLngLat.lng.toPrecision(6).toString()}`}</p> */}
                         <center>
                             <button
-                                onClick={() => alert('submitting to database')}
+                                // disabled={loading}
+                                onClick={() => submitToQueue()}
                                 className="mobile-button user-login-button"
                                 style={{backgroundColor: '#00BB00', marginBottom: '1%'}}
                                 >Submit</button>
@@ -252,12 +277,12 @@ export function SidePanel({isPanelExpanded2, currentLngLat, markers, currentUser
                                     }
                                     }}
                                 />
-                                <img
+                                {file !== null && <img
                                     className='border'
                                     onClick={() => setClicked(!clicked)}
                                     src={imageSource}
                                     style={{ maxWidth: '80%', maxHeight: clicked ?  '40%' : '200px', marginTop: '10px', marginBottom: '100px' }}
-                                />
+                                />}
                             </div>
                         </center>
                     </div>

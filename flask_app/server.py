@@ -95,29 +95,35 @@ def cat_logic():
         cats = Cat.map_to_cat(result)
         return {'cats': cats}
     elif request.method == 'DELETE':
-        cat_query = "DELETE FROM cat WHERE id=%s"
-        photo_query = "DELETE FROM photo where cat_id=%s"
-        cat_id = request.args.get('cat_id')
-        num_photos_deleted = delete_query(photo_query, params=(cat_id,))
-        num_cats_deleted = delete_query(cat_query, params=(cat_id,))
-        return {'message': f"{num_cats_deleted} cats deleted and {num_photos_deleted} photos deleted"}
+        pass
+        # cat_query = "DELETE FROM cat WHERE id=%s"
+        # photo_query = "DELETE FROM photo where cat_id=%s"
+        # cat_id = request.args.get('cat_id')
+        # num_photos_deleted = delete_query(photo_query, params=(cat_id,))
+        # num_cats_deleted = delete_query(cat_query, params=(cat_id,))
+        # return {'message': f"{num_cats_deleted} cats deleted and {num_photos_deleted} photos deleted"}
     elif request.method == 'PATCH':
         # current fields are name and desc
-        field = request.json.get('fieldToUpdate')
-        value = request.json.get('newValue')
-        cat_id = request.json.get('cat_id')
-        if field == 'desc':
-            query = f"UPDATE cat SET `{field}` = %s WHERE id= %s"
-        else:
-            query = f"UPDATE cat SET {field} = %s WHERE id= %s"
-        num_cats_updated = delete_query(query, params=(value, cat_id))
-        return {'message': f"updated {num_cats_updated} cats"}
-    else: 
-        return {'stub': 'else'}
+        pass
+        #     field = request.json.get('fieldToUpdate')
+        #     value = request.json.get('newValue')
+        #     cat_id = request.json.get('cat_id')
+        #     if field == 'desc':
+        #         query = f"UPDATE cat SET `{field}` = %s WHERE id= %s"
+        #     else:
+        #         query = f"UPDATE cat SET {field} = %s WHERE id= %s"
+        #     num_cats_updated = delete_query(query, params=(value, cat_id))
+        #     return {'message': f"updated {num_cats_updated} cats"}
+        # else: 
+        #     return {'stub': 'else'}
         
 
 
-
+# what fields do I need in order to allow  user to do a post
+# I still need to upload the photo into s3 -> do the actual file upload
+# and give me the id of the file
+# I need the the cat name and description
+# i need the user naame and I need the lng, lat
 @app.route('/pin', methods=['GET', 'POST', 'DELETE', 'PATCH'])
 def pin_logic():
     # its easier to add the cats using patch
@@ -125,38 +131,55 @@ def pin_logic():
         # this method should create a new pin, and return an id
         lat = request.json.get('lat')
         lng = request.json.get('lng')
-        query = "INSERT INTO pin (lat, lng) VALUE (%s, %s);"
-        return {'id': post_query(query, params=(lat, lng))}
+        username = request.json.get('username')
+
+        get_user_id = read_query("SELECT * FROM user where username = %s", params=(username,))
+        user_id = User.map_to_user(get_user_id)[0]['id']
+        query = "INSERT INTO pin (lat, lng, user_id) VALUE (%s, %s, %s);"
+
+        # todo update this to return all the relevant information
+        pin_id = post_query(query, params=(lat, lng, user_id))
+        print('pin_id', pin_id)
+
+        pin_info_query = "SELECT * FROM pin where id = %s"
+        get_all_info = read_query(pin_info_query, params=(pin_id,))
+        print('getting all the info')
+        print(get_all_info)
+        my_pin = Pin.map_to_pin(get_all_info)[0]
+
+        return {'id': my_pin['id'], 'user_id': my_pin['user_id'], 'created_at': my_pin['created_at']}
     elif request.method == 'DELETE':
         id = request.json.get('id')
         # read the number cats before deleting
-        query = "SELECT count(*) FROM cat WHERE pin_id = %s"
-        num_cats = read_query(query, (id,))[0][0]
-        print(num_cats)
-        if num_cats > 0:
-            return {'num_cats': num_cats}
+        pass
+        # query = "SELECT count(*) FROM cat WHERE pin_id = %s"
+        # num_cats = read_query(query, (id,))[0][0]
+        # print(num_cats)
+        # if num_cats > 0:
+        #     return {'num_cats': num_cats}
 
-        pin_query = "DELETE FROM pin WHERE id=%s;"
-        cat_query = "DELETE FROM cat WHERE pin_id=%s"
-        num_cats_deleted = delete_query(cat_query, params=(id,))
-        num_pins_deleted = delete_query(pin_query, params=(id,))
-        return {"message": f"Pin {id} {'deleted successfuly' if num_pins_deleted > 0 else 'not deleted'}. Deleted {num_cats_deleted} cats :("}
+        # pin_query = "DELETE FROM pin WHERE id=%s;"
+        # cat_query = "DELETE FROM cat WHERE pin_id=%s"
+        # num_cats_deleted = delete_query(cat_query, params=(id,))
+        # num_pins_deleted = delete_query(pin_query, params=(id,))
+        # return {"message": f"Pin {id} {'deleted successfuly' if num_pins_deleted > 0 else 'not deleted'}. Deleted {num_cats_deleted} cats :("}
     elif request.method == 'PATCH':
         # creates a new cat and associates it with a locatino 
-        cat_name = request.json.get('name')
-        cat_desc = request.json.get('desc')
-        pin_id = request.json.get('id')
-        print(cat_name, cat_desc, pin_id)
-        cat_query = "INSERT INTO cat (name, `desc`, pin_id) VALUES (%s, %s, %s);"
-        post_query(cat_query, params=(cat_name, cat_desc, pin_id))
+        pass
+        # cat_name = request.json.get('name')
+        # cat_desc = request.json.get('desc')
+        # pin_id = request.json.get('id')
+        # print(cat_name, cat_desc, pin_id)
+        # cat_query = "INSERT INTO cat (name, `desc`, pin_id) VALUES (%s, %s, %s);"
+        # post_query(cat_query, params=(cat_name, cat_desc, pin_id))
 
-        updated_cats_query = "SELECT * FROM cat WHERE pin_id = %s"
-        result = read_query(updated_cats_query, params=(pin_id,))
-        all_cats = Cat.map_to_cat(result)
+        # updated_cats_query = "SELECT * FROM cat WHERE pin_id = %s"
+        # result = read_query(updated_cats_query, params=(pin_id,))
+        # all_cats = Cat.map_to_cat(result)
 
-        return {'assoicated_cats': all_cats,
-                'pin_id': pin_id
-                }
+        # return {'assoicated_cats': all_cats,
+        #         'pin_id': pin_id
+        #         }
     else:
         # default is GET
         result = read_query("SELECT pin.id, pin.lat, pin.lng, pin.created_at, user.username FROM pin INNER JOIN user on pin.user_id = user.id")
@@ -165,18 +188,35 @@ def pin_logic():
         pins = Pin.map_to_pin(result)
         return {'pins': pins}
     
+@app.route('/queue', methods=['POST'])
+def queue_logic():
+    lng = request.json.get('lng')
+    lat = request.json.get('lat')
+    username = request.json.get('username')
+    catName = request.json.get('catName')
+    catDesc = request.json.get('catDesc')
+    awsuuid = request.json.get('awsuuid')
+
+    print(lng, lat, username, catName, catDesc, awsuuid)
+    if not len(awsuuid):
+        return {'message': 'You must add a photo'}
+    if len(catName) > 50:
+        return {'message': 'Name cannot exceed 50 characters'}
+    if not len(catName) or not len(catDesc):
+        return {'message': 'You must include a name and description'}
+    if len(catDesc) > 240:
+        return {'message': 'Description cannot exceeed 240 characters'}
+    if int(lat) == int(lng):
+        return {'message': 'Add a pin on the map please.'}
+
+    insert_into_query_table = "INSERT INTO queue (lat, lng, catName, catDesc, username, awsuuid) VALUE (%s, %s, %s, %s, %s, %s);"
+    insertion_result = post_query(insert_into_query_table, params=(lat, lng, catName, catDesc, username, awsuuid))
+    print(insertion_result)
+
+
+    return {'message': 'success'}
+
     
-@app.route('/user', methods=['GET'])
-def user_logic():
-    query = "SELECT * FROM user WHERE id = %s"
-    user_id = request.args.get('user_id')
-    if user_id == 'all':
-        result = read_query("SELECT * FROM user")
-    else:
-        result = read_query(query, (user_id,))
-    user_id = User.map_to_user(result)
-    print(user_id[0]['username'])
-    return {'username': user_id}
 
 @app.route('/login', methods=['POST', 'PATCH'])
 def login_logic():
@@ -231,16 +271,15 @@ def login_logic():
         print(result)
         return {'message': 'success'}
 
-        # verify that the username does not already exist
-    
 @app.route('/photo', methods=['GET', 'POST', 'DELETE'])
 def photo_logic():
     if request.method == 'POST':
-        file_name = request.json.get('file_name')
-        cat_id = request.json.get('cat_id')
-        insert_photo_query = "INSERT INTO photo (file_name, cat_id, awsuuid) VALUE (%s, %s, %s);"
+        pass
+        # file_name = request.json.get('file_name')
+        # cat_id = request.json.get('cat_id')
+        # insert_photo_query = "INSERT INTO photo (file_name, cat_id, awsuuid) VALUE (%s, %s, %s);"
         new_uuid = str(uuid.uuid4())
-        result = str(post_query(insert_photo_query, params=(file_name, cat_id, new_uuid)))
+        # result = str(post_query(insert_photo_query, params=(file_name, cat_id, new_uuid)))
         return {'new_photo_id': new_uuid}
     elif request.method == 'GET':
         cat_id = request.args.get('cat_id')
@@ -250,11 +289,12 @@ def photo_logic():
         return {'photos': all_photos}
     else:
         # delete
-        photo_id = request.args.get('photo_id')
-        print(photo_id)
-        delete_photo_query = "DELETE FROM photo WHERE id = %s"
-        num_photos_deleted = delete_query(delete_photo_query, params=(photo_id,))
-        return {'num_photos_deleted': num_photos_deleted}
+        pass
+        # photo_id = request.args.get('photo_id')
+        # print(photo_id)
+        # delete_photo_query = "DELETE FROM photo WHERE id = %s"
+        # num_photos_deleted = delete_query(delete_photo_query, params=(photo_id,))
+        # return {'num_photos_deleted': num_photos_deleted}
 
 
 

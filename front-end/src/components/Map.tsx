@@ -78,166 +78,23 @@ export function Map({permissions}: {permissions: number}){
           allCats.forEach(cat => dispatch(addCat(cat)));
       })
   }
- 
-     // see note; be careful about assumptions with lngLat
-    //  function MarkerPopup({mapInstance, lngLat} : {mapInstance : any, lngLat: LngLatWithID}){      
-    //   const [catName, setCatName] = useState("");
-    //   const [catDesc, setCatDesc] = useState("");
-    //   const [selectedOption, setSelectedOption] = useState('admin');
-    //   const catViewer = lngLat.id && <CatViewer pin_id={lngLat.id} permissions={permissions}/>;
 
-    //   // prompts the user to create a new pin?
-    //    if(permissions === 0){
-    //     // ADMIN
-    // return <div> 
-    //           <label>
-    //               <input 
-    //                   type="radio" 
-    //                   value="admin" 
-    //                   checked={selectedOption === 'admin'} 
-    //                   onChange={(e) => setSelectedOption(e.target.value)} 
-    //               />
-    //               Add/Remove Pins
-    //           </label>
-    //           <label>
-    //               <input 
-    //                   type="radio" 
-    //                   value="viewer" 
-    //                   checked={selectedOption === 'viewer'} 
-    //                   onChange={(e) => setSelectedOption(e.target.value)} 
-    //               />
-    //               Add Photos and update cats
-    //           </label>
-    //           {selectedOption === 'viewer' ? <div>
-    //             {catViewer}
-    //           </div> :
-    //           <div> 
-    //             <h3>Do you want to delete this pin?</h3>
-    //             <p><strong>Latitude:</strong> {lngLat.lat}</p>
-    //             <p><strong>Longitude:</strong> {lngLat.lng}</p>
-    //             <center>
-    //             <button 
-    //             onClick={() => {
-    //               // make this do a delete on cascade
-    //             fetch(PIN_URL, {
-    //               method: 'DELETE',
-    //               headers: {
-    //                 'Content-Type': 'application/json'
-    //               },
-    //               body: JSON.stringify({'id': lngLat.id})
-    //             }).then(res => res.json()).then(data => {
-    //               console.log(data);
+    // call this function from addMarker
+    // the cat needs the pin id
+    const addSingleCat = (catName: string, catDesc: string) => { 
+      fetch(PIN_URL, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({'id': lngLat.id, 'name': catName, 'desc': catDesc})
+      }).then(res => res.json()).then(data => {
+        console.log(data);
+        // setCatDesc('');setCatName('');
+      })
+  }
 
-    //               const num_cats: number = data.num_cats;
-    //               if (num_cats > 0){
-    //                 alert('There are ' + num_cats + 'cats at this pin')
-    //               } else{
-    //                 const markerToDelete = markersRef.current.filter(pin => pin.id === lngLat.id)[0].marker;
-    //                 markerToDelete.remove();
-    //                 const filteredMarkers = markersRef.current.filter(pin => pin.id !== lngLat.id);
-    //                 markersRef.current = filteredMarkers;
-    //                 setMarkers(filteredMarkers)
-    //               }
-    //             })
-    //             }}>Yes</button>
-    //             <h3>Add a cat instead?</h3>
-    //             <input
-    //             type="text"
-    //             value={catName}
-    //             onChange={(e) => setCatName(e.target.value)}
-    //             placeholder='Name of the Cat?'
-    //             />
-    //             <textarea
-    //             value={catDesc}
-    //             onChange={(e) => setCatDesc(e.target.value)}
-    //             placeholder='Description...'
-    //             rows={7}
-    //             cols={20}
-    //             />
-    //             {/* TODO how to handle having no name or description? */}
-    //             <button 
-    //             // TODO fix bug where description longer than expected in my database is crashing it
-    //             disabled={!catName.length || !catDesc.length || catDesc.length > 240}
-    //             onClick={() => {
-    //               fetch(PIN_URL, {
-    //                 method: 'PATCH',
-    //                 headers: {
-    //                   'Content-Type': 'application/json'
-    //                 },
-    //                 body: JSON.stringify({'id': lngLat.id, 'name': catName, 'desc': catDesc})
-    //               }).then(res => res.json()).then(data => {
-    //                 console.log(data);setCatDesc('');setCatName('');
-    //               })
-    //             }}>Add cat</button>
-    //             <button onClick={() => console.log(`${catName} ${catDesc}`)} >debug</button>
-    //               </center>
-    //           </div>}
-    //       </div>
-    //   // END ADMIN
-    //  } else{
-    //    // USER
-    //   return catViewer
-    //   // END USER
-    //  }
-
-    //  } 
-
-    // function MapPopup({lngLat, mapInstance}: {lngLat: LngLatWithID, mapInstance: any}) {
-    // const [added, setAdded] = useState(false);
-
-    //   if(permissions == 0){
-    //     // ADMIN
-    //   const addMarker = () => {
-    //   // add marker to database
-    //   fetch(PIN_URL, {
-    //     method: 'POST',
-    //     headers: {
-    //       "Content-Type": "application/json"
-    //     },
-    //     body: JSON.stringify(lngLat)}).then(
-    //       res => res.json()
-    // )
-    // .then(data => {
-    //   const deleteNode = document.createElement('div');
-    //   const root = ReactDOM.createRoot(deleteNode);
-    //   // NOTE; this part is wonky because when you create the marker popup
-    //   // the id is not known until response is received from the server with the id
-    //   const newLngLat = {
-    //     'id': data.id, 'lat': lngLat.lat, 'lng': lngLat.lng
-    //   };
-    //   root.render(<MarkerPopup  mapInstance={map.current} lngLat={newLngLat}/>);
-
-
-    // const newMarker = new maplibregl.Marker({color: "#FF0000"})
-    //   .setLngLat([lngLat.lng, lngLat.lat])
-    //   .setPopup(new maplibregl.Popup().setDOMContent(deleteNode))
-    //   .addTo(mapInstance);
-
-    // const newValue = [...markersRef.current, {'marker': newMarker, 'id': data.id}];
-    // markersRef.current = newValue;
-    // setMarkers(newValue)
-    // })
-    // }
-    
-    //   return added ? <h4>Please close the window</h4> : (
-    //       <div style={{ padding: '10px', maxWidth: '200px' }}>
-    //           <h3>Adding a new Marker</h3>
-    //           <p><strong>Latitude:</strong> {lngLat.lat}</p>
-    //           <p><strong>Longitude:</strong> {lngLat.lng}</p>
-    //           <h4>Are you sure you want to add a new marker here?</h4>
-    //           <button onClick={() => {setAdded(true);addMarker()}}>Yes</button>
-    //       </div>
-    //   );
-    //   // END ADMIN
-    // } else{
-
-    //   // USER 
-    //   return <div style={{ padding: '10px', maxWidth: '200px' }}>
-    //           <h3>Do you know any cats here?</h3>
-    //       </div>
-    //   // END USER
-    // }
-    // }
+  // then upload all photos
 
     useEffect(() => {
         if (map.current) return; // stops map from intializing more than once
@@ -283,18 +140,9 @@ export function Map({permissions}: {permissions: number}){
           const {pins} = data;
           console.log('pins');
           console.log(data)
-          const initMarkerState = pins.map((pin: any) => {
-            const deleteNode = document.createElement('div');
-            const root = ReactDOM.createRoot(deleteNode);
-            const lngLatProp  : LngLatWithID = {
-              id: pin.id,
-              lng: pin.lng,
-              lat: pin.lat
-            }
-            
+          const initMarkerState = pins.map((pin: any) => {            
             const newMarker = new maplibregl.Marker({color: "#FF0000"})
             .setLngLat([pin.lng, pin.lat])
-            // .setPopup(new maplibregl.Popup().setDOMContent(deleteNode)) 
             .addTo(map.current!);
             // if no markers are selected, a click should deselect all markers except that on
             // if a marker is selected and is clicked, de select it

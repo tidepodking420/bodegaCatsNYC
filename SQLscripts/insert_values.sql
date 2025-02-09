@@ -17,3 +17,6 @@ INSERT INTO user (username, email, password_hash, user_role) VALUE
 
 INSERT INTO pin (lat, lng, user_id) VALUE
     (40.7402666, -73.8673452, 'eefabe41-e4c4-11ef-a633-08d23ea2bce1');
+
+INSERT INTO queue (lat, lng, created_at, name, `desc`, username, awsuuid) VALUE
+    ();
