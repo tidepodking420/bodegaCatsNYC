@@ -192,7 +192,7 @@ export function SidePanel({isPanelExpanded2, currentLngLat, markers, currentUser
                             className="mobile-button user-login-button"
                             style={{backgroundColor: '#0000BB', marginBottom: '1%', position: 'relative', left: '20px', display: 'inline-block'}}
                             >{placingPinRef.current ? 'Placing pin' : 'Place Pin'}</button>
-                        <p style={{position: 'absolute', fontSize: '13px', left: '4%', top: '17%', marginTop: '4%'}}>{placingPinRef.current ? '🔒 Lock in Place' : 'Touch Map & Drag Pin'}</p>
+                        <p style={{position: 'absolute', fontSize: '13px', left: '4%', top: '18%', marginTop: '4%'}}>{placingPinRef.current ? '🔒 Lock in Place' : 'Touch Map & Drag Pin'}</p>
                         {/* <p style={{display: 'inline-block', marginLeft: '8%'}} >{currentLngLat.lat === -1 && currentLngLat.lng == -1 ? 'Not chosen' :`Lat: ${currentLngLat.lat.toPrecision(6).toString()} Lng: ${currentLngLat.lng.toPrecision(6).toString()}`}</p> */}
                         <center>
                             <button
@@ -209,9 +209,9 @@ export function SidePanel({isPanelExpanded2, currentLngLat, markers, currentUser
                                 onChange={(e) => setCatName(e.target.value)}
                                 placeholder='Name of the Cat?'
                             />
-                            <label style={{position: 'absolute', left: '69%', fontSize: '12px', bottom: '26em'}}>
+                            <label style={{position: 'absolute', left: '69%', fontSize: '12px', bottom: '23em'}}>
                                 <input
-                                    style={{position: 'relative', left: '40%', top: '3em', transform: 'scale(1.5)'}}
+                                    style={{position: 'relative', left: '40%', top: '4em', transform: 'scale(1.5)'}}
                                     type="checkbox"
                                     checked={checked}
                                     onChange={() => {
