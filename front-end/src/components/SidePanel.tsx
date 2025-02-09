@@ -209,7 +209,7 @@ export function SidePanel({isPanelExpanded2, currentLngLat, markers, currentUser
                                 onChange={(e) => setCatName(e.target.value)}
                                 placeholder='Name of the Cat?'
                             />
-                            <label style={{position: 'absolute', left: '69%', fontSize: '12px', bottom: '23em'}}>
+                            <label style={{position: 'absolute', left: '69%', fontSize: '12px', bottom: '24.5em'}}>
                                 <input
                                     style={{position: 'relative', left: '40%', top: '4em', transform: 'scale(1.5)'}}
                                     type="checkbox"
