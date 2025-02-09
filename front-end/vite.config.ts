@@ -6,9 +6,9 @@ export default defineConfig({
   plugins: [react()],
   server: {
     allowedHosts: [
-      'cat-app-load-balancer-254988594.us-east-2.elb.amazonaws.com', // Allow the ALB hostname
+      'cat-app-load-balancer-254988594.us-east-2.elb.amazonaws.com',
       'dualstack.cat-app-load-balancer-254988594.us-east-2.elb.amazonaws.com',
-      'example.com', // Add your custom domain if you have one
+      'bodega-cats-nyc.com',
     ],
   },
 })
