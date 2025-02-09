@@ -2,7 +2,7 @@ import type { LngLatWithID, Marker } from "./Map"
 import {useSelector } from "react-redux";
 import { RootState } from "./redux/CatStore";
 import { BasicCat } from "./BasicCat";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 const VITE_SERVER_URL = import.meta.env.VITE_SERVER_URL;
 const PHOTO_URL = VITE_SERVER_URL + "/photo"
 import {DeleteObjectCommand, PutObjectCommand, S3Client} from '@aws-sdk/client-s3';
@@ -48,6 +48,15 @@ export function SidePanel({isPanelExpanded2, currentLngLat, markers, currentUser
     const [catName, setCatName] = useState('');
     const [catDesc, setCatDesc] = useState('');
 
+    const [imageSource, setImageSource] = useState(localStorage.getItem('imagePreview') || '#');
+    const [clicked, setClicked] = useState(false);
+    // console.log(imageSource)
+
+    useEffect(() => {
+        localStorage.setItem('imagePreview', imageSource)
+    }, [imageSource])
+
+
     const [file, setFile] = useState(null); 
     const fileInputRef = useRef(null); 
     const [loading, setLoading] = useState(false);
@@ -62,6 +71,7 @@ export function SidePanel({isPanelExpanded2, currentLngLat, markers, currentUser
                 // one-to-many relationship between cats
                 if(!file){
                     alert('Upload a file please :)')
+                    setLoading(false);
                     return;
                 }
                 // TODO only set a pin before doing upload,
@@ -127,7 +137,7 @@ export function SidePanel({isPanelExpanded2, currentLngLat, markers, currentUser
             position: 'absolute',
             width: '97%',
             bottom: '0px',
-            height: isPanelExpanded2 ? addingCatMode ? '60%': '40%' : '0%',
+            height: isPanelExpanded2 ? addingCatMode ? '58%': '40%' : '0%',
             right: '3px',
             background: 'white',
             borderWidth: '1px',
@@ -181,8 +191,8 @@ export function SidePanel({isPanelExpanded2, currentLngLat, markers, currentUser
                             className="mobile-button user-login-button"
                             style={{backgroundColor: '#0000BB', marginBottom: '1%', position: 'relative', left: '20px', display: 'inline-block'}}
                             >{placingPinRef.current ? 'Placing pin' : 'Place Pin'}</button>
-                        <p style={{position: 'absolute', fontSize: '13px', left: '4%', top: '27%', marginTop: '4%'}}>{placingPinRef.current ? '🔒 Lock in Place' : 'Touch Map & Drag Pin'}</p>
-                        <p style={{display: 'inline-block', marginLeft: '8%'}} >{currentLngLat.lat === -1 && currentLngLat.lng == -1 ? 'Not chosen' :`Lat: ${currentLngLat.lat.toPrecision(6).toString()} Lng: ${currentLngLat.lng.toPrecision(6).toString()}`}</p>
+                        <p style={{position: 'absolute', fontSize: '13px', left: '4%', top: '17%', marginTop: '4%'}}>{placingPinRef.current ? '🔒 Lock in Place' : 'Touch Map & Drag Pin'}</p>
+                        {/* <p style={{display: 'inline-block', marginLeft: '8%'}} >{currentLngLat.lat === -1 && currentLngLat.lng == -1 ? 'Not chosen' :`Lat: ${currentLngLat.lat.toPrecision(6).toString()} Lng: ${currentLngLat.lng.toPrecision(6).toString()}`}</p> */}
                         <center>
                             <button
                                 onClick={() => alert('submitting to database')}
@@ -206,20 +216,33 @@ export function SidePanel({isPanelExpanded2, currentLngLat, markers, currentUser
                                 rows={7}
                                 cols={20}
                             />
-                            <input type="file"
-                                style={{position: 'relative', marginTop: '10px', left: '10%'}}
-                                ref={fileInputRef}
-                                onChange={(e) => {
-                                setFile(e.target.files[0])
-                                }} />
-                                
-                            <button 
-                                disabled={loading}
-                                style={{position: 'relative', right: '10%'}}
-                                onClick={() => {
-                                    setLoading(true)
-                                    uploadFile();
-                                }}>Save Image</button>
+                            <div>
+                                <input
+                                    type="file"
+                                    style={{ position: 'relative', marginTop: '10px', left: '10%' }}
+                                    ref={fileInputRef}
+                                    onChange={(e) => {
+                                    const file = e.target.files[0]; // Get the selected file
+                                    if (file) {
+                                        setFile(file);
+                                        const reader = new FileReader(); // Create a FileReader instance
+
+                                        // Define the onload event handler
+                                        reader.onload = (event) => {
+                                            console.log(event.target.result)
+                                            setImageSource(event.target.result);
+                                        };
+
+                                        reader.readAsDataURL(file); // Read the file as a data URL
+                                    }
+                                    }}
+                                />
+                                <img
+                                    onClick={() => setClicked(!clicked)}
+                                    src={imageSource}
+                                    style={{ maxWidth: '100%', maxHeight: clicked ?  '40%' : '200px', marginTop: '10px', marginBottom: '100px' }}
+                                />
+                            </div>
                         </center>
                     </div>
                 </div>}   
