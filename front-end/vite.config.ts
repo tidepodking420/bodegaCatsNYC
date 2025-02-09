@@ -7,6 +7,7 @@ export default defineConfig({
   server: {
     allowedHosts: [
       'cat-app-load-balancer-254988594.us-east-2.elb.amazonaws.com', // Allow the ALB hostname
+      'dualstack.cat-app-load-balancer-254988594.us-east-2.elb.amazonaws.com',
       'example.com', // Add your custom domain if you have one
     ],
   },
