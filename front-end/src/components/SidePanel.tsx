@@ -60,6 +60,7 @@ export function SidePanel({isPanelExpanded2, currentLngLat, markers, currentUser
     const [file, setFile] = useState(null); 
     const fileInputRef = useRef(null); 
     const [loading, setLoading] = useState(false);
+    const [checked, setChecked] = useState(false);
     // TODO close the navigation panel when the user goes to add a cat
     // and make this panel even larger
 
@@ -170,11 +171,11 @@ export function SidePanel({isPanelExpanded2, currentLngLat, markers, currentUser
                 </div>
             </div>
                 : <div>
-                    <p style={{display: 'inline-block'}}>Adding Cat Mode</p> 
+                    <p style={{display: 'inline-block'}}>Adding Cat Mode 🐈😻🐈</p> 
                     <button
                         onClick={() => setAddingCatMode(!addingCatMode)}
                         className="mobile-button user-login-button"
-                        style={{backgroundColor: '#BB0000', left: '200px', display: 'inline-block', position: 'relative', padding: '5px'}}
+                        style={{backgroundColor: '#BB0000', left: '110px', display: 'inline-block', position: 'relative', padding: '5px'}}
                         >Exit</button>
                     <div>
 
@@ -202,11 +203,25 @@ export function SidePanel({isPanelExpanded2, currentLngLat, markers, currentUser
                             <input
                                 style={{display: 'block'}}
                                 className="new-cat"
+                                disabled={checked}
                                 type="text"
                                 value={catName}
                                 onChange={(e) => setCatName(e.target.value)}
                                 placeholder='Name of the Cat?'
                             />
+                            <label style={{position: 'absolute', left: '69%', fontSize: '12px', bottom: '26em'}}>
+                                <input
+                                    style={{position: 'relative', left: '40%', top: '3em', transform: 'scale(1.5)'}}
+                                    type="checkbox"
+                                    checked={checked}
+                                    onChange={() => {
+                                        setChecked(!checked);
+                                        setCatName(!checked? 'Unknown kitty car 🐈🚗' : '')
+                                    }
+                                    }
+                                />
+                                Don't know the name?
+                             </label>
                             <textarea
                                 className='new-cat'
                                 style={{display: 'block'}}
@@ -238,9 +253,10 @@ export function SidePanel({isPanelExpanded2, currentLngLat, markers, currentUser
                                     }}
                                 />
                                 <img
+                                    className='border'
                                     onClick={() => setClicked(!clicked)}
                                     src={imageSource}
-                                    style={{ maxWidth: '100%', maxHeight: clicked ?  '40%' : '200px', marginTop: '10px', marginBottom: '100px' }}
+                                    style={{ maxWidth: '80%', maxHeight: clicked ?  '40%' : '200px', marginTop: '10px', marginBottom: '100px' }}
                                 />
                             </div>
                         </center>

@@ -359,7 +359,7 @@ export function Map({permissions}: {permissions: number}){
                   lat: lngLat.lat,
                   lng: lngLat.lng
                 });
-                const newMarker = new maplibregl.Marker({color:     "#0000BB"}).setDraggable(true).setLngLat([lngLat.lng, lngLat.lat]).addTo(map. current!);
+                const newMarker = new maplibregl.Marker({color:"#0000BB"}).setDraggable(true).setLngLat([lngLat.lng, lngLat.lat]).addTo(map. current!);
                 newPinRef.current = newMarker;
                 setNewPin(newMarker);
                 newMarker.on('drag', () => {

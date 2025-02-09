@@ -41,8 +41,14 @@
     left: 100px;
   }
 
+  .border {
+    border-width: 1px;
+    border-style: solid;
+    border-color: black;
+  }
+
   .new-cat {
-    border-width: 3px;
+    border-width: 1px;
     border-style: solid;
     border-color: black;
     width: 60%;
