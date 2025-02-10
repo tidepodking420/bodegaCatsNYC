@@ -38,15 +38,12 @@ interface SidePanelProps {
 // next step: show the user and the 
 export function SidePanel({isPanelExpanded2, currentLngLat, markers, currentUser, placingPin, setPlacingPin, placingPinRef, newPinRef, setIsPanelExpanded}: SidePanelProps) {
 
-    // const dispatch = useDispatch();
     const cats = useSelector((state: RootState) => state.cats.cats);
     const [addingCatMode, setAddingCatMode] = useState(false);
 
 
     const selectedPin = markers.filter(marker => marker.selected);
     
-    // TODO: show the user the error text
-    // TODO: remove the blue pin on successs
     // TODO: give the user a cue that an upload is successful
     // TOOD: create queue admin screen
 
@@ -61,11 +58,14 @@ export function SidePanel({isPanelExpanded2, currentLngLat, markers, currentUser
     const fileInputRef = useRef(null); 
     const [loading, setLoading] = useState(false);
     const [checked, setChecked] = useState(false);
+    const [errorText, setErrorText] = useState('');
 
       async function submitToQueue() {
           // add marker to database
           if(!file){
-             console.log('Upload a file please :)')
+            const noFileMessage = 'Upload a file please :)';
+             console.log(noFileMessage)
+             setErrorText(noFileMessage);
              return;
           }
           console.log('inside add marker')
@@ -88,20 +88,22 @@ export function SidePanel({isPanelExpanded2, currentLngLat, markers, currentUser
             })}).then(res => res.json()).then(data => {
                 console.log(data)
                 if(data.message === 'success'){
+                    // TODO remove pin
                     uploadFile(newPhotoId);
+                    setCatDesc('');
+                    setCatName('');
+                    setErrorText('');
+                    setChecked(false);
+                    newPinRef.current.remove();
+                    newPinRef.current = null;
+                } else{
+                    setErrorText(data.message);
                 }
             })
             .then(() => setLoading(false))
         }
 
     const uploadFile = async (uuid_string: string) => {
-                // originally built this on the assumption of just one cat
-                // one-to-many relationship between cats
-                if(!file){
-                    alert('Upload a file please :)')
-                    return 'Upload a file please :)';
-                }
-              
                 const arrayBuffer = await file.arrayBuffer(); // Convert File to ArrayBuffer
                 const uint8Array = new Uint8Array(arrayBuffer);
                 const params = {
@@ -190,6 +192,7 @@ export function SidePanel({isPanelExpanded2, currentLngLat, markers, currentUser
                         <p style={{position: 'absolute', fontSize: '13px', left: '4%', top: '18%', marginTop: '4%'}}>{placingPinRef.current ? '🔒 Lock in Place' : 'Touch Map & Drag Pin'}</p>
                         {/* <p style={{display: 'inline-block', marginLeft: '8%'}} >{currentLngLat.lat === -1 && currentLngLat.lng == -1 ? 'Not chosen' :`Lat: ${currentLngLat.lat.toPrecision(6).toString()} Lng: ${currentLngLat.lng.toPrecision(6).toString()}`}</p> */}
                         <center>
+                            <p style={{color: 'red', margin: '0', width: '40%', left: '10%', position: 'relative'}}>{errorText}</p>
                             <button
                                 // disabled={loading}
                                 onClick={() => submitToQueue()}

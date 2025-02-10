@@ -196,8 +196,10 @@ def queue_logic():
         return {'message': 'You must add a photo'}
     if len(catName) > 50:
         return {'message': 'Name cannot exceed 50 characters'}
-    if not len(catName) or not len(catDesc):
-        return {'message': 'You must include a name and description'}
+    if not len(catName):
+        return {'message': 'You must include a name or check the box'}
+    if not len(catDesc):
+        return {'message': 'You must include a description'}
     if len(catDesc) > 240:
         return {'message': 'Description cannot exceeed 240 characters'}
     if int(lat) == int(lng):
