@@ -8,11 +8,6 @@ from dotenv import load_dotenv
 import os
 import uuid
 
-# TODO env vars for ports, URLS, AWS credentials
-# TODO create default database with some cats
-# TODO how to go about creating users -> Amazon Cognito
-# TODO mobile specific UI
-
 load_dotenv()
 
 app = Flask(__name__)
@@ -137,7 +132,6 @@ def pin_logic():
         user_id = User.map_to_user(get_user_id)[0]['id']
         query = "INSERT INTO pin (lat, lng, user_id) VALUE (%s, %s, %s);"
 
-        # todo update this to return all the relevant information
         pin_id = post_query(query, params=(lat, lng, user_id))
         print('pin_id', pin_id)
 

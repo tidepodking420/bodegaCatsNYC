@@ -6,6 +6,7 @@ import { useRef, useState, useEffect } from "react";
 const VITE_SERVER_URL = import.meta.env.VITE_SERVER_URL;
 const PHOTO_URL = VITE_SERVER_URL + "/photo"
 const PIN_URL = VITE_SERVER_URL + "/pin"
+import {v4 as uuidv4} from 'uuid';
 const QUEUE_URL = VITE_SERVER_URL + "/queue"
 import {DeleteObjectCommand, PutObjectCommand, S3Client} from '@aws-sdk/client-s3';
 const AWS_ACCESS_KEY_ID = import.meta.env.VITE_AWS_ACCESS_KEY_ID;
@@ -44,47 +45,34 @@ export function SidePanel({isPanelExpanded2, currentLngLat, markers, currentUser
 
     const selectedPin = markers.filter(marker => marker.selected);
     
-    // console.log('markers in side panel', markers)
-    // console.log('cats', cats);
+    // TODO: show the user the error text
+    // TODO: remove the blue pin on successs
+    // TODO: give the user a cue that an upload is successful
+    // TOOD: create queue admin screen
+
 
     const [catName, setCatName] = useState('');
     const [catDesc, setCatDesc] = useState('');
-    const [photoId, setPhotoId] = useState('');
 
     const [imageSource, setImageSource] = useState(null);
     const [clicked, setClicked] = useState(false);
-    // console.log(imageSource)
-
-
 
     const [file, setFile] = useState(null); 
     const fileInputRef = useRef(null); 
     const [loading, setLoading] = useState(false);
     const [checked, setChecked] = useState(false);
-    // TODO close the navigation panel when the user goes to add a cat
-    // and make this panel even larger
-    async function deletePhotoAWS(photo_id: string) {
-                const params = {
-                    Bucket: S3_BUCKET,
-                    Key: photo_id,  // Use the same key (ID) as when uploading
-                };
-                const command = new DeleteObjectCommand(params);
-                    await s3Client.send(command);
-                    console.log("Photo deleted successfully! in AWS");
-            }
 
       async function submitToQueue() {
           // add marker to database
-          // TODO upload the file onSUbmit
+          if(!file){
+             console.log('Upload a file please :)')
+             return;
+          }
           console.log('inside add marker')
-        //   console.log(lat, lng)
-          // TODO the pin id needs the user id
+            setLoading(true);
+          const newPhotoId = uuidv4();
+          console.log('newPhotoId', newPhotoId)
           setLoading(true)
-          const b = await uploadFile();
-          if(b.length > 0){
-            console.log(b)
-            setLoading(false)
-          } else{
              fetch(QUEUE_URL, {
             method: 'POST',
             headers: {
@@ -96,45 +84,29 @@ export function SidePanel({isPanelExpanded2, currentLngLat, markers, currentUser
                 'username': currentUser,
                 catName, 
                 catDesc,
-                'awsuuid': photoId
+                'awsuuid': newPhotoId
             })}).then(res => res.json()).then(data => {
                 console.log(data)
-                if(data.message !== 'success'){
-                    deletePhotoAWS(photoId);
+                if(data.message === 'success'){
+                    uploadFile(newPhotoId);
                 }
             })
             .then(() => setLoading(false))
         }
-        }
 
-    // start out with designing for just one cat
-    // TODO create pin before creating a cat
-    // TODO create a cat to associate with before file upload
-    const uploadFile = async () => {
+    const uploadFile = async (uuid_string: string) => {
                 // originally built this on the assumption of just one cat
                 // one-to-many relationship between cats
                 if(!file){
                     alert('Upload a file please :)')
                     return 'Upload a file please :)';
                 }
-                // TODO only set a pin before doing upload,
-                // disable the button while doing an upload
-                //
-                const res = await fetch(PHOTO_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                })
-                const data = await res.json();
-                console.log(data)
-                setPhotoId(data.new_photo_id);
-    
+              
                 const arrayBuffer = await file.arrayBuffer(); // Convert File to ArrayBuffer
                 const uint8Array = new Uint8Array(arrayBuffer);
                 const params = {
                     Bucket: S3_BUCKET,
-                    Key: data.new_photo_id,
+                    Key: uuid_string,
                     Body: uint8Array,
                     ContentType: file.type,
                 };
@@ -158,7 +130,6 @@ export function SidePanel({isPanelExpanded2, currentLngLat, markers, currentUser
 
     return (
         <div style={{
-            // TODO use addingCatMode to make this panel
             position: 'absolute',
             width: '97%',
             bottom: '0px',
@@ -290,3 +261,14 @@ export function SidePanel({isPanelExpanded2, currentLngLat, markers, currentUser
         </div>
     )
 }
+
+    // and make this panel even larger
+    // async function deletePhotoAWS(photo_id: string) {
+    //             const params = {
+    //                 Bucket: S3_BUCKET,
+    //                 Key: photo_id,  // Use the same key (ID) as when uploading
+    //             };
+    //             const command = new DeleteObjectCommand(params);
+    //                 await s3Client.send(command);
+    //                 console.log("Photo deleted successfully! in AWS");
+    //         }
