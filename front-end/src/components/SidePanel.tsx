@@ -148,8 +148,8 @@ export function SidePanel({isPanelExpanded2, currentLngLat, markers, currentUser
                     <div style={{display: 'inline-block'}}>
                         {selectedPin[0] ? `Added by ${selectedPin[0].user_id} on ${selectedPin[0].created_at.toLocaleDateString()}` : 'All cats view'}
                     </div>
-                    <div className="create-cats">
-                        {currentUser.length > 0 ?
+                    {currentUser.length > 0 ?
+                    <div className="create-cats" style={{width: '60%'}}>
                         <button
                             onClick={() => {
                                 setIsPanelExpanded(false);
@@ -157,8 +157,14 @@ export function SidePanel({isPanelExpanded2, currentLngLat, markers, currentUser
                             }}
                             className="mobile-button user-login-button"
                             style={{backgroundColor: 'yellowgreen'}}
-                            >Add a cat</button> : <p id='qer'>Sign in to submit cats</p>}
-                    </div>
+                            >Add a cat</button>
+                        <button
+                            onClick={() => {
+                            }}
+                            className="mobile-button user-login-button"
+                            style={{backgroundColor: 'blue', display: 'inline-block', marginLeft: '2%'}}
+                            >Review</button> 
+                    </div> : <p style={{display: 'inline-block', marginLeft: '10%'}}>Sign in to submit cats</p> }
                 </div>
                 <div>
                     {selectedPin[0] ? cats.filter(cat => cat.pin_id === selectedPin[0].id).map(cat => <BasicCat key={cat.id} cat={cat} markers={markers}/>) : cats.map(cat => <BasicCat key={cat.id} cat={cat} markers={markers}/>)}

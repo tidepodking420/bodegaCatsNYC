@@ -43,6 +43,16 @@ def get_db_connection():
 
 connection_pool = get_db_connection()
 
+def update_query(query, params=()):
+    mydb = connection_pool.get_connection()
+    cursor = mydb.cursor()
+    cursor.execute(query, params)
+    mydb.commit()
+    
+    rows_affected = cursor.rowcount  # Retrieve the number of rows affected by the update
+    mydb.close()
+    return rows_affected
+
 
 def read_query(query, params=()):
     mydb = connection_pool.get_connection()
@@ -145,6 +155,8 @@ def queue_logic():
         cat_name = request.json.get('catName')
         cat_desc = request.json.get('catDesc')
         awsuuid = request.json.get('awsuuid')
+
+        update_sql = "UPDATE queue SET email = %s WHERE id = %s"
         if selection == 'accept':
 
             get_user_id = read_query("SELECT * FROM user where username = %s", params=(username,))
@@ -168,8 +180,6 @@ def queue_logic():
             print(num_deleted)
             return {'message': 'success' if num_deleted else 'failure'}
 
-        return {'message': queue_id}
-    
 
 @app.route('/login', methods=['POST', 'PATCH'])
 def login_logic():
