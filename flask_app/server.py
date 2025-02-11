@@ -183,7 +183,7 @@ def pin_logic():
         pins = Pin.map_to_pin(result)
         return {'pins': pins}
     
-@app.route('/queue', methods=['POST', 'GET'])
+@app.route('/queue', methods=['POST', 'GET', 'PATCH'])
 def queue_logic():
     if request.method == 'GET':
         result = read_query("SELECT * FROM queue ORDER by created_at DESC")
@@ -218,7 +218,20 @@ def queue_logic():
         print(insertion_result)
 
         return {'message': 'success'}
+    if request.method == 'PATCH':
+        queue_id = request.json.get('queue_id')
+        selection = request.json.get('selection')
+        if selection == 'accept':
+            pass
+        else:
+            # TODO delete from the queue
+            print('deleting from queue')
+            delete_q_query = "DELETE FROM queue WHERE id=%s;"
+            num_deleted = delete_query(delete_q_query, params=(queue_id,))
+            print(num_deleted)
+            return {'message': 'success' if num_deleted else 'failure'}
 
+        return {'message': queue_id}
     
 
 @app.route('/login', methods=['POST', 'PATCH'])

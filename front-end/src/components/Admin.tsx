@@ -2,6 +2,7 @@ const VITE_SERVER_URL = import.meta.env.VITE_SERVER_URL;
 const QUEUE_URL = VITE_SERVER_URL + "/queue"
 import {useState, useEffect} from 'react'
 import { AdminItem } from './AdminItem';
+import {DeleteObjectCommand, S3Client} from '@aws-sdk/client-s3';
 
 export type QueueItem = {
     id: number,
@@ -14,21 +15,48 @@ export type QueueItem = {
     awsuuid: string
 };
 
+const AWS_ACCESS_KEY_ID = import.meta.env.VITE_AWS_ACCESS_KEY_ID;
+const AWS_SECRET_ACCESS_KEY = import.meta.env.VITE_AWS_SECRET_ACCESS_KEY;
+const S3_BUCKET = import.meta.env.VITE_S3_BUCKET;
+const REGION = import.meta.env.VITE_REGION;
+const s3Client = new S3Client({
+  region: REGION, // Change to your S3 region
+  credentials: {
+    accessKeyId: AWS_ACCESS_KEY_ID,
+    secretAccessKey: AWS_SECRET_ACCESS_KEY,
+  },
+});
+
 
 export function Admin(){
 
-    function confirmOrReject(queue_id: number, selection: boolean){
-        fetch(QUEUE_URL + `?queue_id=${queue_id}`, {
+    async function deletePhotoAWS(awsuuid: string) {
+                const params = {
+                    Bucket: S3_BUCKET,
+                    Key: awsuuid,  // Use the same key (ID) as when uploading
+                };
+                const command = new DeleteObjectCommand(params);
+                    await s3Client.send(command);
+                    console.log("Photo deleted successfully! in AWS");
+            }
+
+    function confirmOrReject(queue_id: number, selection: boolean, awsuuid: string){
+        fetch(QUEUE_URL, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json'
-            }
+            },
+            body: JSON.stringify({'queue_id': queue_id, 'selection': selection})
         }).then(res => res.json()).then(data => {
             console.log(data)
             // TODO confirm success from server
-            const newQueue = queue.filter(item => item.id === queue_id);
-            console.log('newQueue', selection)
+            const newQueue = [...queue.filter(item => item.id !== queue_id)];
+            console.log('newQueue')
             console.log(newQueue)
+            setQueue(newQueue);
+            if(data.message === 'success'){
+                deletePhotoAWS(awsuuid)
+            }
         })
     }
 
@@ -42,7 +70,7 @@ export function Admin(){
                 'Content-Type': 'application/json'
             }
         }).then(res => res.json()).then(data => setQueue(data.queue))
-    }, [queue])
+    }, [])
 
     return (
         <div>

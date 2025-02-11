@@ -2,11 +2,11 @@ import type { LngLatWithID, Marker } from "./Map"
 import {useSelector } from "react-redux";
 import { RootState } from "./redux/CatStore";
 import { BasicCat } from "./BasicCat";
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState } from "react";
 const VITE_SERVER_URL = import.meta.env.VITE_SERVER_URL;
 import {v4 as uuidv4} from 'uuid';
 const QUEUE_URL = VITE_SERVER_URL + "/queue"
-import {DeleteObjectCommand, PutObjectCommand, S3Client} from '@aws-sdk/client-s3';
+import {PutObjectCommand, S3Client} from '@aws-sdk/client-s3';
 const AWS_ACCESS_KEY_ID = import.meta.env.VITE_AWS_ACCESS_KEY_ID;
 const AWS_SECRET_ACCESS_KEY = import.meta.env.VITE_AWS_SECRET_ACCESS_KEY;
 const S3_BUCKET = import.meta.env.VITE_S3_BUCKET;
@@ -262,14 +262,3 @@ export function SidePanel({isPanelExpanded2, currentLngLat, markers, currentUser
         </div>
     )
 }
-
-    // and make this panel even larger
-    // async function deletePhotoAWS(photo_id: string) {
-    //             const params = {
-    //                 Bucket: S3_BUCKET,
-    //                 Key: photo_id,  // Use the same key (ID) as when uploading
-    //             };
-    //             const command = new DeleteObjectCommand(params);
-    //                 await s3Client.send(command);
-    //                 console.log("Photo deleted successfully! in AWS");
-    //         }

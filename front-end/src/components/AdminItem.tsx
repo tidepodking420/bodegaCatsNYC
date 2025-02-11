@@ -39,11 +39,12 @@ export function AdminItem({queueItem, confirmOrReject} : {queueItem: QueueItem, 
                         alert('Choose an option')
                         return;
                     }
-                    confirmOrReject(id, selectedOption)
+                    confirmOrReject(id, selectedOption, awsuuid)
                     }} >Confirm selection: {selectedOption}</button>
                 <div>
+                    <p style={{display: 'inline-block'}}>{'lat/lng:\t'}</p>
                     <a href={`https://www.google.com/maps?q=${lat},${lng}`} target="_blank" rel="noopener noreferrer">
-                        lat/lng:{lat} {lng}
+                        {lat} {lng}
                     </a>
                 </div>
                 <p>created_at: {created_at}</p>
