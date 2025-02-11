@@ -3,7 +3,7 @@ from flask_cors import CORS
 from mysql.connector import pooling
 import time
 import boto3
-from models import Cat, Pin, Photo, User
+from models import Cat, Pin, Photo, User, Queue
 from dotenv import load_dotenv
 import os
 import uuid
@@ -124,26 +124,27 @@ def pin_logic():
     # its easier to add the cats using patch
     if request.method == 'POST':
         # this method should create a new pin, and return an id
-        lat = request.json.get('lat')
-        lng = request.json.get('lng')
-        username = request.json.get('username')
+        pass
+        # lat = request.json.get('lat')
+        # lng = request.json.get('lng')
+        # username = request.json.get('username')
 
-        get_user_id = read_query("SELECT * FROM user where username = %s", params=(username,))
-        user_id = User.map_to_user(get_user_id)[0]['id']
-        query = "INSERT INTO pin (lat, lng, user_id) VALUE (%s, %s, %s);"
+        # get_user_id = read_query("SELECT * FROM user where username = %s", params=(username,))
+        # user_id = User.map_to_user(get_user_id)[0]['id']
+        # query = "INSERT INTO pin (lat, lng, user_id) VALUE (%s, %s, %s);"
 
-        pin_id = post_query(query, params=(lat, lng, user_id))
-        print('pin_id', pin_id)
+        # pin_id = post_query(query, params=(lat, lng, user_id))
+        # print('pin_id', pin_id)
 
-        pin_info_query = "SELECT * FROM pin where id = %s"
-        get_all_info = read_query(pin_info_query, params=(pin_id,))
-        print('getting all the info')
-        print(get_all_info)
-        my_pin = Pin.map_to_pin(get_all_info)[0]
+        # pin_info_query = "SELECT * FROM pin where id = %s"
+        # get_all_info = read_query(pin_info_query, params=(pin_id,))
+        # print('getting all the info')
+        # print(get_all_info)
+        # my_pin = Pin.map_to_pin(get_all_info)[0]
 
-        return {'id': my_pin['id'], 'user_id': my_pin['user_id'], 'created_at': my_pin['created_at']}
+        # return {'id': my_pin['id'], 'user_id': my_pin['user_id'], 'created_at': my_pin['created_at']}
     elif request.method == 'DELETE':
-        id = request.json.get('id')
+        # id = request.json.get('id')
         # read the number cats before deleting
         pass
         # query = "SELECT count(*) FROM cat WHERE pin_id = %s"
@@ -182,35 +183,41 @@ def pin_logic():
         pins = Pin.map_to_pin(result)
         return {'pins': pins}
     
-@app.route('/queue', methods=['POST'])
+@app.route('/queue', methods=['POST', 'GET'])
 def queue_logic():
-    lng = request.json.get('lng')
-    lat = request.json.get('lat')
-    username = request.json.get('username')
-    catName = request.json.get('catName')
-    catDesc = request.json.get('catDesc')
-    awsuuid = request.json.get('awsuuid')
+    if request.method == 'GET':
+        result = read_query("SELECT * FROM queue ORDER by created_at DESC")
+        print('resssulTT')
+        print(result)
+        queues = Queue.map_to_queue(result)
+        return {'queue': queues}
+    if request.method == 'POST':
+        lng = request.json.get('lng')
+        lat = request.json.get('lat')
+        username = request.json.get('username')
+        catName = request.json.get('catName')
+        catDesc = request.json.get('catDesc')
+        awsuuid = request.json.get('awsuuid')
 
-    print(lng, lat, username, catName, catDesc, awsuuid)
-    if not len(awsuuid):
-        return {'message': 'You must add a photo'}
-    if len(catName) > 50:
-        return {'message': 'Name cannot exceed 50 characters'}
-    if not len(catName):
-        return {'message': 'You must include a name or check the box'}
-    if not len(catDesc):
-        return {'message': 'You must include a description'}
-    if len(catDesc) > 240:
-        return {'message': 'Description cannot exceeed 240 characters'}
-    if int(lat) == int(lng):
-        return {'message': 'Add a pin on the map please.'}
+        print(lng, lat, username, catName, catDesc, awsuuid)
+        if not len(awsuuid):
+            return {'message': 'You must add a photo'}
+        if len(catName) > 50:
+            return {'message': 'Name cannot exceed 50 characters'}
+        if not len(catName):
+            return {'message': 'You must include a name or check the box'}
+        if not len(catDesc):
+            return {'message': 'You must include a description'}
+        if len(catDesc) > 240:
+            return {'message': 'Description cannot exceeed 240 characters'}
+        if int(lat) == int(lng):
+            return {'message': 'Add a pin on the map please.'}
 
-    insert_into_query_table = "INSERT INTO queue (lat, lng, catName, catDesc, username, awsuuid) VALUE (%s, %s, %s, %s, %s, %s);"
-    insertion_result = post_query(insert_into_query_table, params=(lat, lng, catName, catDesc, username, awsuuid))
-    print(insertion_result)
+        insert_into_query_table = "INSERT INTO queue (lat, lng, catName, catDesc, username, awsuuid) VALUE (%s, %s, %s, %s, %s, %s);"
+        insertion_result = post_query(insert_into_query_table, params=(lat, lng, catName, catDesc, username, awsuuid))
+        print(insertion_result)
 
-
-    return {'message': 'success'}
+        return {'message': 'success'}
 
     
 

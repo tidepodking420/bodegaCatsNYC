@@ -4,8 +4,6 @@ import { RootState } from "./redux/CatStore";
 import { BasicCat } from "./BasicCat";
 import { useRef, useState, useEffect } from "react";
 const VITE_SERVER_URL = import.meta.env.VITE_SERVER_URL;
-const PHOTO_URL = VITE_SERVER_URL + "/photo"
-const PIN_URL = VITE_SERVER_URL + "/pin"
 import {v4 as uuidv4} from 'uuid';
 const QUEUE_URL = VITE_SERVER_URL + "/queue"
 import {DeleteObjectCommand, PutObjectCommand, S3Client} from '@aws-sdk/client-s3';
