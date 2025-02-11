@@ -43,7 +43,6 @@ export function SidePanel({isPanelExpanded2, currentLngLat, markers, currentUser
     const selectedPin = markers.filter(marker => marker.selected);
     
     // TODO: give the user a cue that an upload is successful
-    // TOOD: create queue admin screen
 
 
     const [catName, setCatName] = useState('');
@@ -168,7 +167,11 @@ export function SidePanel({isPanelExpanded2, currentLngLat, markers, currentUser
                 : <div>
                     <p style={{display: 'inline-block'}}>Adding Cat Mode 🐈😻🐈</p> 
                     <button
-                        onClick={() => setAddingCatMode(!addingCatMode)}
+                        onClick={() => {
+                            placingPinRef.current = false;
+                            setPlacingPin(false);
+                            setAddingCatMode(!addingCatMode)
+                        }}
                         className="mobile-button user-login-button"
                         style={{backgroundColor: '#BB0000', left: '110px', display: 'inline-block', position: 'relative', padding: '5px'}}
                         >Exit</button>

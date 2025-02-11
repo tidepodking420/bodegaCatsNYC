@@ -15,7 +15,6 @@ type Photo = {
     cat_id: number
 };
 
-// TODO retrieve the username
 export function BasicCat({cat, markers}: {cat: Cat, markers: Array<Marker>}){
 
     const [catPhotos, setCatPhotos] = useState<Array<Photo>>([]); 
