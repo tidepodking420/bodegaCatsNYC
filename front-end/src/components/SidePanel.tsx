@@ -2,7 +2,9 @@ import type { LngLatWithID, Marker } from "./Map"
 import {useSelector } from "react-redux";
 import { RootState } from "./redux/CatStore";
 import { BasicCat } from "./BasicCat";
-import { useRef, useState } from "react";
+import { UserItem } from "./UserItem";
+import { useRef, useState, useEffect } from "react";
+import type {QueueItem} from './Admin'
 const VITE_SERVER_URL = import.meta.env.VITE_SERVER_URL;
 import {v4 as uuidv4} from 'uuid';
 const QUEUE_URL = VITE_SERVER_URL + "/queue"
@@ -37,7 +39,21 @@ interface SidePanelProps {
 export function SidePanel({isPanelExpanded2, currentLngLat, markers, currentUser, placingPin, setPlacingPin, placingPinRef, newPinRef, setIsPanelExpanded}: SidePanelProps) {
 
     const cats = useSelector((state: RootState) => state.cats.cats);
+    const [reviewMode, setReviewMode] = useState(false);
     const [addingCatMode, setAddingCatMode] = useState(false);
+
+    const [queue, setQueue] = useState<Array<QueueItem>>([]);
+    // change 
+        useEffect(() => {
+            if(currentUser.length > 0){
+                fetch(QUEUE_URL + `?username=${currentUser}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }).then(res => res.json()).then(data => setQueue(data.queue))
+            }
+        }, [currentUser])
 
 
     const selectedPin = markers.filter(marker => marker.selected);
@@ -127,6 +143,18 @@ export function SidePanel({isPanelExpanded2, currentLngLat, markers, currentUser
                 //   getCatPhotos();
           };
 
+          const reviewModeButton = <button
+          onClick={() => {
+              setReviewMode(!reviewMode);
+          }}
+          className="mobile-button user-login-button"
+          style={{backgroundColor: !reviewMode ? 'blue' : 'red', display: 'inline-block', marginLeft: '2%'}}
+          >{!reviewMode ? `Review` : 'Exit'}</button> 
+          const catView = <div>{selectedPin[0] ? cats.filter(cat => cat.pin_id === selectedPin[0].id).map(cat => <BasicCat key={cat.id} cat={cat} markers={markers}/>) : cats.map(cat => <BasicCat key={cat.id} cat={cat} markers={markers}/>)}</div>
+                    
+
+          // fetch everything from review mode
+
     return (
         <div style={{
             position: 'absolute',
@@ -142,7 +170,7 @@ export function SidePanel({isPanelExpanded2, currentLngLat, markers, currentUser
             flexDirection: "column", // Stack children vertically
             overflow: 'scroll',
           }}>
-            {!addingCatMode ?
+            {!addingCatMode ? !reviewMode ? 
             <div>
                 <div>
                     <div style={{display: 'inline-block'}}>
@@ -158,17 +186,22 @@ export function SidePanel({isPanelExpanded2, currentLngLat, markers, currentUser
                             className="mobile-button user-login-button"
                             style={{backgroundColor: 'yellowgreen'}}
                             >Add a cat</button>
-                        <button
-                            onClick={() => {
-                            }}
-                            className="mobile-button user-login-button"
-                            style={{backgroundColor: 'blue', display: 'inline-block', marginLeft: '2%'}}
-                            >Review</button> 
+                       {reviewModeButton}
                     </div> : <p style={{display: 'inline-block', marginLeft: '10%'}}>Sign in to submit cats</p> }
                 </div>
                 <div>
-                    {selectedPin[0] ? cats.filter(cat => cat.pin_id === selectedPin[0].id).map(cat => <BasicCat key={cat.id} cat={cat} markers={markers}/>) : cats.map(cat => <BasicCat key={cat.id} cat={cat} markers={markers}/>)}
+                    {catView}
                 </div>
+            </div> : 
+            <div style={{position: 'relative', top: '.5em'}}>
+                <center>
+                    Review Cat Submissions
+                    {reviewModeButton}
+                    <div >
+                        {queue.map(queueItem => <UserItem key={`userItem-${queueItem.id}`} queueItem={queueItem}/>
+                    )}
+                    </div>
+                </center>
             </div>
                 : <div>
                     <p style={{display: 'inline-block'}}>Adding Cat Mode 🐈😻🐈</p> 

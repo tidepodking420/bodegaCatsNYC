@@ -28,13 +28,15 @@ s3_client = boto3.client(
     aws_access_key_id=AWS_ACCESS_KEY_ID,
     aws_secret_access_key=AWS_SECRET_ACCESS_KEY
 )
+# TODO lazy load the pictures; pool size is getting over loaded bc 
+# the pictures are all getting retrieved every time
 
 def get_db_connection():
     time.sleep(5)
     # Function to get a database connection
     return pooling.MySQLConnectionPool(
     pool_name="Swimming_Pools_Drank",
-    pool_size=5,
+    pool_size=10,
     host=app.config['MYSQL_HOST'],
     user=app.config['MYSQL_USER'],
     password=app.config['MYSQL_PASSWORD'],
@@ -116,7 +118,13 @@ def pin_logic():
 @app.route('/queue', methods=['POST', 'GET', 'PATCH'])
 def queue_logic():
     if request.method == 'GET':
-        result = read_query("SELECT * FROM queue ORDER by created_at DESC")
+        print('username', request.args.get('username'))
+        username = request.args.get('username')
+        if username:
+            result = read_query("SELECT * FROM queue WHERE username = %s ORDER by created_at DESC", params=(username,))
+        else:
+            result = read_query("SELECT * FROM queue ORDER by created_at DESC")
+        
         queues = Queue.map_to_queue(result)
         return {'queue': queues}
     if request.method == 'POST':
