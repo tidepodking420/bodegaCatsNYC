@@ -6,7 +6,7 @@ export function SubwayToggleButton({map}: {map: any}){
     const [showSubway, setShowSubway] = useState(true);
 
     return (
-        <div>
+        <div style={{display: 'inline-block'}}>
         <button className='mobile-button nav-button' onClick={() => {
             if(showSubway){
             subwayLayerStyles.forEach((style) => {

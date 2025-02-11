@@ -35,31 +35,28 @@ export function NavigationPanel({map, isPanelExpanded, currentUser, toggleShowSi
                 width: '100%',
                 backgroundColor: 'hwb(0 82% 8%)',
                 height: isPanelExpanded ? '20%' : '0'}}>
-                        <div style={{display: 'flex', width: '100%', justifyContent: 'space-evenly', position: 'absolute', top: '20px'}}>
+                        <div style={{width: '100%', position: 'relative', left: '15%', marginBottom: '8.5%', top: '0.5em'}}>
                             <SubwayToggleButton map={map}/>
-                            <button className='mobile-button nav-button' onClick={() => map.current!.fitBounds([
+                            <button className='mobile-button nav-button' 
+                                style={{display: 'inline-block', marginLeft: '3%'}}
+                                onClick={() => map.current!.fitBounds([
                                 [-74.270056,40.494061],
                                 [-73.663062,40.957187]
-                            ])}>Reset View</button>
+                                ])}>Reset View</button>
+                            <button 
+                                className='mobile-button user-login-button'
+                                style={{backgroundColor: currentUser ? '#BB0000' :'#00BB00', display: 'inline-block', marginLeft: '3%'}} onClick={() => currentUser.length > 0 ? setCurrentUser('') : toggleShowSignIn()}>{currentUser ? 'Sign Out': 'Sign in'}</button>
                         </div>
-                        <div style={{ height: '40px' }}></div>
-                        <center>
-                            <p>Move between boroughs</p>  
-                        </center>
                         <div style={{ 
-        display: 'grid', 
-        gridTemplateColumns: 'repeat(3, 1fr)', /* 3 columns */
-        gap: '10px', /* Space between buttons */
-      }}>
+                            display: 'grid', 
+                            gridTemplateColumns: 'repeat(3, 1fr)', /* 3 columns */
+                            gap: '10px', /* Space between buttons */
+                            }}>
                             {Object.keys(boroughs).map(boro => <button className='mobile-button nav-button' key={boro} onClick={() => map.current!.fitBounds(boroughs[boro])}>{boro}</button>)}
                             <div style={{ height: '3px' }}></div>
                         </div>
-                        <div style={{ paddingBottom: '10px', paddingLeft: '5%'}}>
-                            <button 
-                            className='mobile-button user-login-button'
-                            style={{backgroundColor: currentUser ? '#BB0000' :'#00BB00', marginRight: '5%'}} onClick={() => currentUser.length > 0 ? setCurrentUser('') : toggleShowSignIn()}>{currentUser ? 'Sign Out': 'Sign in'}</button>
-                            <div style={{display: 'inline-block'}}>{currentUser.length === 0 ? 'Not signed in  ':`Signed in as: ${currentUser}`} </div>
-                        </div>
+                        <div style={{display: 'inline-block', position: 'relative', left: '10%', bottom: '.4em'}}>{currentUser.length === 0 ? 'Not signed in  ':`Signed in as: ${currentUser}`} </div>
+
             </div>
     )
 }

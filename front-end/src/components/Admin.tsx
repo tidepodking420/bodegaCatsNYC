@@ -49,7 +49,6 @@ export function Admin(){
             body: JSON.stringify({queue_id, selection, username, lat, lng, catName, catDesc, awsuuid})
         }).then(res => res.json()).then(data => {
             console.log(data)
-            // TODO confirm success from server
             const newQueue = [...queue.filter(item => item.id !== queue_id)];
             console.log('newQueue')
             console.log(newQueue)
