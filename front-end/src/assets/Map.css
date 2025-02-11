@@ -57,3 +57,17 @@
   input.new-cat {
     margin-bottom: 1%;
   }
+
+  .queue-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3 items per row */
+    gap: 16px; /* Space between items */
+    padding: 16px;
+  }
+  
+  .queue-item {
+    border: 1px solid black;
+    border-radius: 8px;
+    padding: 16px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
