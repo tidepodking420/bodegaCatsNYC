@@ -40,13 +40,13 @@ export function Admin(){
                     console.log("Photo deleted successfully! in AWS");
             }
 
-    function confirmOrReject(queue_id: number, selection: boolean, awsuuid: string){
+    function confirmOrReject(queue_id: number, selection: string, awsuuid: string, username, lat: string, lng: string, catName: string, catDesc){
         fetch(QUEUE_URL, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({'queue_id': queue_id, 'selection': selection})
+            body: JSON.stringify({queue_id, selection, username, lat, lng, catName, catDesc, awsuuid})
         }).then(res => res.json()).then(data => {
             console.log(data)
             // TODO confirm success from server
@@ -54,7 +54,7 @@ export function Admin(){
             console.log('newQueue')
             console.log(newQueue)
             setQueue(newQueue);
-            if(data.message === 'success'){
+            if(data.message === 'success' && selection === 'reject'){
                 deletePhotoAWS(awsuuid)
             }
         })

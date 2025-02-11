@@ -86,7 +86,6 @@ export function SidePanel({isPanelExpanded2, currentLngLat, markers, currentUser
             })}).then(res => res.json()).then(data => {
                 console.log(data)
                 if(data.message === 'success'){
-                    // TODO remove pin
                     uploadFile(newPhotoId);
                     setCatDesc('');
                     setCatName('');
@@ -94,6 +93,7 @@ export function SidePanel({isPanelExpanded2, currentLngLat, markers, currentUser
                     setChecked(false);
                     newPinRef.current.remove();
                     newPinRef.current = null;
+                    alert('SUCCESS! Now wait for your post to be approved. TODO cat submission screen')
                 } else{
                     setErrorText(data.message);
                 }

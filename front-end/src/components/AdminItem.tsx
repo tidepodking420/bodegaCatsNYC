@@ -39,7 +39,7 @@ export function AdminItem({queueItem, confirmOrReject} : {queueItem: QueueItem, 
                         alert('Choose an option')
                         return;
                     }
-                    confirmOrReject(id, selectedOption, awsuuid)
+                    confirmOrReject(id, selectedOption, awsuuid, username, lat, lng, catName, catDesc)
                     }} >Confirm selection: {selectedOption}</button>
                 <div>
                     <p style={{display: 'inline-block'}}>{'lat/lng:\t'}</p>

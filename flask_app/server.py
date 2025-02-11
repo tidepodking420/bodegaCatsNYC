@@ -183,12 +183,13 @@ def pin_logic():
         pins = Pin.map_to_pin(result)
         return {'pins': pins}
     
+# TODO be able to delete pins and shit
+# TODO update database to have 'decision' column for queue: that way users can see updates on cat submissions
+# then add decisions instead of deleting those entries
 @app.route('/queue', methods=['POST', 'GET', 'PATCH'])
 def queue_logic():
     if request.method == 'GET':
         result = read_query("SELECT * FROM queue ORDER by created_at DESC")
-        print('resssulTT')
-        print(result)
         queues = Queue.map_to_queue(result)
         return {'queue': queues}
     if request.method == 'POST':
@@ -221,10 +222,29 @@ def queue_logic():
     if request.method == 'PATCH':
         queue_id = request.json.get('queue_id')
         selection = request.json.get('selection')
+        username = request.json.get('username')
+        lat = request.json.get('lat')
+        lng = request.json.get('lng')
+        cat_name = request.json.get('catName')
+        cat_desc = request.json.get('catDesc')
+        awsuuid = request.json.get('awsuuid')
         if selection == 'accept':
-            pass
+
+            get_user_id = read_query("SELECT * FROM user where username = %s", params=(username,))
+            user_id = User.map_to_user(get_user_id)[0]['id']
+
+            pin_insert_query = "INSERT INTO pin (lat, lng, user_id) VALUE (%s, %s, %s);"
+            pin_id = post_query(pin_insert_query, params=(lat, lng, user_id))
+
+            cat_query = "INSERT INTO cat (name, `desc`, pin_id) VALUES (%s, %s, %s);"
+            cat_id = post_query(cat_query, params=(cat_name, cat_desc, pin_id))
+
+            file_name = 'file_name'
+            insert_photo_query = "INSERT INTO photo (file_name, cat_id, awsuuid) VALUE (%s, %s, %s);"
+            final_result = post_query(insert_photo_query, params=(file_name, cat_id, awsuuid))
+            print(final_result)
+            return {'message' : 'suceess'}
         else:
-            # TODO delete from the queue
             print('deleting from queue')
             delete_q_query = "DELETE FROM queue WHERE id=%s;"
             num_deleted = delete_query(delete_q_query, params=(queue_id,))
@@ -294,9 +314,9 @@ def photo_logic():
         # file_name = request.json.get('file_name')
         # cat_id = request.json.get('cat_id')
         # insert_photo_query = "INSERT INTO photo (file_name, cat_id, awsuuid) VALUE (%s, %s, %s);"
-        new_uuid = str(uuid.uuid4())
+        # new_uuid = str(uuid.uuid4())
         # result = str(post_query(insert_photo_query, params=(file_name, cat_id, new_uuid)))
-        return {'new_photo_id': new_uuid}
+        # return {'new_photo_id': new_uuid}
     elif request.method == 'GET':
         cat_id = request.args.get('cat_id')
         query = "SELECT * FROM photo WHERE cat_id = %s"
