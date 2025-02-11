@@ -45,6 +45,7 @@ create TABLE queue (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     catName VARCHAR(50) NOT NULL,
     catDesc VARCHAR(240) NOT NULL,
+    decision ENUM('pending', 'accepted', 'rejected') DEFAULT 'pending', 
     -- pseudo foreign keys
     username VARCHAR(50) NOT NULL,
     awsuuid CHAR(36) NOT NULL

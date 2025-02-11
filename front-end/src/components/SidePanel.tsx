@@ -25,6 +25,7 @@ const s3Client = new S3Client({
 interface SidePanelProps {
     isPanelExpanded2: boolean;
     currentLngLat: LngLatWithID;
+    setCurrentLngLat: any;
     markers: Array<Marker>;
     currentUser: string;
     placingPin: boolean;
@@ -36,22 +37,24 @@ interface SidePanelProps {
 // Show all of the cats
 
 // next step: show the user and the 
-export function SidePanel({isPanelExpanded2, currentLngLat, markers, currentUser, placingPin, setPlacingPin, placingPinRef, newPinRef, setIsPanelExpanded}: SidePanelProps) {
+export function SidePanel({isPanelExpanded2, currentLngLat, setCurrentLngLat, markers, currentUser, placingPin, setPlacingPin, placingPinRef, newPinRef, setIsPanelExpanded}: SidePanelProps) {
 
     const cats = useSelector((state: RootState) => state.cats.cats);
     const [reviewMode, setReviewMode] = useState(false);
     const [addingCatMode, setAddingCatMode] = useState(false);
 
     const [queue, setQueue] = useState<Array<QueueItem>>([]);
-    // change 
+    async function updateQueue() {
+        fetch(QUEUE_URL + `?username=${currentUser}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then(res => res.json()).then(data => setQueue(data.queue))
+    }
         useEffect(() => {
             if(currentUser.length > 0){
-                fetch(QUEUE_URL + `?username=${currentUser}`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                }).then(res => res.json()).then(data => setQueue(data.queue))
+                updateQueue();
             }
         }, [currentUser])
 
@@ -59,6 +62,8 @@ export function SidePanel({isPanelExpanded2, currentLngLat, markers, currentUser
     const selectedPin = markers.filter(marker => marker.selected);
     
     // TODO: give the user a cue that an upload is successful
+    // TODO fix bug when submitting a second cat
+    console.log(currentLngLat)
 
 
     const [catName, setCatName] = useState('');
@@ -108,12 +113,17 @@ export function SidePanel({isPanelExpanded2, currentLngLat, markers, currentUser
                     setChecked(false);
                     newPinRef.current.remove();
                     newPinRef.current = null;
+                    setCurrentLngLat({
+                        id: null,
+                        lat: -1,
+                        lng: -1
+                      });
                     alert('SUCCESS! Now wait for your post to be approved. TODO cat submission screen')
                 } else{
                     setErrorText(data.message);
                 }
             })
-            .then(() => setLoading(false))
+            .then(() => updateQueue())
         }
 
     const uploadFile = async (uuid_string: string) => {
@@ -198,8 +208,7 @@ export function SidePanel({isPanelExpanded2, currentLngLat, markers, currentUser
                     Review Cat Submissions
                     {reviewModeButton}
                     <div >
-                        {queue.map(queueItem => <UserItem key={`userItem-${queueItem.id}`} queueItem={queueItem}/>
-                    )}
+                        {queue.length > 0 ? queue.map(queueItem => <UserItem key={`userItem-${queueItem.id}`} queueItem={queueItem}/>) : <h2>No submissions made yet</h2>}
                     </div>
                 </center>
             </div>

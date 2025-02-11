@@ -263,7 +263,7 @@ export function Map({permissions}: {permissions: number}){
             style={{ bottom: '2px', left:'6px'}}>
             ☰ {/* Hamburger Icon */}
           </button>
-          <SidePanel isPanelExpanded2={isPanelExpanded2} currentLngLat={currentLngLat}
+          <SidePanel isPanelExpanded2={isPanelExpanded2} currentLngLat={currentLngLat} setCurrentLngLat={setCurrentLngLat}
             markers={markers}  currentUser={currentUser} placingPin={placingPin}
              setPlacingPin={setPlacingPin} placingPinRef={placingPinRef} newPinRef={newPinRef}
              setIsPanelExpanded={setIsPanelExpanded}/>

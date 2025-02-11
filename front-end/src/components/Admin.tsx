@@ -11,6 +11,7 @@ export type QueueItem = {
     created_at: string,
     catName: string,
     catDesc: string,
+    decision: string,
     username: string,
     awsuuid: string
 };
