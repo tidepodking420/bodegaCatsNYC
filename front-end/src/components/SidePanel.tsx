@@ -118,7 +118,7 @@ export function SidePanel({isPanelExpanded2, currentLngLat, setCurrentLngLat, ma
                         lat: -1,
                         lng: -1
                       });
-                    alert('SUCCESS! Now wait for your post to be approved. TODO cat submission screen')
+                    alert('SUCCESS! Now wait for your post to be approved. Check the status in the "review" tab')
                 } else{
                     setErrorText(data.message);
                 }

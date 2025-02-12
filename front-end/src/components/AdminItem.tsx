@@ -9,7 +9,7 @@ const GET_PHOTO_URL = (key: number | string) => `https://${S3_BUCKET}.s3.${REGIO
 export function AdminItem({queueItem, confirmOrReject} : {queueItem: QueueItem, confirmOrReject: any}){
 
     const [selectedOption, setSelectedOption] = useState('');
-    const {id, lat, lng, created_at, catName, catDesc, username, awsuuid} = queueItem
+    const {id, lat, lng, created_at, catName, catDesc, decision, username, awsuuid} = queueItem
     return (
          <div className='queue-item' key={id}>
             <center>
@@ -51,6 +51,7 @@ export function AdminItem({queueItem, confirmOrReject} : {queueItem: QueueItem, 
                 <p>cat name: {catName}</p>
                 <p>cat description: {catDesc}</p>
                 <p>username: {username}</p>
+                <p>decision: {decision}</p>
                 <img src={GET_PHOTO_URL(awsuuid)} alt={`${awsuuid}`} width={'75%%'}/>
              </center>
          </div>

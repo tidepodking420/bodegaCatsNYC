@@ -10,7 +10,8 @@ export function UserItem({queueItem} : {queueItem: QueueItem}){
     const {id, lat, lng, created_at, catName, catDesc, decision ,username, awsuuid} = queueItem
     return (
          <div className='queue-item' key={id}>
-            <p style={{display: 'inline-block'}}>{'lat/lng:\t'}</p>
+            <p >id: {id}</p>
+            <p style={{display: 'inline-block'}}>{'lat/lng:'}</p>
             <a href={`https://www.google.com/maps?q=${lat},${lng}`} target="_blank" rel="noopener noreferrer">
                 {lat} {lng}
             </a>

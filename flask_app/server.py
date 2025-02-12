@@ -123,7 +123,7 @@ def queue_logic():
         if username:
             result = read_query("SELECT * FROM queue WHERE username = %s ORDER by created_at DESC", params=(username,))
         else:
-            result = read_query("SELECT * FROM queue ORDER by created_at DESC")
+            result = read_query("SELECT * FROM queue WHERE decision = 'pending' ORDER by created_at DESC")
         
         queues = Queue.map_to_queue(result)
         return {'queue': queues}
@@ -164,7 +164,7 @@ def queue_logic():
         cat_desc = request.json.get('catDesc')
         awsuuid = request.json.get('awsuuid')
 
-        update_sql = "UPDATE queue SET email = %s WHERE id = %s"
+        update_sql = "UPDATE queue SET decision = %s WHERE id = %s"
         if selection == 'accept':
 
             get_user_id = read_query("SELECT * FROM user where username = %s", params=(username,))
@@ -180,13 +180,19 @@ def queue_logic():
             insert_photo_query = "INSERT INTO photo (file_name, cat_id, awsuuid) VALUE (%s, %s, %s);"
             final_result = post_query(insert_photo_query, params=(file_name, cat_id, awsuuid))
             print(final_result)
+
+            decision = 'accepted'
+
+            post_query(update_sql, params=(decision, queue_id))
             return {'message' : 'suceess'}
         else:
-            print('deleting from queue')
-            delete_q_query = "DELETE FROM queue WHERE id=%s;"
-            num_deleted = delete_query(delete_q_query, params=(queue_id,))
-            print(num_deleted)
-            return {'message': 'success' if num_deleted else 'failure'}
+            print('rejected from queue')
+            # delete_q_query = "DELETE FROM queue WHERE id=%s;"
+            # num_deleted = delete_query(delete_q_query, params=(queue_id,))
+            # print(num_deleted)
+            decision = 'rejected'
+            post_query(update_sql, params=(decision, queue_id))
+            return {'message': 'success'}
 
 
 @app.route('/login', methods=['POST', 'PATCH'])
