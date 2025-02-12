@@ -209,8 +209,7 @@ function moveToPin(){
             {!addingCatMode ? !reviewMode ? 
             <div>
                 <div>
-                    <div style={{display: 'inline-block'}}>
-                        {/* TODO; refatctor cat GET to retriver the username and data added */}
+                    <div style={{display: 'inline-block', position: 'relative', left: '5%'}}>
                         {selectedPin[0] ? 'Cats at Pin View' : 'All cats view'}
                     </div>
                     {!selectedPin[0] && (currentUser.length > 0 ?
