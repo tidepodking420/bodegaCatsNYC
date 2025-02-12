@@ -5,23 +5,24 @@ const LOGIN_URL = VITE_SERVER_URL + "/login";
 export function UserSignOn({toggleShowSignIn, setCurrentUser}: {toggleShowSignIn: any, setCurrentUser:any}){
 
     function login(){
+        const newUsername = username.trim();
         fetch(LOGIN_URL, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                username: username.trim(),
+                username: newUsername,
                 password: password.trim(),
             })
         }).then(res => res.json()).then(data => {
             if(data.message === 'successful-login'){
                 setErrorMessage('');
-                setCurrentUser(username);
+                setCurrentUser(newUsername);
                 toggleShowSignIn();
                 setUsername('');
                 setPassword('');
-                localStorage.setItem('currentUser', username);
+                localStorage.setItem('currentUser', newUsername);
             } else if(data.message === 'no-such-user'){
                 setCurrentUser('');
                 setErrorMessage(`"${username}" is not an existing user`)
