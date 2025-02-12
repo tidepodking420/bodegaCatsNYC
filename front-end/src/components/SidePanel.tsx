@@ -186,11 +186,6 @@ export function SidePanel({isPanelExpanded2, currentLngLat, setCurrentLngLat, ma
             cats.map(cat => <BasicCat key={cat.id} cat={cat} markers={markers}/>)}
             </div>
 
-function moveToPin(){
-    console.log('in the function')
-    console.log(map.current!)
-  }
-
     return (
         <div style={{
             position: 'absolute',
@@ -206,8 +201,9 @@ function moveToPin(){
             flexDirection: "column", // Stack children vertically
             overflow: 'scroll',
           }}>
+            {/* TODO fix the overflow x when in all cats view */}
             {!addingCatMode ? !reviewMode ? 
-            <div>
+            <div style={{overflowX: 'hidden', maxWidth: '100%'}}>
                 <div>
                     <div style={{display: 'inline-block', position: 'relative', left: '5%'}}>
                         {selectedPin[0] ? 'Cats at Pin View' : 'All cats view'}
