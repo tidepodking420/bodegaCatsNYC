@@ -30,6 +30,11 @@ const boroughs = {
 };
 
 export function NavigationPanel({map, isPanelExpanded, currentUser, toggleShowSignIn, showSignIn, setCurrentUser}: {map: any, isPanelExpanded: boolean, currentUser: string, toggleShowSignIn: any, showSignIn: boolean, setCurrentUser: any}){
+    function signOut(){
+        setCurrentUser('')
+        localStorage.setItem('currentUser', '')
+    }
+    
     return (
             <div style={{ position: 'relative',
                 width: '100%',
@@ -45,7 +50,8 @@ export function NavigationPanel({map, isPanelExpanded, currentUser, toggleShowSi
                                 ])}>Reset View</button>
                             <button 
                                 className='mobile-button user-login-button'
-                                style={{backgroundColor: currentUser ? '#BB0000' :'#00BB00', display: 'inline-block', marginLeft: '3%'}} onClick={() => currentUser.length > 0 ? setCurrentUser('') : toggleShowSignIn()}>{currentUser ? 'Sign Out': 'Sign in'}</button>
+                                style={{backgroundColor: currentUser ? '#BB0000' :'#00BB00', display: 'inline-block', marginLeft: '3%'}} onClick={() => currentUser.length > 0 ? 
+                                signOut(): toggleShowSignIn()}>{currentUser ? 'Sign Out': 'Sign in'}</button>
                         </div>
                         <div style={{ 
                             display: 'grid', 

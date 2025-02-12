@@ -15,6 +15,7 @@ type Photo = {
     cat_id: number
 };
 
+// TODO lazy load photos
 export function BasicCat({cat, markers}: {cat: Cat, markers: Array<Marker>}){
 
     const [catPhotos, setCatPhotos] = useState<Array<Photo>>([]); 
@@ -30,7 +31,6 @@ export function BasicCat({cat, markers}: {cat: Cat, markers: Array<Marker>}){
         }).then(res => res.json()).then(data => {
             console.log(data)
             setCatPhotos(data.photos)
-            // catSetter(cats.filter(x => x.id !== cat_id))
         })
     }
 

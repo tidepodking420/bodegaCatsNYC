@@ -160,7 +160,20 @@ export function SidePanel({isPanelExpanded2, currentLngLat, setCurrentLngLat, ma
           className="mobile-button user-login-button"
           style={{backgroundColor: !reviewMode ? 'blue' : 'red', display: 'inline-block', marginLeft: '2%'}}
           >{!reviewMode ? `Review` : 'Exit'}</button> 
-          const catView = <div>{selectedPin[0] ? cats.filter(cat => cat.pin_id === selectedPin[0].id).map(cat => <BasicCat key={cat.id} cat={cat} markers={markers}/>) : cats.map(cat => <BasicCat key={cat.id} cat={cat} markers={markers}/>)}</div>
+
+          const addCatButton = <button
+          onClick={() => {
+              setIsPanelExpanded(false);
+              setAddingCatMode(!addingCatMode)
+          }}
+          className="mobile-button user-login-button"
+          style={{backgroundColor: 'yellowgreen'}}
+          >Add a cat</button>;
+          const catView = <div>
+            {selectedPin[0] ? 
+            cats.filter(cat => cat.pin_id === selectedPin[0].id).map(cat => <BasicCat key={cat.id} cat={cat} markers={markers}/>) : 
+            cats.map(cat => <BasicCat key={cat.id} cat={cat} markers={markers}/>)}
+            </div>
                     
 
           // fetch everything from review mode
@@ -186,17 +199,11 @@ export function SidePanel({isPanelExpanded2, currentLngLat, setCurrentLngLat, ma
                     <div style={{display: 'inline-block'}}>
                         {selectedPin[0] ? `Added by ${selectedPin[0].user_id} on ${selectedPin[0].created_at.toLocaleDateString()}` : 'All cats view'}
                     </div>
+                    {/* TODO remove below when viewing a specific cat  */}
                     {currentUser.length > 0 ?
                     <div className="create-cats" style={{width: '60%'}}>
-                        <button
-                            onClick={() => {
-                                setIsPanelExpanded(false);
-                                setAddingCatMode(!addingCatMode)
-                            }}
-                            className="mobile-button user-login-button"
-                            style={{backgroundColor: 'yellowgreen'}}
-                            >Add a cat</button>
-                       {reviewModeButton}
+                        {addCatButton}
+                        {reviewModeButton}
                     </div> : <p style={{display: 'inline-block', marginLeft: '10%'}}>Sign in to submit cats</p> }
                 </div>
                 <div>

@@ -2,7 +2,6 @@ import { useRef, useEffect, useState } from 'react';
 import maplibregl, { Marker } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import '../assets/Map.css';
-import ReactDOM from 'react-dom/client';
 import { subwayLayerStyles } from './data/subway-layer-styles.ts';
 import { NavigationPanel } from './NavigationPanel.tsx';
 import { SidePanel } from './SidePanel.tsx';
@@ -37,7 +36,8 @@ lng: number,
 
 
 
-
+// TODO fix the review and add a cat button being in a weird position when viewing individual cats
+// TODO move sceen when clicking on an individual cat to center on the pin and make that pin larger
 // 0 for admin, 1 for user
 export function Map({permissions}: {permissions: number}){
     const mapContainer = useRef(null);
@@ -52,7 +52,7 @@ export function Map({permissions}: {permissions: number}){
     const [newPin, setNewPin] = useState<maplibregl.Marker | null>(null);
     const newPinRef = useRef(newPin);
     const [placingPin, setPlacingPin] = useState(false);
-    const [currentUser, setCurrentUser] = useState('');
+    const [currentUser, setCurrentUser] = useState(localStorage.getItem('currentUser') ?? '');
     const [isMarkerSelected, setIsMarkerSelected] = useState(false);
     const isMarkersSelectedRef = useRef(isMarkerSelected);
     const [markers, setMarkers] = useState<Array<Marker>>([]);

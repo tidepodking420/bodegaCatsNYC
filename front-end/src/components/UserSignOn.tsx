@@ -21,6 +21,7 @@ export function UserSignOn({toggleShowSignIn, setCurrentUser}: {toggleShowSignIn
                 toggleShowSignIn();
                 setUsername('');
                 setPassword('');
+                localStorage.setItem('currentUser', username);
             } else if(data.message === 'no-such-user'){
                 setCurrentUser('');
                 setErrorMessage(`"${username}" is not an existing user`)
