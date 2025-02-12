@@ -43,10 +43,7 @@ export function Map({permissions}: {permissions: number}){
     const lat = 40.7632571;
     const lng = -73.932958;
     const zoom = 11;
-    // {
-    // marker: maplibregl.marker
-    // id: int
-    // }
+    // TODO clicking on reset view should deselect the pin being selected
     const [newPin, setNewPin] = useState<maplibregl.Marker | null>(null);
     const newPinRef = useRef(newPin);
     const [placingPin, setPlacingPin] = useState(false);

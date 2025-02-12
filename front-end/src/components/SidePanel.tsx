@@ -211,16 +211,15 @@ function moveToPin(){
                 <div>
                     <div style={{display: 'inline-block'}}>
                         {/* TODO; refatctor cat GET to retriver the username and data added */}
-                        {selectedPin[0] ? `Added by ${selectedPin[0].user_id} on ${selectedPin[0].created_at.toLocaleDateString()}` : 'All cats view'}
+                        {selectedPin[0] ? 'Cats at Pin View' : 'All cats view'}
                     </div>
                     {!selectedPin[0] && (currentUser.length > 0 ?
-                    <div className="create-cats" style={{width: '60%'}}>
+                    <div className="create-cats" style={{width: '80%'}}>
                         {addCatButton}
                         {reviewModeButton}
                     </div> : <p style={{display: 'inline-block', marginLeft: '10%'}}>Sign in to submit cats</p> )}
                 </div>
                 <div>
-                    <button onClick={() => moveToPin()}>debug</button>
                     {catView}
                 </div>
             </div> : 
