@@ -6,7 +6,6 @@ import boto3
 from models import Cat, Pin, Photo, User, Queue
 from dotenv import load_dotenv
 import os
-import uuid
 
 load_dotenv()
 
@@ -93,13 +92,14 @@ def index():
 def cat_logic():
     if request.method == 'GET':
         # retrieving the cats at specific id
-        query = "SELECT * FROM cat WHERE pin_id = %s"
+        query = "SELECT cat.id, cat.name, cat.`desc`, cat.pin_id, user.username, pin.created_at FROM cat INNER JOIN pin ON cat.pin_id=pin.id INNER JOIN user ON pin.user_id=user.id"
         pin_id = request.args.get('pin_id')
         if pin_id == 'all':
-            result = read_query("SELECT * FROM cat")
+            result = read_query(query)
         else:
-            result = read_query(query, (pin_id,))
+            result = read_query(query + " WHERE pin_id = %s", (pin_id,))
         cats = Cat.map_to_cat(result)
+
         return {'cats': cats}
         
 
@@ -113,8 +113,6 @@ def pin_logic():
     return {'pins': pins}
     
 # TODO be able to delete pins and shit
-# TODO update database to have 'decision' column for queue: that way users can see updates on cat submissions
-# then add decisions instead of deleting those entries
 @app.route('/queue', methods=['POST', 'GET', 'PATCH'])
 def queue_logic():
     if request.method == 'GET':
@@ -186,10 +184,6 @@ def queue_logic():
             post_query(update_sql, params=(decision, queue_id))
             return {'message' : 'suceess'}
         else:
-            print('rejected from queue')
-            # delete_q_query = "DELETE FROM queue WHERE id=%s;"
-            # num_deleted = delete_query(delete_q_query, params=(queue_id,))
-            # print(num_deleted)
             decision = 'rejected'
             post_query(update_sql, params=(decision, queue_id))
             return {'message': 'success'}

@@ -36,7 +36,6 @@ lng: number,
 
 
 
-// TODO move sceen when clicking on an individual cat to center on the pin and make that pin larger
 // 0 for admin, 1 for user
 export function Map({permissions}: {permissions: number}){
     const mapContainer = useRef(null);
@@ -72,7 +71,6 @@ export function Map({permissions}: {permissions: number}){
               'Content-Type': 'application/json',
           }
       }).then(res => res.json()).then(data => {
-          console.log(data.cats);
           const allCats: Array<Cat> = data.cats;
           allCats.forEach(cat => dispatch(addCat(cat)));
       })
@@ -88,8 +86,6 @@ export function Map({permissions}: {permissions: number}){
         },
         body: JSON.stringify({'id': lngLat.id, 'name': catName, 'desc': catDesc})
       }).then(res => res.json()).then(data => {
-        console.log(data);
-        // setCatDesc('');setCatName('');
       })
   }
 
