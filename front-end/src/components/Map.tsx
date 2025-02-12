@@ -36,7 +36,6 @@ lng: number,
 
 
 
-// TODO fix the review and add a cat button being in a weird position when viewing individual cats
 // TODO move sceen when clicking on an individual cat to center on the pin and make that pin larger
 // 0 for admin, 1 for user
 export function Map({permissions}: {permissions: number}){
@@ -112,8 +111,8 @@ export function Map({permissions}: {permissions: number}){
       map.current.on('style.load', () => {
         // fitbounds to NYC
         map.current!.fitBounds([
-          [-74.270056,40.494061],
-          [-73.663062,40.957187]
+          [-74.270056,40.354061],
+          [-73.663062,40.757187]
         ])
 
         // add geojson sources for subway routes and stops
@@ -266,7 +265,7 @@ export function Map({permissions}: {permissions: number}){
           <SidePanel isPanelExpanded2={isPanelExpanded2} currentLngLat={currentLngLat} setCurrentLngLat={setCurrentLngLat}
             markers={markers}  currentUser={currentUser} placingPin={placingPin}
              setPlacingPin={setPlacingPin} placingPinRef={placingPinRef} newPinRef={newPinRef}
-             setIsPanelExpanded={setIsPanelExpanded}/>
+             setIsPanelExpanded={setIsPanelExpanded} map={map}/>
           <div style={{
              position: 'absolute',
              zIndex: 999,

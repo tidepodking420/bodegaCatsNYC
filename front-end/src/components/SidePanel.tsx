@@ -33,11 +33,12 @@ interface SidePanelProps {
     placingPinRef: any;
     newPinRef: any;
     setIsPanelExpanded: any;
+    map: any;
   }
 // Show all of the cats
 
 // next step: show the user and the 
-export function SidePanel({isPanelExpanded2, currentLngLat, setCurrentLngLat, markers, currentUser, placingPin, setPlacingPin, placingPinRef, newPinRef, setIsPanelExpanded}: SidePanelProps) {
+export function SidePanel({isPanelExpanded2, currentLngLat, setCurrentLngLat, markers, currentUser, placingPin, setPlacingPin, placingPinRef, newPinRef, setIsPanelExpanded, map}: SidePanelProps) {
 
     const cats = useSelector((state: RootState) => state.cats.cats);
     const [reviewMode, setReviewMode] = useState(false);
@@ -52,20 +53,30 @@ export function SidePanel({isPanelExpanded2, currentLngLat, setCurrentLngLat, ma
             }
         }).then(res => res.json()).then(data => setQueue(data.queue))
     }
-        useEffect(() => {
-            if(currentUser.length > 0){
-                updateQueue();
-            }
-        }, [currentUser])
+    useEffect(() => {
+        if(currentUser.length > 0){
+            updateQueue();
+        }
+    }, [currentUser])
 
-
+        
     const selectedPin = markers.filter(marker => marker.selected);
+        
+    useEffect(() => {
+        console.log('new value of selectedPIn');console.log(selectedPin)
+        if(selectedPin.length > 0){
+            // confirmed to have a selected pin at this point
+            const {lng, lat} = selectedPin[0].marker.getLngLat();
+            // console.log('TRUTH', lng, lat)
+            // bottom left, then top right
+            const offset = 0.02;
+            map.current!.fitBounds([
+                [lng - offset, lat - offset - .01],
+                [lng + offset, lat + offset - .01]
+              ])
+        }
+    }, [selectedPin])
     
-    // TODO: give the user a cue that an upload is successful
-    // TODO fix bug when submitting a second cat
-    console.log(currentLngLat)
-
-
     const [catName, setCatName] = useState('');
     const [catDesc, setCatDesc] = useState('');
 
@@ -174,9 +185,11 @@ export function SidePanel({isPanelExpanded2, currentLngLat, setCurrentLngLat, ma
             cats.filter(cat => cat.pin_id === selectedPin[0].id).map(cat => <BasicCat key={cat.id} cat={cat} markers={markers}/>) : 
             cats.map(cat => <BasicCat key={cat.id} cat={cat} markers={markers}/>)}
             </div>
-                    
 
-          // fetch everything from review mode
+function moveToPin(){
+    console.log('in the function')
+    console.log(map.current!)
+  }
 
     return (
         <div style={{
@@ -197,16 +210,17 @@ export function SidePanel({isPanelExpanded2, currentLngLat, setCurrentLngLat, ma
             <div>
                 <div>
                     <div style={{display: 'inline-block'}}>
+                        {/* TODO; refatctor cat GET to retriver the username and data added */}
                         {selectedPin[0] ? `Added by ${selectedPin[0].user_id} on ${selectedPin[0].created_at.toLocaleDateString()}` : 'All cats view'}
                     </div>
-                    {/* TODO remove below when viewing a specific cat  */}
-                    {currentUser.length > 0 ?
+                    {!selectedPin[0] && (currentUser.length > 0 ?
                     <div className="create-cats" style={{width: '60%'}}>
                         {addCatButton}
                         {reviewModeButton}
-                    </div> : <p style={{display: 'inline-block', marginLeft: '10%'}}>Sign in to submit cats</p> }
+                    </div> : <p style={{display: 'inline-block', marginLeft: '10%'}}>Sign in to submit cats</p> )}
                 </div>
                 <div>
+                    <button onClick={() => moveToPin()}>debug</button>
                     {catView}
                 </div>
             </div> : 

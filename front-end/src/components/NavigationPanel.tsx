@@ -45,8 +45,8 @@ export function NavigationPanel({map, isPanelExpanded, currentUser, toggleShowSi
                             <button className='mobile-button nav-button' 
                                 style={{display: 'inline-block', marginLeft: '3%'}}
                                 onClick={() => map.current!.fitBounds([
-                                [-74.270056,40.494061],
-                                [-73.663062,40.957187]
+                                [-74.270056,40.354061],
+                                [-73.663062,40.757187]
                                 ])}>Reset View</button>
                             <button 
                                 className='mobile-button user-login-button'
