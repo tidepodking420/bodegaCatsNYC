@@ -8,6 +8,8 @@ COPY server.py .
 
 COPY .env .
 
+COPY email_sender.py .
+
 COPY models/ ./models/ 
 
 RUN pip install --no-cache-dir -r requirements.txt
