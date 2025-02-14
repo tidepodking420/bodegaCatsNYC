@@ -201,7 +201,6 @@ export function SidePanel({isPanelExpanded2, currentLngLat, setCurrentLngLat, ma
             flexDirection: "column", // Stack children vertically
             overflow: 'scroll',
           }}>
-            {/* TODO fix the overflow x when in all cats view */}
             {!addingCatMode ? !reviewMode ? 
             <div style={{overflowX: 'hidden', maxWidth: '100%'}}>
                 <div>

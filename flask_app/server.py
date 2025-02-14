@@ -27,8 +27,6 @@ s3_client = boto3.client(
     aws_access_key_id=AWS_ACCESS_KEY_ID,
     aws_secret_access_key=AWS_SECRET_ACCESS_KEY
 )
-# TODO lazy load the pictures; pool size is getting over loaded bc 
-# the pictures are all getting retrieved every time
 
 def get_db_connection():
     time.sleep(5)
@@ -112,7 +110,6 @@ def pin_logic():
     pins = Pin.map_to_pin(result)
     return {'pins': pins}
     
-# TODO be able to delete pins and shit
 @app.route('/queue', methods=['POST', 'GET', 'PATCH'])
 def queue_logic():
     if request.method == 'GET':
