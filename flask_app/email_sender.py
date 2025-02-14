@@ -34,8 +34,8 @@ def send_email(receiver_email, token):
     smtp_port = 587
     sender_email = os.getenv('SENDER_EMAIL')
     sender_password = os.getenv('SENDER_PASSWORD')
-    print(token)
-    verification_link = url_for('verify_email', token=token, _external=True)
+    # verification_link = url_for('verify_email', token=token, _external=True)
+    verification_link = 'https://bodega-cats-nyc.com:5000/verify-email/' + token
     print('verification_link', verification_link)
     # Create the email
     subject = "🐈 Verification from bodega-cats-nyc.com 🐈"
