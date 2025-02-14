@@ -6,7 +6,9 @@ CREATE TABLE user (
     password_hash VARCHAR(255) NOT NULL,     -- Hashed password (use a strong hashing algorithm)
     user_role ENUM('admin', 'user') DEFAULT 'user', -- User role (e.g., admin or regular user)
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Timestamp for when the user was created
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP -- Timestamp for when the user was last updated
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, -- Timestamp for when the user was last updated
+    is_authenticated BOOLEAN DEFAULT FALSE,
+    verification_token VARCHAR(120) NOT NULL
 );
 
 

@@ -34,13 +34,14 @@ export function UserSignOn({toggleShowSignIn, setCurrentUser}: {toggleShowSignIn
     }
 
     function signUp(){
+        const newUsername = username.trim();
         fetch(LOGIN_URL, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                username: username.trim(),
+                username: newUsername,
                 password: password.trim(),
                 email: email.trim()
             })
@@ -49,7 +50,7 @@ export function UserSignOn({toggleShowSignIn, setCurrentUser}: {toggleShowSignIn
             if(data.message !== 'success'){
                 setSignUpErrorMessage(data.message);
             } else{
-                setCurrentUser(username);
+                setCurrentUser(newUsername);
                 setSignUpErrorMessage('');
                 toggleShowSignIn();
                 setUsername('');

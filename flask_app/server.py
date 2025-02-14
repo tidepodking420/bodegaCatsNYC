@@ -6,6 +6,7 @@ import boto3
 from models import Cat, Pin, Photo, User, Queue
 from dotenv import load_dotenv
 import os
+from email_sender import send_email, generate_verification_token, verify_verification_token
 
 load_dotenv()
 
@@ -232,10 +233,15 @@ def login_logic():
         email_obj = User.map_to_user(result)
         if len(email_obj):
             return {'message': f"Email {email} already in Use"}
-
         
-        insert_user_query = "INSERT INTO user (username, email, password_hash, user_role) VALUE (%s, %s, %s, 'user');"
-        result = post_query(insert_user_query, params=(username, email, password))
+        # send_email("a", "b", "c", "asdadsf")
+        email_v_token = generate_verification_token(email)
+        with app.app_context():
+            send_email(email, email_v_token)
+
+        # TODO: how will I use the status of authenticated vs not authenticated?
+        insert_user_query = "INSERT INTO user (username, email, password_hash, user_role, verification_token) VALUE (%s, %s, %s, 'user', %s);"
+        result = post_query(insert_user_query, params=(username, email, password, email_v_token))
         print(result)
         return {'message': 'success'}
 
@@ -246,6 +252,25 @@ def photo_logic():
     result = read_query(query, (cat_id,))
     all_photos = Photo.map_to_photo(result)
     return {'photos': all_photos}
+
+@app.route('/verify-email/<token>')
+def verify_email(token):
+    # verify the token
+    # retreive
+    query_user = "SELECT * FROM user where verification_token = %s"
+    result = read_query(query_user, params=(token,))
+    # get the user id
+    user_obj = User.map_to_user(result)
+    if not user_obj:
+        return {'invalid_token': 'invalid token'}
+    # print(user_obj[0]['id'])
+
+    user_auth_sql = "UPDATE user SET is_authenticated = TRUE WHERE id = %s"
+    user_id = user_obj[0]['id']
+    post_query(user_auth_sql, params=(user_id,))
+
+
+    return f"Email verified with token: {token}"
    
 
 
