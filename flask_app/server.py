@@ -144,6 +144,16 @@ def queue_logic():
             return {'message': 'Description cannot exceeed 240 characters'}
         if int(lat) == int(lng):
             return {'message': 'Add a pin on the map please.'}
+        
+        query_user = "SELECT * FROM user where username = %s"
+        user_result = User.map_to_user(read_query(query_user, params=(username,)))[0]
+        # get the user id
+        user_verify_status = user_result['is_authenticated']
+
+        if user_verify_status == 0:
+            return {'message': f"please verify your email: {user_result['email']}"}
+
+        print('user_verify_status',user_verify_status)
 
         insert_into_query_table = "INSERT INTO queue (lat, lng, catName, catDesc, username, awsuuid) VALUE (%s, %s, %s, %s, %s, %s);"
         insertion_result = post_query(insert_into_query_table, params=(lat, lng, catName, catDesc, username, awsuuid))

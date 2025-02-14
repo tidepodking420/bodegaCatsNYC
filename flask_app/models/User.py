@@ -39,4 +39,4 @@ class User(object):
         }
     
     def map_to_user(rows):
-        return [User(id=row[0], username=row[1], email=row[2], password_hash=row[3], user_role=row[4], created_at=row[5], updated_at=row[6], is_authenticated=[7], verification_token=[8]).to_dict() for row in rows]
+        return [User(id=row[0], username=row[1], email=row[2], password_hash=row[3], user_role=row[4], created_at=row[5], updated_at=row[6], is_authenticated=row[7], verification_token=row[8]).to_dict() for row in rows]

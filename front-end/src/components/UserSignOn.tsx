@@ -56,6 +56,8 @@ export function UserSignOn({toggleShowSignIn, setCurrentUser}: {toggleShowSignIn
                 setUsername('');
                 setPassword('');
                 setEmail('');
+                localStorage.setItem('currentUser', newUsername);
+                alert('Check your email for verification link');
              }
         })
     }
