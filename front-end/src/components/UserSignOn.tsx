@@ -4,8 +4,12 @@ const LOGIN_URL = VITE_SERVER_URL + "/login";
 
 export function UserSignOn({toggleShowSignIn, setCurrentUser}: {toggleShowSignIn: any, setCurrentUser:any}){
 
+
+    const [loading, setLoading] = useState<boolean>()
+
     function login(){
         const newUsername = username.trim();
+        setLoading(true);
         fetch(LOGIN_URL, {
             method: 'POST',
             headers: {
@@ -30,10 +34,11 @@ export function UserSignOn({toggleShowSignIn, setCurrentUser}: {toggleShowSignIn
                 setErrorMessage(`"${password}" is not the password`);
                 setCurrentUser('');
             }
-        })
+        }).then(() => setLoading(false));
     }
 
     function signUp(){
+        setLoading(true);
         const newUsername = username.trim();
         fetch(LOGIN_URL, {
             method: 'PATCH',
@@ -59,7 +64,7 @@ export function UserSignOn({toggleShowSignIn, setCurrentUser}: {toggleShowSignIn
                 localStorage.setItem('currentUser', newUsername);
                 alert('Check your email for verification link');
              }
-        })
+        }).then(() => setLoading(false))
     }
 
 
@@ -119,6 +124,7 @@ export function UserSignOn({toggleShowSignIn, setCurrentUser}: {toggleShowSignIn
                 <div style={{position: 'relative', top: '20px'}}>
                     <p style={{display: 'inline-block', marginRight: '2%'}}>Don't have an account?</p>
                     <button
+                        disabled={loading}
                         className='mobile-button user-login-button'
                         style={{display: 'inline-block', backgroundColor: '#0096FF', marginRight: '5%'}}
                         onClick={() => setDoSignUp(!doSignUp)}>Sign Up</button>
@@ -135,6 +141,7 @@ export function UserSignOn({toggleShowSignIn, setCurrentUser}: {toggleShowSignIn
                         <p style={{position: 'relative' ,color: 'red', fontSize: 'bolder', margin: '0px', left: '5%'}}>{signUpErrorMessage}</p>
                         {signUpInputs}
                         <button 
+                            disabled={loading}
                             className='mobile-button user-login-button'
                             onClick={() => signUp()}
                             style={{backgroundColor: '#0096FF', marginTop: '5px'
