@@ -180,10 +180,12 @@ export function SidePanel({isPanelExpanded2, currentLngLat, setCurrentLngLat, ma
           className="mobile-button user-login-button"
           style={{backgroundColor: 'yellowgreen'}}
           >Add a cat</button>;
+          console.log([...cats].sort((a, b) => Date.parse(b.created_at) - Date.parse(a.created_at)))
           const catView = <div>
-            {selectedPin[0] ? 
-            cats.filter(cat => cat.pin_id === selectedPin[0].id).map(cat => <BasicCat key={cat.id} cat={cat} markers={markers}/>) : 
-            cats.map(cat => <BasicCat key={cat.id} cat={cat} markers={markers}/>)}
+           {[...cats]
+            .filter(cat => selectedPin[0] ? cat.pin_id === selectedPin[0].id : true)
+            .sort((a, b) => Date.parse(b.created_at) - Date.parse(a.created_at))
+            .map(cat => (<BasicCat key={cat.id} cat={cat} markers={markers} />))}
             </div>
 
     return (
