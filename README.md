@@ -1,3 +1,3 @@
 # bodegaCatsNYC
 
-https://bodega-cats-nyc.com
+Website specifically designed for mobile: https://bodega-cats-nyc.com
